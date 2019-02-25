@@ -11,6 +11,14 @@ farmOS Aggregator is an application for aggregating data from multiple
 
 For more information on farmOS, visit [farmOS.org](https://farmOS.org).
 
+## GETTING STARTED
+
+To launch the application in Docker, run the following command:
+
+    sudo docker-compose up
+
+Then open `https://localhost` in your browser to view the application.
+
 ## MAINTAINERS
 
  * Michael Stenta (m.stenta) - https://github.com/mstenta
