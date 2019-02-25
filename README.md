@@ -27,6 +27,12 @@ needed for state persistence will be stored in the `./instance` directory.
 The `./instance` directory may contain sensitive information, so it is
 important that it is stored and managed securely on production servers.
 
+### Database
+
+An SQLite3 database is automatically created to store information about the
+farmOS instances that are being tracked. By default, this will be saved to
+`./instance/database.sqlite3`.
+
 ### Configuration
 
 Configuration for the instance can be overridden by creating a `settings.py`

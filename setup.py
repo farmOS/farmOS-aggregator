@@ -21,6 +21,7 @@ setup(
     install_requires=[
         'flask',
         'flask-admin',
+        'flask-sqlalchemy',
         'sqlalchemy',
     ],
 )
