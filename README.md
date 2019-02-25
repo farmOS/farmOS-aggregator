@@ -19,6 +19,20 @@ To launch the application in Docker, run the following command:
 
 Then open `https://localhost` in your browser to view the application.
 
+## INSTANCE FILES
+
+When you start up an instance of the farmOS Aggregator, any files that are
+needed for state persistence will be stored in the `./instance` directory.
+
+The `./instance` directory may contain sensitive information, so it is
+important that it is stored and managed securely on production servers.
+
+### Configuration
+
+Configuration for the instance can be overridden by creating a `settings.py`
+file inside the `./instance` directory. For a list of available settings and
+their default values, see `farmOSaggregator/default_settings.py`.
+
 ## MAINTAINERS
 
  * Michael Stenta (m.stenta) - https://github.com/mstenta

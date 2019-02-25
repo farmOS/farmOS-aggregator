@@ -4,3 +4,5 @@ services:
     build: .
     ports:
       - '80:80'
+    volumes:
+      - './instance:/usr/src/app/instance'
