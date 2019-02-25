@@ -7,6 +7,9 @@ from flask_admin import Admin
 # Import SQLAlchemy.
 from flask_sqlalchemy import SQLAlchemy
 
+# Import SQLAlchemy ModelView.
+from flask_admin.contrib.sqla import ModelView
+
 # Import models.
 import farmOSaggregator.models as models
 
@@ -30,4 +33,6 @@ models.Base.metadata.create_all(db.engine)
 
 # Create a Flask Admin interface.
 service_name = 'farmOS Aggregator'
-admin = Admin(app, name=service_name, template_mode='bootstrap3', url='/')
+index_name = 'Farms'
+index_view = ModelView(models.Farm, db.session, name=index_name, endpoint='admin')
+admin = Admin(app, name=service_name, template_mode='bootstrap3', url='/', index_view=index_view)

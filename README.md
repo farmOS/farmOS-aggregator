@@ -39,6 +39,10 @@ Configuration for the instance can be overridden by creating a `settings.py`
 file inside the `./instance` directory. For a list of available settings and
 their default values, see `farmOSaggregator/default_settings.py`.
 
+Some settings that you will want to override are:
+
+ * `SECRET_KEY`: The Flask secret key.
+
 ## MAINTAINERS
 
  * Michael Stenta (m.stenta) - https://github.com/mstenta
