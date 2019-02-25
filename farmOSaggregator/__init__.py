@@ -7,6 +7,9 @@ from flask_admin import Admin
 # Import SQLAlchemy.
 from flask_sqlalchemy import SQLAlchemy
 
+# Import BasicAuth.
+from flask_basicauth import BasicAuth
+
 # Import SQLAlchemy ModelView.
 from flask_admin.contrib.sqla import ModelView
 
@@ -30,6 +33,9 @@ db = SQLAlchemy(app)
 
 # Create the database tables, if necessary.
 models.Base.metadata.create_all(db.engine)
+
+# Configure HTTP Basic Authentication for the entire application.
+basic_auth = BasicAuth(app)
 
 # Create a Flask Admin interface.
 service_name = 'farmOS Aggregator'

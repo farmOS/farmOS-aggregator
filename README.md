@@ -41,6 +41,8 @@ their default values, see `farmOSaggregator/default_settings.py`.
 
 Some settings that you will want to override are:
 
+ * `BASIC_AUTH_USERNAME`: The Basic Authorization username.
+ * `BASIC_AUTH_PASSWORD`: The Basic Authorization username.
  * `SECRET_KEY`: The Flask secret key.
 
 ## MAINTAINERS
