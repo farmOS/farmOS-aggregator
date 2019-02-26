@@ -24,5 +24,6 @@ setup(
         'flask-basicauth',
         'flask-sqlalchemy',
         'sqlalchemy',
+        'wtforms',
     ],
 )
