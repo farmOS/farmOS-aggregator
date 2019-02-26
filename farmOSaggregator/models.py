@@ -12,6 +12,8 @@ class Farm(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     url = Column(String(), index=True, nullable=False)
     farm_name = Column(String(), index=True, nullable=False)
+    username = Column(String(), index=True)
+    password = Column(String())
 
     def __str__(self):
         return "{}".format(self.url)
