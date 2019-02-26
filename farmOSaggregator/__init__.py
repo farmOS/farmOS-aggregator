@@ -10,11 +10,11 @@ from flask_sqlalchemy import SQLAlchemy
 # Import BasicAuth.
 from flask_basicauth import BasicAuth
 
-# Import SQLAlchemy ModelView.
-from flask_admin.contrib.sqla import ModelView
-
 # Import models.
 import farmOSaggregator.models as models
+
+# Import views.
+import farmOSaggregator.views as views
 
 # Import default settings.
 import farmOSaggregator.default_settings
@@ -40,5 +40,5 @@ basic_auth = BasicAuth(app)
 # Create a Flask Admin interface.
 service_name = 'farmOS Aggregator'
 index_name = 'Farms'
-index_view = ModelView(models.Farm, db.session, name=index_name, endpoint='admin')
+index_view = views.FarmView(models.Farm, db.session, name=index_name, endpoint='admin')
 admin = Admin(app, name=service_name, template_mode='bootstrap3', url='/', index_view=index_view)
