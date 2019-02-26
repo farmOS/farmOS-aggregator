@@ -11,3 +11,7 @@ BASIC_AUTH_PASSWORD = 'test'
 
 # Define a default secret.
 SECRET_KEY = 'secret'
+
+# Configure the Bootstrap theme.
+FLASK_ADMIN_FLUID_LAYOUT = True
+FLASK_ADMIN_SWATCH = 'flatly'
