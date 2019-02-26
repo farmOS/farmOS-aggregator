@@ -3,8 +3,8 @@ import re
 # Import SQLAlchemy ModelView.
 from flask_admin.contrib.sqla import ModelView
 
-# Import ValidationError.
-from wtforms.validators import ValidationError
+# Import WTForms libraries.
+from wtforms import ValidationError, PasswordField
 
 
 def is_valid_hostname(hostname):
@@ -22,6 +22,12 @@ def is_valid_hostname(hostname):
 
 class FarmView(ModelView):
     """Extend the ModelView class for Farm models."""
+
+    # Exclude the password field from columns and configure it as a password.
+    column_exclude_list = ['password']
+    form_extra_fields = {
+        'password': PasswordField('Password')
+    }
 
     # Validate URLs.
     def valid_url(form, field):
