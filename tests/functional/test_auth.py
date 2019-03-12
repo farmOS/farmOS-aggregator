@@ -10,6 +10,17 @@ def login(client_secure, username, password):
     #return client.get("/", headers=headers)
     return client_secure.get("/", headers=headers)
 
+def test_login_not_required_for_basic_testing(client):
+    """
+    GIVEN a Flask app
+    WHEN the '/' page is requested without credentials
+    THEN check the page is loaded
+    """
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert b'There are no items in the table.' in response.data
+
 def test_valid_login(client_secure):
     """
     GIVEN a Flask app
