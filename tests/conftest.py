@@ -35,7 +35,7 @@ def client_secure():
     farmOSaggregator.app.config['TESTING'] = True
 
     # Enable HTTP Basic Auth by default
-    farmOSaggregator.app.config['LOGIN_DISABLED'] = True
+    farmOSaggregator.app.config['BASIC_AUTH_FORCE'] = True
 
     client = farmOSaggregator.app.test_client()
 
