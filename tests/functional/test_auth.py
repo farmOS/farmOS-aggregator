@@ -31,3 +31,13 @@ def test_valid_login(client_secure):
 
     assert response.status_code == 200
     assert b'There are no items in the table.' in response.data
+
+def test_invalid_login(client_secure):
+    """
+    GIVEN a Flask app
+    WHEN the '/' page is requested with INVALID credentials
+    THEN check the page is NOT loaded
+    """
+    response = login(client_secure, 'username', 'password')
+
+    assert response.status_code == 401
