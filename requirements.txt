@@ -1,7 +1,0 @@
-flask
-flask-admin
-flask-basicauth
-flask-sqlalchemy
-sqlalchemy
-wtforms
-pytest
