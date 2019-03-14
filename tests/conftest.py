@@ -3,11 +3,17 @@ pytest configuration file.
 
 Includes fixtures for unit and functional tests
 """
+import os
+import tempfile
 
 import pytest
+from flask_sqlalchemy import SQLAlchemy
 
-from farmOSaggregator import farmOSaggregator, db
+from farmOSaggregator import farmOSaggregator
 from farmOSaggregator.models import Farm
+
+# Disable SQL Modifification Tracking for performance
+farmOSaggregator.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 @pytest.fixture(scope='module')
 def new_farm():
@@ -21,12 +27,24 @@ def client():
     # Disable HTTP Basic Auth by default
     farmOSaggregator.app.config['BASIC_AUTH_FORCE'] = False
 
+    # Create temporary database
+    db_fd, db_filepath = tempfile.mkstemp()
+    farmOSaggregator.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_filepath
+
     client = farmOSaggregator.app.test_client()
 
     ctx = farmOSaggregator.app.app_context()
     ctx.push()
 
+    # Initialize DB
+    db = SQLAlchemy(farmOSaggregator.app)
+    farmOSaggregator.models.Base.metadata.create_all(db.engine)
+
     yield client
+
+    # Delete temp datbase
+    os.close(db_fd)
+    os.unlink(db_filepath)
 
     ctx.pop()
 
@@ -37,11 +55,23 @@ def client_secure():
     # Enable HTTP Basic Auth by default
     farmOSaggregator.app.config['BASIC_AUTH_FORCE'] = True
 
+    # Create temporary database
+    db_fd, db_filepath = tempfile.mkstemp()
+    farmOSaggregator.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_filepath
+
     client = farmOSaggregator.app.test_client()
 
     ctx = farmOSaggregator.app.app_context()
     ctx.push()
 
+    # Initialize DB
+    db = SQLAlchemy(farmOSaggregator.app)
+    farmOSaggregator.models.Base.metadata.create_all(db.engine)
+
     yield client
+
+    # Delete temp datbase
+    os.close(db_fd)
+    os.unlink(db_filepath)
 
     ctx.pop()
