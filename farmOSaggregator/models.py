@@ -15,7 +15,7 @@ class Farm(Base):
     username = Column(String(), index=True)
     password = Column(String())
 
-    def __init__(self, url, farm_name, username, password):
+    def __init__(self, url=None, farm_name=None, username=None, password=None):
         self.url = url
         self.farm_name = farm_name
         self.username = username
