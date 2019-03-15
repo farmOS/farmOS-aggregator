@@ -27,7 +27,7 @@ def test_valid_login(client_secure):
     WHEN the '/' page is requested with valid credentials
     THEN check the page is loaded
     """
-    response = login(client_secure, farmOSaggregator.app.config['BASIC_AUTH_USERNAME'], farmOSaggregator.app.config['BASIC_AUTH_PASSWORD'])
+    response = login(client_secure, farmOSaggregator.default_settings.BASIC_AUTH_USERNAME, farmOSaggregator.default_settings.BASIC_AUTH_PASSWORD)
 
     assert response.status_code == 200
     assert b'There are no items in the table.' in response.data
