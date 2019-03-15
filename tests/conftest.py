@@ -12,9 +12,6 @@ from flask_sqlalchemy import SQLAlchemy
 from farmOSaggregator import farmOSaggregator
 from farmOSaggregator.models import Farm
 
-# Disable SQL Modifification Tracking for performance
-farmOSaggregator.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 @pytest.fixture(scope='module')
 def new_farm():
     farm = Farm('test.url', 'test name', 'testusername', 'testpass')
