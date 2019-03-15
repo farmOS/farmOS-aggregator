@@ -1,19 +1,21 @@
-# Import SQLAlchemy packages
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
+# Import SQLAlchemy.
+from flask_sqlalchemy import SQLAlchemy
 
-# Initialize a declarative base class.
-Base = declarative_base()
+# Create db extension object in models file per
+#   http://flask.pocoo.org/docs/1.0/patterns/appfactories/#factories-extensions
+db = SQLAlchemy()
 
+# Subclass from db instance, not sqlalcemy.model per
+#   http://flask-sqlalchemy.pocoo.org/2.3/api/#models
 
-class Farm(Base):
+class Farm(db.Model):
     """Define the farm database model."""
     __tablename__ = 'farm'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    url = Column(String(), index=True, nullable=False)
-    farm_name = Column(String(), index=True, nullable=False)
-    username = Column(String(), index=True)
-    password = Column(String())
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    url = db.Column(db.String(), index=True, nullable=False)
+    farm_name = db.Column(db.String(), index=True, nullable=False)
+    username = db.Column(db.String(), index=True)
+    password = db.Column(db.String())
 
     def __init__(self, url=None, farm_name=None, username=None, password=None):
         self.url = url

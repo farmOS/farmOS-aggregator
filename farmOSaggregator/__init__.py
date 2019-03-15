@@ -11,7 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_basicauth import BasicAuth
 
 # Import models.
-import farmOSaggregator.models as models
+from farmOSaggregator.models import db
 
 # Import views.
 import farmOSaggregator.views as views
@@ -28,12 +28,15 @@ def create_app(config_filename=None):
     app.config.from_object('farmOSaggregator.default_settings')
     app.config.from_pyfile(config_filename, silent=True)
 
-# Create a database session.
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.instance_path + '/' + app.config['DATABASE_FILENAME']
-db = SQLAlchemy(app)
+    # Create a database session.
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.instance_path + '/' + app.config['DATABASE_FILENAME']
+    db.init_app(app)
 
-# Create the database tables, if necessary.
-models.Base.metadata.create_all(db.engine)
+    with app.app_context():
+
+        db.create_all()
+
+        return app
 
 # Configure HTTP Basic Authentication for the entire application.
 basic_auth = BasicAuth(app)
