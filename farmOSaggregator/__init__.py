@@ -19,6 +19,11 @@ import farmOSaggregator.views as views
 # Import default settings.
 import farmOSaggregator.default_settings
 
+# Create the instances of the Flask extensions (flask-sqlalchemy, flask-basicauth, etc.) in
+# the global scope, but without instance specific argumentss passed in.
+# These instances are not attached to the application at this point.
+basic_auth = BasicAuth()
+
 # Application Factory Function http://flask.pocoo.org/docs/1.0/patterns/appfactories/
 def create_app(config_filename=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -32,14 +37,15 @@ def create_app(config_filename=None):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.instance_path + '/' + app.config['DATABASE_FILENAME']
     db.init_app(app)
 
+    # Configure HTTP Basic Authentication for the entire application.
+    basic_auth.init_app(app)
+
     with app.app_context():
 
         db.create_all()
 
         return app
 
-# Configure HTTP Basic Authentication for the entire application.
-basic_auth = BasicAuth(app)
 
 # Create a Flask Admin interface.
 service_name = 'farmOS Aggregator'
