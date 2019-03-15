@@ -19,13 +19,14 @@ import farmOSaggregator.views as views
 # Import default settings.
 import farmOSaggregator.default_settings
 
-# Create a Flask application.
-app = Flask(__name__, instance_relative_config=True)
+# Application Factory Function http://flask.pocoo.org/docs/1.0/patterns/appfactories/
+def create_app(config_filename=None):
+    app = Flask(__name__, instance_relative_config=True)
 
-# Load configuration from defaults first, then override with a settings.py file
-# inside the instance path.
-app.config.from_object('farmOSaggregator.default_settings')
-app.config.from_pyfile('settings.py', silent=True)
+    # Load configuration from defaults first, then override with a settings.py file
+    # inside the instance path.
+    app.config.from_object('farmOSaggregator.default_settings')
+    app.config.from_pyfile(config_filename, silent=True)
 
 # Create a database session.
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.instance_path + '/' + app.config['DATABASE_FILENAME']
