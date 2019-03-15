@@ -11,10 +11,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_basicauth import BasicAuth
 
 # Import models.
-from farmOSaggregator.models import db
+from farmOSaggregator.models import db, Farm
 
 # Import views.
-import farmOSaggregator.views as views
+from farmOSaggregator.views import FarmView
 
 # Import default settings.
 import farmOSaggregator.default_settings
@@ -40,15 +40,14 @@ def create_app(config_filename=None):
     # Configure HTTP Basic Authentication for the entire application.
     basic_auth.init_app(app)
 
+    # Create a Flask Admin interface.
+    service_name = 'farmOS Aggregator'
+    index_name = 'Farms'
+    index_view = FarmView(Farm, db.session, name=index_name, endpoint='admin')
+    admin = Admin(app, name=service_name, template_mode='bootstrap3', url='/', index_view=index_view)
+
     with app.app_context():
 
         db.create_all()
 
         return app
-
-
-# Create a Flask Admin interface.
-service_name = 'farmOS Aggregator'
-index_name = 'Farms'
-index_view = views.FarmView(models.Farm, db.session, name=index_name, endpoint='admin')
-admin = Admin(app, name=service_name, template_mode='bootstrap3', url='/', index_view=index_view)
