@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app import crud
@@ -62,6 +62,27 @@ async def create_farm(
     farm = crud.farm.create(db, farm_in=farm_in)
 
     return farm
+
+# /farms/info/ endpoint for accessing farmOS info
+
+@router.get("/farms/info/", tags=["farm info"])
+def get_all_farm_info(
+    farms: List[int] = Query(None),
+    db: Session = Depends(get_db),
+):
+    if farms:
+        farm_list = crud.farm.get_by_multi_id(db, farm_id_list=farms)
+    else:
+        farm_list = crud.farm.get_multi(db)
+
+    data = {}
+    for farm in farm_list:
+        data[farm.id] = {}
+        f = farmOS(farm.url, farm.username, farm.password)
+        if f.authenticate() :
+            data[farm.id]['info'] = f.info()
+
+    return data
 
 # /farms/logs/ endpoint for accessing farmOS logs
 
