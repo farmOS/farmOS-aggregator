@@ -6,6 +6,9 @@ from app.models.farm import FarmInCreate
 def get_by_id(db_session, *, farm_id: int):
     return db_session.query(Farm).filter(Farm.id == farm_id).first()
 
+def get_by_multi_id(db_session, *, farm_id_list: List[int]):
+    return db_session.query(Farm).filter(Farm.id.in_((farm_id_list))).all()
+
 def get_by_url(db_session, *, farm_url: str):
     return db_session.query(Farm).filter(Farm.url == farm_url).first()
 

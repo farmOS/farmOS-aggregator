@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app import crud
@@ -86,11 +87,36 @@ def get_all_farm_info(
 
 # /farms/logs/ endpoint for accessing farmOS logs
 
-# @router.get("/farm/logs/", tags=["farm"])
-# def get_all_farm_logs():
-#     data = []
-#     for farm in farms:
-#         response = await farm.log.get()
-#         data.append(response)
-#
-#     return data
+class Log(BaseModel):
+    class Config:
+        extra = 'allow'
+
+    name: str
+    type: str
+
+class LogUpdate(BaseModel):
+    class Config:
+        extra = 'allow'
+
+    id: int
+
+@router.get("/farms/logs/", tags=["farm log"])
+def get_all_farm_logs(
+    farms: List[int] = Query(None),
+    #filters: Dict = Query(None),
+    db: Session = Depends(get_db),
+):
+    if farms:
+        farm_list = crud.farm.get_by_multi_id(db, farm_id_list=farms)
+    else:
+        farm_list = crud.farm.get_multi(db)
+
+    data = {}
+    for farm in farm_list:
+        data[farm.id] = []
+        f = farmOS(farm.url, farm.username, farm.password)
+        if f.authenticate() :
+            data[farm.id].append(f.log.get())
+
+    return data
+
