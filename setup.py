@@ -5,6 +5,24 @@ from setuptools import find_packages, setup
 with io.open('README.md', 'rt', encoding='utf8') as f:
     readme = f.read()
 
+setup_requires=[
+    'pytest-runner',
+]
+
+install_requires=[
+    'flask',
+    'flask-admin',
+    'flask-basicauth',
+    'flask-sqlalchemy',
+    'sqlalchemy',
+    'wtforms',
+    ]
+
+tests_require=[
+    'pytest',
+],
+
+
 setup(
     name='farmOSaggregator',
     version='1.0.0',
@@ -18,12 +36,8 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    install_requires=[
-        'flask',
-        'flask-admin',
-        'flask-basicauth',
-        'flask-sqlalchemy',
-        'sqlalchemy',
-        'wtforms',
-    ],
+    setup_requires=setup_requires,
+    install_requires=install_requires,
+    tests_require=tests_require,
+    test_suite='pytest',
 )

@@ -11,34 +11,43 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_basicauth import BasicAuth
 
 # Import models.
-import farmOSaggregator.models as models
+from farmOSaggregator.models import db, Farm
 
 # Import views.
-import farmOSaggregator.views as views
+from farmOSaggregator.views import FarmView
 
 # Import default settings.
 import farmOSaggregator.default_settings
 
-# Create a Flask application.
-app = Flask(__name__, instance_relative_config=True)
+# Create the instances of the Flask extensions (flask-sqlalchemy, flask-basicauth, etc.) in
+# the global scope, but without instance specific argumentss passed in.
+# These instances are not attached to the application at this point.
+basic_auth = BasicAuth()
 
-# Load configuration from defaults first, then override with a settings.py file
-# inside the instance path.
-app.config.from_object('farmOSaggregator.default_settings')
-app.config.from_pyfile('settings.py', silent=True)
+# Application Factory Function http://flask.pocoo.org/docs/1.0/patterns/appfactories/
+def create_app(config_filename=None):
+    app = Flask(__name__, instance_relative_config=True)
 
-# Create a database session.
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.instance_path + '/' + app.config['DATABASE_FILENAME']
-db = SQLAlchemy(app)
+    # Load configuration from defaults first, then override with a settings.py file
+    # inside the instance path.
+    app.config.from_object('farmOSaggregator.default_settings')
+    app.config.from_pyfile(config_filename, silent=True)
 
-# Create the database tables, if necessary.
-models.Base.metadata.create_all(db.engine)
+    # Create a database session.
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.instance_path + '/' + app.config['DATABASE_FILENAME']
+    db.init_app(app)
 
-# Configure HTTP Basic Authentication for the entire application.
-basic_auth = BasicAuth(app)
+    # Configure HTTP Basic Authentication for the entire application.
+    basic_auth.init_app(app)
 
-# Create a Flask Admin interface.
-service_name = 'farmOS Aggregator'
-index_name = 'Farms'
-index_view = views.FarmView(models.Farm, db.session, name=index_name, endpoint='admin')
-admin = Admin(app, name=service_name, template_mode='bootstrap3', url='/', index_view=index_view)
+    # Create a Flask Admin interface.
+    service_name = 'farmOS Aggregator'
+    index_name = 'Farms'
+    index_view = FarmView(Farm, db.session, name=index_name, endpoint='admin')
+    admin = Admin(app, name=service_name, template_mode='bootstrap3', url='/', index_view=index_view)
+
+    with app.app_context():
+
+        db.create_all()
+
+        return app

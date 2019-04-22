@@ -45,6 +45,15 @@ Some settings that you will want to override are:
  * `BASIC_AUTH_PASSWORD`: The Basic Authorization username.
  * `SECRET_KEY`: The Flask secret key.
 
+## RUNNING TESTS
+
+Tests can be run with:
+
+    python setup.py test
+
+This will run all included tests in the `tests/` directory. Pytest is the default test runner.
+
+
 ## MAINTAINERS
 
  * Michael Stenta (m.stenta) - https://github.com/mstenta

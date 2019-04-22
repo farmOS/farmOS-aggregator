@@ -15,3 +15,6 @@ SECRET_KEY = 'secret'
 # Configure the Bootstrap theme.
 FLASK_ADMIN_FLUID_LAYOUT = True
 FLASK_ADMIN_SWATCH = 'flatly'
+
+# Disable SQL Modifification Tracking for performance
+SQLALCHEMY_TRACK_MODIFICATIONS = False
