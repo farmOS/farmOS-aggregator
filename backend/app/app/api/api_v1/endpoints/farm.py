@@ -35,7 +35,8 @@ def read_farm_by_id(
     """
     Get a specific farm by id
     """
-    farm = curd.farm.get_by_id(db, farm_id=farm_id)
+    farm = crud.farm.get_by_id(db, farm_id=farm_id)
+    return farm
 
 @router.get("/farms/{farm_url}", tags=["farms"], response_model=Farm)
 def read_farm_by_url(
@@ -45,7 +46,8 @@ def read_farm_by_url(
     """
     Get a specific farm by farm_url
     """
-    farm = curd.farm.get_by_url(db, farm_url=farm_url)
+    farm = crud.farm.get_by_url(db, farm_url=farm_url)
+    return farm
 
 @router.post("/farms/", tags=["farms"], response_model=Farm)
 async def create_farm(
