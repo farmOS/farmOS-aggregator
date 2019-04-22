@@ -141,3 +141,59 @@ def create_farm_logs(
 
     return data
 
+# /farms/assets/ endpoint for accessing farmOS assets
+
+class Asset(BaseModel):
+    class Config:
+        extra = 'allow'
+
+    name: str
+    type: str
+
+class AssetUpdate(BaseModel):
+    class Config:
+        extra = 'allow'
+
+    id: int
+
+@router.get("/farms/assets/", tags=["farm asset"])
+def get_all_farm_assets(
+    farms: List[int] = Query(None),
+    #filters: Dict = Query(None),
+    db: Session = Depends(get_db),
+):
+    if farms:
+        farm_list = crud.farm.get_by_multi_id(db, farm_id_list=farms)
+    else:
+        farm_list = crud.farm.get_multi(db)
+
+    data = {}
+    for farm in farm_list:
+        data[farm.id] = []
+        f = farmOS(farm.url, farm.username, farm.password)
+        if f.authenticate() :
+            data[farm.id].append(f.asset.get())
+
+    return data
+
+@router.post("/farms/assets/", tags=["farm asset"])
+def create_farm_assets(
+    asset: Asset,
+    farms: List[int] = Query(None),
+    #filters: Dict = Query(None),
+    db: Session = Depends(get_db),
+):
+    if farms:
+        farm_list = crud.farm.get_by_multi_id(db, farm_id_list=farms)
+    else:
+        farm_list = crud.farm.get_multi(db)
+
+    data = {}
+    for farm in farm_list:
+        data[farm.id] = []
+        f = farmOS(farm.url, farm.username, farm.password)
+        if f.authenticate() :
+            data[farm.id].append(f.asset.send(payload=asset.dict()))
+
+    return data
+
