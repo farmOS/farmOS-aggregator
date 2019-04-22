@@ -120,3 +120,24 @@ def get_all_farm_logs(
 
     return data
 
+@router.post("/farms/logs/", tags=["farm log"])
+def create_farm_logs(
+    log: Log,
+    farms: List[int] = Query(None),
+    #filters: Dict = Query(None),
+    db: Session = Depends(get_db),
+):
+    if farms:
+        farm_list = crud.farm.get_by_multi_id(db, farm_id_list=farms)
+    else:
+        farm_list = crud.farm.get_multi(db)
+
+    data = {}
+    for farm in farm_list:
+        data[farm.id] = []
+        f = farmOS(farm.url, farm.username, farm.password)
+        if f.authenticate() :
+            data[farm.id].append(f.log.send(payload=log.dict()))
+
+    return data
+
