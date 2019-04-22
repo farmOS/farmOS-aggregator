@@ -28,5 +28,10 @@ def create(db_session, *, farm_in: FarmInCreate) -> Farm:
     db_session.refresh(farm)
     return farm
 
+def delete(db_session, *, farm_id: int):
+    farm = get_by_id(db_session=db_session, farm_id=farm_id)
+    db_session.delete(farm)
+    db_session.commit()
+
 def is_authenticated(Farm):
     return farm.is_authenticated

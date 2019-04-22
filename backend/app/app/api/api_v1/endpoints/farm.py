@@ -66,6 +66,17 @@ async def create_farm(
 
     return farm
 
+@router.delete("/farms/{farm_id}", tags=["farms"], response_model=Farm)
+async def delete_farm(
+    farm_id: int,
+    db: Session = Depends(get_db),
+):
+    """
+    Delete farm
+    """
+    farm = crud.farm.delete(db, farm_id=farm_id)
+    return farm
+
 # /farms/info/ endpoint for accessing farmOS info
 
 @router.get("/farms/info/", tags=["farm info"])
