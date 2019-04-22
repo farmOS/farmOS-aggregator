@@ -129,7 +129,7 @@ def get_all_farm_logs(
         data[farm.id] = []
         f = farmOS(farm.url, farm.username, farm.password)
         if f.authenticate() :
-            data[farm.id].append(f.log.get())
+            data[farm.id] = data[farm.id] + f.log.get()
 
     return data
 
@@ -150,7 +150,7 @@ def create_farm_logs(
         data[farm.id] = []
         f = farmOS(farm.url, farm.username, farm.password)
         if f.authenticate() :
-            data[farm.id].append(f.log.send(payload=log.dict()))
+            data[farm.id] = data[farm.id] + f.log.send(payload=log.dict())
 
     return data
 
@@ -185,7 +185,7 @@ def get_all_farm_assets(
         data[farm.id] = []
         f = farmOS(farm.url, farm.username, farm.password)
         if f.authenticate() :
-            data[farm.id].append(f.asset.get())
+            data[farm.id] = data[farm.id] + f.asset.get()
 
     return data
 
@@ -206,7 +206,8 @@ def create_farm_assets(
         data[farm.id] = []
         f = farmOS(farm.url, farm.username, farm.password)
         if f.authenticate() :
-            data[farm.id].append(f.asset.send(payload=asset.dict()))
+            data[farm.id] = data[farm.id] + f.asset.send(payload=asset.dict())
+
 
     return data
 
@@ -228,7 +229,7 @@ def get_all_farm_terms(
         data[farm.id] = []
         f = farmOS(farm.url, farm.username, farm.password)
         if f.authenticate() :
-            data[farm.id].append(f.term.get())
+            data[farm.id] = data[farm.id] + f.term.get()
 
     return data
 
@@ -250,6 +251,6 @@ def get_all_farm_areas(
         data[farm.id] = []
         f = farmOS(farm.url, farm.username, farm.password)
         if f.authenticate() :
-            data[farm.id].append(f.area.get())
+            data[farm.id] = data[farm.id] + f.area.get()
 
     return data
