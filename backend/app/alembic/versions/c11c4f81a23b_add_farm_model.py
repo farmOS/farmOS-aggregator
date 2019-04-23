@@ -1,8 +1,8 @@
-"""Add Farms model
+"""Add Farm model
 
-Revision ID: 34e07bbcbf71
-Revises: e6ae69e9dcb9
-Create Date: 2019-04-14 03:08:42.646150
+Revision ID: c11c4f81a23b
+Revises: d4867f3a4c0a
+Create Date: 2019-04-23 23:25:01.807906
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '34e07bbcbf71'
-down_revision = 'e6ae69e9dcb9'
+revision = 'c11c4f81a23b'
+down_revision = 'd4867f3a4c0a'
 branch_labels = None
 depends_on = None
 
@@ -24,12 +24,10 @@ def upgrade():
     sa.Column('url', sa.String(), nullable=True),
     sa.Column('username', sa.String(), nullable=True),
     sa.Column('password', sa.String(), nullable=True),
-    sa.Column('is_authenticated', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_farm_farm_name'), 'farm', ['farm_name'], unique=False)
     op.create_index(op.f('ix_farm_id'), 'farm', ['id'], unique=False)
-    op.create_index(op.f('ix_farm_is_authenticated'), 'farm', ['is_authenticated'], unique=False)
     op.create_index(op.f('ix_farm_password'), 'farm', ['password'], unique=False)
     op.create_index(op.f('ix_farm_url'), 'farm', ['url'], unique=False)
     op.create_index(op.f('ix_farm_username'), 'farm', ['username'], unique=False)
@@ -41,7 +39,6 @@ def downgrade():
     op.drop_index(op.f('ix_farm_username'), table_name='farm')
     op.drop_index(op.f('ix_farm_url'), table_name='farm')
     op.drop_index(op.f('ix_farm_password'), table_name='farm')
-    op.drop_index(op.f('ix_farm_is_authenticated'), table_name='farm')
     op.drop_index(op.f('ix_farm_id'), table_name='farm')
     op.drop_index(op.f('ix_farm_farm_name'), table_name='farm')
     op.drop_table('farm')
