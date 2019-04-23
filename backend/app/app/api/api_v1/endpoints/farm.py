@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app import crud
 from app.api.utils.db import get_db
 from app.db_models.farm import Farm as DBFarm
-from app.models.farm import Farm, FarmInCreate, FarmInDB
+from app.models.farm import Farm, FarmCreate, FarmInDB
 
 from farmOS import farmOS
 
@@ -53,7 +53,7 @@ def read_farm_by_url(
 async def create_farm(
     *,
     db: Session = Depends(get_db),
-    farm_in: FarmInCreate
+    farm_in: FarmCreate
 ):
     """
     Create new farm

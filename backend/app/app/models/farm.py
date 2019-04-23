@@ -13,7 +13,7 @@ class FarmBaseInDB(FarmBase):
     id: int = None
 
 # Properties to recieve via API on creation
-class FarmInCreate(FarmBaseInDB):
+class FarmCreate(FarmBaseInDB):
     farm_name: str
     url: str
     username: str
