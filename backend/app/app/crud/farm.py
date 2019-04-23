@@ -1,21 +1,23 @@
 from typing import List, Optional
 
-from app.db_models.farm import Farm
-from app.models.farm import FarmInCreate
+from sqlalchemy.orm import Session
 
-def get_by_id(db_session, *, farm_id: int):
+from app.db_models.farm import Farm
+from app.models.farm import FarmCreate
+
+def get_by_id(db_session: Session, *, farm_id: int):
     return db_session.query(Farm).filter(Farm.id == farm_id).first()
 
-def get_by_multi_id(db_session, *, farm_id_list: List[int]):
+def get_by_multi_id(db_session: Session, *, farm_id_list: List[int]):
     return db_session.query(Farm).filter(Farm.id.in_((farm_id_list))).all()
 
-def get_by_url(db_session, *, farm_url: str):
+def get_by_url(db_session: Session, *, farm_url: str):
     return db_session.query(Farm).filter(Farm.url == farm_url).first()
 
-def get_multi(db_session, *, skip=0, limit=100) -> List[Optional[Farm]]:
+def get_multi(db_session: Session, *, skip=0, limit=100) -> List[Optional[Farm]]:
     return db_session.query(Farm).offset(skip).limit(limit).all()
 
-def create(db_session, *, farm_in: FarmInCreate) -> Farm:
+def create(db_session: Session, *, farm_in: FarmCreate) -> Farm:
     farm = Farm(
         farm_name=farm_in.farm_name,
         url=farm_in.url,
@@ -28,7 +30,7 @@ def create(db_session, *, farm_in: FarmInCreate) -> Farm:
     db_session.refresh(farm)
     return farm
 
-def delete(db_session, *, farm_id: int):
+def delete(db_session: Session, *, farm_id: int):
     farm = get_by_id(db_session=db_session, farm_id=farm_id)
     db_session.delete(farm)
     db_session.commit()
