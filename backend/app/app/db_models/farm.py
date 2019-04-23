@@ -9,4 +9,3 @@ class Farm(Base):
     url = Column(String, index=True)
     username = Column(String, index=True)
     password = Column(String, index=True)
-    is_authenticated = Column(Boolean, index=True)
