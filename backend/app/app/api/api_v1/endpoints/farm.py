@@ -15,7 +15,7 @@ router = APIRouter()
 
 # /farms/ endpoints for farmOS instances
 
-@router.get("/farms/", tags=["farms"], response_model=List[Farm])
+@router.get("/", tags=["farms"], response_model=List[Farm])
 def read_farms(
     db: Session = Depends(get_db),
     skip: int = 0,
@@ -27,7 +27,7 @@ def read_farms(
     farms = crud.farm.get_multi(db, skip=skip, limit=limit)
     return farms
 
-@router.get("/farms/{farm_id}", tags=["farms"], response_model=Farm)
+@router.get("/{farm_id}", tags=["farms"], response_model=Farm)
 def read_farm_by_id(
     farm_id: int,
     db: Session = Depends(get_db),
@@ -38,7 +38,7 @@ def read_farm_by_id(
     farm = crud.farm.get_by_id(db, farm_id=farm_id)
     return farm
 
-@router.get("/farms/{farm_url}", tags=["farms"], response_model=Farm)
+@router.get("/{farm_url}", tags=["farms"], response_model=Farm)
 def read_farm_by_url(
     farm_url: str,
     db: Session = Depends(get_db),
@@ -49,7 +49,7 @@ def read_farm_by_url(
     farm = crud.farm.get_by_url(db, farm_url=farm_url)
     return farm
 
-@router.post("/farms/", tags=["farms"], response_model=Farm)
+@router.post("/", tags=["farms"], response_model=Farm)
 async def create_farm(
     *,
     db: Session = Depends(get_db),
@@ -66,7 +66,7 @@ async def create_farm(
 
     return farm
 
-@router.delete("/farms/{farm_id}", tags=["farms"], response_model=Farm)
+@router.delete("/{farm_id}", tags=["farms"], response_model=Farm)
 async def delete_farm(
     farm_id: int,
     db: Session = Depends(get_db),
@@ -79,7 +79,7 @@ async def delete_farm(
 
 # /farms/info/ endpoint for accessing farmOS info
 
-@router.get("/farms/info/", tags=["farm info"])
+@router.get("/info/", tags=["farm info"])
 def get_all_farm_info(
     farms: List[int] = Query(None),
     db: Session = Depends(get_db),
@@ -113,7 +113,7 @@ class LogUpdate(BaseModel):
 
     id: int
 
-@router.get("/farms/logs/", tags=["farm log"])
+@router.get("/logs/", tags=["farm log"])
 def get_all_farm_logs(
     farms: List[int] = Query(None),
     #filters: Dict = Query(None),
@@ -133,7 +133,7 @@ def get_all_farm_logs(
 
     return data
 
-@router.post("/farms/logs/", tags=["farm log"])
+@router.post("/logs/", tags=["farm log"])
 def create_farm_logs(
     log: Log,
     farms: List[int] = Query(None),
@@ -169,7 +169,7 @@ class AssetUpdate(BaseModel):
 
     id: int
 
-@router.get("/farms/assets/", tags=["farm asset"])
+@router.get("/assets/", tags=["farm asset"])
 def get_all_farm_assets(
     farms: List[int] = Query(None),
     #filters: Dict = Query(None),
@@ -189,7 +189,7 @@ def get_all_farm_assets(
 
     return data
 
-@router.post("/farms/assets/", tags=["farm asset"])
+@router.post("/assets/", tags=["farm asset"])
 def create_farm_assets(
     asset: Asset,
     farms: List[int] = Query(None),
@@ -213,7 +213,7 @@ def create_farm_assets(
 
 # /farms/terms/ endpoint for accessing farmOS terms
 
-@router.get("/farms/terms/", tags=["farm term"])
+@router.get("/terms/", tags=["farm term"])
 def get_all_farm_terms(
     farms: List[int] = Query(None),
     #filters: Dict = Query(None),
@@ -235,7 +235,7 @@ def get_all_farm_terms(
 
 # /farms/areas/ endpoint for accessing farmOS areas
 
-@router.get("/farms/areas/", tags=["farm area"])
+@router.get("/areas/", tags=["farm area"])
 def get_all_farm_areas(
     farms: List[int] = Query(None),
     #filters: Dict = Query(None),
