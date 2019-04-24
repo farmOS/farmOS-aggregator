@@ -152,7 +152,10 @@ def create_farm_logs(
         data[farm.id] = []
         f = farmOS(farm.url, farm.username, farm.password)
         if f.authenticate() :
-            data[farm.id] = data[farm.id] + f.log.send(payload=log.dict())
+            data[farm.id].append(f.log.send(payload=log.dict()))
+
+    return data
+
 
     return data
 

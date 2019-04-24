@@ -16,3 +16,13 @@ def superuser_token_headers():
 @pytest.fixture(scope='module')
 def test_farm():
     return get_test_farm_instance()
+
+@pytest.fixture(scope='module')
+def test_log():
+    data = {
+        "name": "Test Log from farmOS-aggregator",
+        "type": "farm_observation",
+        "done": True
+    }
+
+    return data
