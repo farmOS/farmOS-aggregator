@@ -1,6 +1,6 @@
 from app import crud
 from app.db.session import db_session
-from app.models.farm import FarmInCreate
+from app.models.farm import FarmCreate
 from app.tests.utils.utils import random_lower_string
 
 def test_create_farm():
@@ -8,7 +8,7 @@ def test_create_farm():
     url = random_lower_string()
     username = random_lower_string()
     password = random_lower_string()
-    farm_in = FarmInCreate(
+    farm_in = FarmCreate(
         farm_name=farm_name,
         url=url,
         username=username,

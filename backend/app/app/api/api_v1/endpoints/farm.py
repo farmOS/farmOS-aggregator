@@ -59,8 +59,8 @@ async def create_farm(
     Create new farm
     """
     # Check to see if farm authenticates
-    farm_test = farmOS(farm_in.url, farm_in.username, farm_in.password)
-    farm_in.is_authenticated = farm_test.authenticate()
+    #farm_test = farmOS(farm_in.url, farm_in.username, farm_in.password)
+    #farm_in.is_authenticated = farm_test.authenticate()
 
     farm = crud.farm.create(db, farm_in=farm_in)
 

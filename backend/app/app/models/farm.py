@@ -7,7 +7,6 @@ class FarmBase(BaseModel):
     farm_name: Optional[str] = None
     url: Optional[str] = None
     username: Optional[str] = None
-    is_authenticated: Optional[bool] = False
 
 class FarmBaseInDB(FarmBase):
     id: int = None

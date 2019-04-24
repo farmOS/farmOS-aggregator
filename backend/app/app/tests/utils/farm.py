@@ -2,7 +2,7 @@ import farmOS
 
 from app import crud
 from app.db.session import db_session
-from app.models.farm import FarmInCreate
+from app.models.farm import FarmCreate
 
 from .test_farm_credentials import test_farm_credentials
 
@@ -16,6 +16,6 @@ def get_test_farm_instance():
 
     Returns: the test_farm object
     """
-    farm_in = FarmInCreate(**test_farm_credentials)
+    farm_in = FarmCreate(**test_farm_credentials)
     test_farm = crud.farm.create(db_session, farm_in=farm_in)
     return test_farm

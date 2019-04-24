@@ -3,7 +3,7 @@ import requests
 from app import crud
 from app.core import config
 from app.db.session import db_session
-from app.models.farm import FarmInCreate
+from app.models.farm import FarmCreate
 from app.tests.utils.utils import get_server_api, random_lower_string
 
 def test_create_delete_farm():
