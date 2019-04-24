@@ -176,6 +176,23 @@ def update_farm_logs(
 
     return data
 
+@router.delete("/logs/", tags=["farm log"])
+def delete_farm_logs(
+    id: int,
+    farms: List[int] = Query(None),
+    db: Session = Depends(get_db),
+):
+    if farms:
+        farm_list = crud.farm.get_by_multi_id(db, farm_id_list=farms)
+    else:
+        farm_list = crud.farm.get_multi(db)
+
+    data = {}
+    for farm in farm_list:
+        data[farm.id] = []
+        f = farmOS(farm.url, farm.username, farm.password)
+        if f.authenticate() :
+            data[farm.id].append(f.log.delete(id=id))
 
     return data
 

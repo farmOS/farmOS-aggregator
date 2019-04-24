@@ -104,3 +104,13 @@ def test_update_log(test_farm, test_log):
     # Check that an optional attribute was updated
     assert bool(int(updated_log['done'])) == data['done']
 
+def test_delete_log(test_farm, test_log):
+    server_api = get_server_api()
+
+    response = requests.delete(
+        f"{server_api}{config.API_V1_STR}/farms/logs/?farms={test_farm.id}&id={test_log['id']}",
+    )
+
+    # Check response
+    assert 200 <= response.status_code < 300
+    content = response.json()
