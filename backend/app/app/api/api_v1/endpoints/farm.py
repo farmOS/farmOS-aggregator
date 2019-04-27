@@ -250,7 +250,7 @@ def create_farm_assets(
         data[farm.id] = []
         f = farmOS(farm.url, farm.username, farm.password)
         if f.authenticate() :
-            data[farm.id] = data[farm.id] + f.asset.send(payload=asset.dict())
+            data[farm.id].append(f.asset.send(payload=asset.dict()))
 
 
     return data

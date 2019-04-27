@@ -5,6 +5,45 @@ from app.core import config
 from app.db.session import db_session
 from app.tests.utils.utils import get_server_api, random_lower_string
 
+def test_create_asset(test_farm, test_asset):
+    server_api = get_server_api()
+
+    data = test_asset
+
+    response = requests.post(
+        f"{server_api}{config.API_V1_STR}/farms/assets/?farms={test_farm.id}",
+        json=data,
+    )
+    # Check response
+    assert 200 <= response.status_code < 300
+    content = response.json()
+
+    # Check farm ID included in response
+    assert str(test_farm.id) in content
+
+    # Check asset was created
+    test_farm_assets = content[str(test_farm.id)]
+    assert len(test_farm_assets) == 1
+    assert 'id' in test_farm_assets[0]
+    created_asset_id = test_farm_assets[0]['id']
+    test_asset['id'] = created_asset_id
+
+    # Check that the creats asset has correct attributes
+    response = requests.get(
+        f"{server_api}{config.API_V1_STR}/farms/assets/?farms={test_farm.id}&id={test_asset['id']}",
+        json=data,
+    )
+    # Check response
+    assert 200 <= response.status_code < 300
+    content = response.json()
+    assert str(test_farm.id) in content
+    assert len(content[str(test_farm.id)]) == 1
+    created_asset = content[str(test_farm.id)][0]
+    # Check attributes
+    assert created_asset['type'] == data['type']
+    # Check that an optional attribute was populated
+    assert created_asset['serial_number'] == data['serial_number']
+
 def test_get_assets(test_farm):
     server_api = get_server_api()
 
