@@ -104,3 +104,13 @@ def test_update_asset(test_farm, test_asset):
     # Check that an optional attribute was updated
     assert int(updated_asset['serial_number']) == data['serial_number']
 
+def test_delete_asset(test_farm, test_asset):
+    server_api = get_server_api()
+
+    response = requests.delete(
+        f"{server_api}{config.API_V1_STR}/farms/assets/?farms={test_farm.id}&id={test_asset['id']}",
+    )
+
+    # Check response
+    assert 200 <= response.status_code < 300
+    content = response.json()
