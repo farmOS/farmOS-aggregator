@@ -70,3 +70,37 @@ def test_get_areas(test_farm):
     for area in test_farm_areas:
         assert "area_type" in area
 
+def test_update_area(test_farm, test_area):
+    server_api = get_server_api()
+
+    # Change area attributes
+    test_area['name'] = "Updated name from farmOS-aggregator"
+    test_area['description'] = "Update description"
+    data = test_area
+
+    response = requests.put(
+        f"{server_api}{config.API_V1_STR}/farms/areas/?farms={test_farm.id}",
+        json=data,
+    )
+    # Check response
+    assert 200 <= response.status_code < 300
+    content = response.json()
+
+    # Check farm ID included in response
+    assert str(test_farm.id) in content
+
+    # Check that the updated area has correct attributes
+    response = requests.get(
+        f"{server_api}{config.API_V1_STR}/farms/areas/?farms={test_farm.id}&tid={test_area['id']}",
+    )
+    # Check response
+    assert 200 <= response.status_code < 300
+    content = response.json()
+    assert str(test_farm.id) in content
+    assert len(content[str(test_farm.id)]) == 1
+    updated_area = content[str(test_farm.id)][0]
+    # Check attributes
+    assert updated_area['name'] == data['name']
+    # Check that an optional attribute was updated
+    assert data['description'] in updated_area['description']
+
