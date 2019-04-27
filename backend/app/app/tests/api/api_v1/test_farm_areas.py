@@ -104,3 +104,13 @@ def test_update_area(test_farm, test_area):
     # Check that an optional attribute was updated
     assert data['description'] in updated_area['description']
 
+def test_delete_area(test_farm, test_area):
+    server_api = get_server_api()
+
+    response = requests.delete(
+        f"{server_api}{config.API_V1_STR}/farms/areas/?farms={test_farm.id}&id={test_area['id']}",
+    )
+
+    # Check response
+    assert 200 <= response.status_code < 300
+    content = response.json()

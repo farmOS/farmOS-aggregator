@@ -469,8 +469,10 @@ def update_farm_area(
 
     return data
 
+@router.delete("/areas/", tags=["farm area"])
+def delete_farm_area(
+    id: int,
     farms: List[int] = Query(None),
-    #filters: Dict = Query(None),
     db: Session = Depends(get_db),
 ):
     if farms:
@@ -483,6 +485,6 @@ def update_farm_area(
         data[farm.id] = []
         f = farmOS(farm.url, farm.username, farm.password)
         if f.authenticate() :
-            data[farm.id] = data[farm.id] + f.area.get()
+            data[farm.id].append(f.area.delete(id=id))
 
     return data
