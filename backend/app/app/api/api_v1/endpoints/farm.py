@@ -394,6 +394,19 @@ def delete_farm_term(
 
 # /farms/areas/ endpoint for accessing farmOS areas
 
+class Area(Term):
+    class Config:
+        extra = 'allow'
+
+    name: str
+    area_type: str
+
+class AreaUpdate(BaseModel):
+    class Config:
+        extra = 'allow'
+
+    id: int
+
 @router.get("/areas/", tags=["farm area"])
 def get_all_farm_areas(
     request: Request,
@@ -413,6 +426,26 @@ def get_all_farm_areas(
         f = farmOS(farm.url, farm.username, farm.password)
         if f.authenticate() :
             data[farm.id] = data[farm.id] + f.area.get(filters=query_params)
+
+    return data
+
+@router.post("/areas/", tags=["farm area"])
+def create_farm_area(
+    area: Area,
+    farms: List[int] = Query(None),
+    db: Session = Depends(get_db),
+):
+    if farms:
+        farm_list = crud.farm.get_by_multi_id(db, farm_id_list=farms)
+    else:
+        farm_list = crud.farm.get_multi(db)
+
+    data = {}
+    for farm in farm_list:
+        data[farm.id] = []
+        f = farmOS(farm.url, farm.username, farm.password)
+        if f.authenticate() :
+            data[farm.id].append(f.area.send(payload=area.dict()))
 
     return data
 

@@ -5,6 +5,45 @@ from app.core import config
 from app.db.session import db_session
 from app.tests.utils.utils import get_server_api, random_lower_string
 
+def test_create_area(test_farm, test_area):
+    server_api = get_server_api()
+
+    data = test_area
+
+    response = requests.post(
+        f"{server_api}{config.API_V1_STR}/farms/areas/?farms={test_farm.id}",
+        json=data,
+    )
+    # Check response
+    assert 200 <= response.status_code < 300
+    content = response.json()
+
+    # Check farm ID included in response
+    assert str(test_farm.id) in content
+
+    # Check area was created
+    test_farm_areas = content[str(test_farm.id)]
+    assert len(test_farm_areas) == 1
+    assert 'id' in test_farm_areas[0]
+    created_area_id = test_farm_areas[0]['id']
+    test_area['id'] = created_area_id
+
+    # Check that the creats area has correct attributes
+    response = requests.get(
+        f"{server_api}{config.API_V1_STR}/farms/areas/?farms={test_farm.id}&tid={test_area['id']}",
+        json=data,
+    )
+    # Check response
+    assert 200 <= response.status_code < 300
+    content = response.json()
+    assert str(test_farm.id) in content
+    assert len(content[str(test_farm.id)]) == 1
+    created_area = content[str(test_farm.id)][0]
+    # Check attributes
+    assert created_area['area_type'] == data['area_type']
+    # Check that an optional attribute was populated
+    assert data['description'] in created_area['description']
+
 def test_get_areas(test_farm):
     server_api = get_server_api()
 

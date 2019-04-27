@@ -46,3 +46,14 @@ def test_term():
     }
 
     return data
+
+@pytest.fixture(scope='module')
+def test_area():
+    data = {
+        "name": "Test farmOS-aggregator field",
+        "area_type": "field",
+        "description": "Description from farmOS-aggregator",
+        "vocabulary": 1, # default VID for areas
+    }
+
+    return data
