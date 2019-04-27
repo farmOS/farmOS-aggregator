@@ -26,3 +26,13 @@ def test_log():
     }
 
     return data
+
+@pytest.fixture(scope='module')
+def test_asset():
+    data = {
+        "name": "Test Tractor from farmOS-aggregator",
+        "type": "equipment",
+        "serial_number": "1234567890"
+    }
+
+    return data

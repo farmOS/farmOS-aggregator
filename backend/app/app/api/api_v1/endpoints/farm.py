@@ -213,21 +213,23 @@ class AssetUpdate(BaseModel):
 
 @router.get("/assets/", tags=["farm asset"])
 def get_all_farm_assets(
+    request: Request,
     farms: List[int] = Query(None),
-    #filters: Dict = Query(None),
     db: Session = Depends(get_db),
 ):
     if farms:
         farm_list = crud.farm.get_by_multi_id(db, farm_id_list=farms)
     else:
         farm_list = crud.farm.get_multi(db)
+    query_params = {**request.query_params}
+    query_params.pop('farms')
 
     data = {}
     for farm in farm_list:
         data[farm.id] = []
         f = farmOS(farm.url, farm.username, farm.password)
         if f.authenticate() :
-            data[farm.id] = data[farm.id] + f.asset.get()
+            data[farm.id] = data[farm.id] + f.asset.get(filters=query_params)
 
     return data
 
