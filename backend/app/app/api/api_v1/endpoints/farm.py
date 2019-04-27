@@ -297,6 +297,19 @@ def delete_farm_assets(
 
 # /farms/terms/ endpoint for accessing farmOS terms
 
+class Term(BaseModel):
+    class Config:
+        extra = 'allow'
+
+    name: str
+    vocabulary: int
+
+class TermUpdate(BaseModel):
+    class Config:
+        extra = 'allow'
+
+    id: int
+
 @router.get("/terms/", tags=["farm term"])
 def get_all_farm_terms(
     request: Request,
@@ -319,8 +332,10 @@ def get_all_farm_terms(
 
     return data
 
+@router.post("/terms/", tags=["farm term"])
+def create_farm_term(
+    term: Term,
     farms: List[int] = Query(None),
-    #filters: Dict = Query(None),
     db: Session = Depends(get_db),
 ):
     if farms:
@@ -333,7 +348,10 @@ def get_all_farm_terms(
         data[farm.id] = []
         f = farmOS(farm.url, farm.username, farm.password)
         if f.authenticate() :
-            data[farm.id] = data[farm.id] + f.term.get()
+            data[farm.id].append(f.term.send(payload=term.dict()))
+
+    return data
+
 
     return data
 

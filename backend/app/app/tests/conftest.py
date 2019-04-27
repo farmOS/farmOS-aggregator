@@ -36,3 +36,13 @@ def test_asset():
     }
 
     return data
+
+@pytest.fixture(scope='module')
+def test_term():
+    data = {
+        "name": "Test crop term from farmOS-aggregator",
+        "description": "Description from farmOS-aggregator",
+        "vocabulary": 7, # default VID for crops
+    }
+
+    return data
