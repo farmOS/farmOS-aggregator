@@ -104,3 +104,13 @@ def test_update_term(test_farm, test_term):
     # Check that an optional attribute was updated
     assert data['description'] in updated_term['description']
 
+def test_delete_term(test_farm, test_term):
+    server_api = get_server_api()
+
+    response = requests.delete(
+        f"{server_api}{config.API_V1_STR}/farms/terms/?farms={test_farm.id}&tid={test_term['id']}",
+    )
+
+    # Check response
+    assert 200 <= response.status_code < 300
+    content = response.json()
