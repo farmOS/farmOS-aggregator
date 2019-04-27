@@ -70,3 +70,37 @@ def test_get_assets(test_farm):
     for asset in test_farm_assets:
         assert "type" in asset
 
+def test_update_asset(test_farm, test_asset):
+    server_api = get_server_api()
+
+    # Change asset attributes
+    test_asset['name'] = "Updated name from farmOS-aggregator"
+    test_asset['serial_number'] = 0
+    data = test_asset
+
+    response = requests.put(
+        f"{server_api}{config.API_V1_STR}/farms/assets/?farms={test_farm.id}",
+        json=data,
+    )
+    # Check response
+    assert 200 <= response.status_code < 300
+    content = response.json()
+
+    # Check farm ID included in response
+    assert str(test_farm.id) in content
+
+    # Check that the updated asset has correct attributes
+    response = requests.get(
+        f"{server_api}{config.API_V1_STR}/farms/assets/?farms={test_farm.id}&id={test_asset['id']}",
+    )
+    # Check response
+    assert 200 <= response.status_code < 300
+    content = response.json()
+    assert str(test_farm.id) in content
+    assert len(content[str(test_farm.id)]) == 1
+    updated_asset = content[str(test_farm.id)][0]
+    # Check attributes
+    assert updated_asset['name'] == data['name']
+    # Check that an optional attribute was updated
+    assert int(updated_asset['serial_number']) == data['serial_number']
+
