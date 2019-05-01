@@ -86,6 +86,35 @@ export default new Router({
                 },
               ],
             },
+            {
+              path: 'farm',
+              component: () => import('./views/main/farm/Farm.vue'),
+              redirect: 'farm/farms/all',
+              children: [
+                {
+                  path: 'farms',
+                  redirect: 'farms/all',
+                },
+                {
+                  path: 'farms/all',
+                  component: () => import(
+                    './views/main/farm/Farms.vue'),
+                },
+                {
+                  path: 'farms/edit/:id',
+                  name: 'main-farm-farms-edit',
+                  component: () => import(
+                    './views/main/farm/EditFarm.vue'),
+                },
+                {
+                  path: 'farms/add',
+                  name: 'main-farm-farms-add',
+                  component: () => import(
+                    './views/main/farm/AddFarm.vue'),
+                },
+
+              ],
+            },
           ],
         },
       ],

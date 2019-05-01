@@ -39,6 +39,26 @@
         </v-list>
         <v-divider></v-divider>
         <v-list subheader v-show="hasAdminAccess">
+          <v-subheader>Farm</v-subheader>
+          <v-list-tile to="/main/farm/farms/all">
+            <v-list-tile-action>
+              <v-icon>group</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Manage Farms</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile to="/main/farm/farms/add">
+            <v-list-tile-action>
+              <v-icon>person_add</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Add Farm</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+        <v-divider></v-divider>
+        <v-list subheader v-show="hasAdminAccess">
           <v-subheader>Admin</v-subheader>
           <v-list-tile to="/main/admin/users/all">
             <v-list-tile-action>
