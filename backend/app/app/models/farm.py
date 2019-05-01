@@ -18,6 +18,10 @@ class FarmCreate(FarmBaseInDB):
     username: str
     password: str
 
+# Properties to receive via API on update
+class FarmUpdate(FarmBaseInDB):
+    password: Optional[str] = None
+
 # Additional properties to return via API
 class Farm(FarmBaseInDB):
     pass

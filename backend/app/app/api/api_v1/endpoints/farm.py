@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app import crud
 from app.api.utils.db import get_db
 from app.db_models.farm import Farm as DBFarm
-from app.models.farm import Farm, FarmCreate, FarmInDB
+from app.models.farm import Farm, FarmCreate, FarmUpdate, FarmInDB
 
 from farmOS import farmOS
 
@@ -65,6 +65,25 @@ async def create_farm(
 
     farm = crud.farm.create(db, farm_in=farm_in)
 
+    return farm
+
+@router.put("/{farm_id}", tags=["farms"], response_model=Farm)
+async def update_farm(
+    *,
+    db: Session = Depends(get_db),
+    farm_id: int,
+    farm_in: FarmUpdate,
+):
+    """
+    Update farm
+    """
+    farm = crud.farm.get_by_id(db, farm_id=farm_id)
+    if not farm:
+        raise HTTPException(
+            status_code=404,
+            detail="The farm with this ID does not exist in the system",
+        )
+    farm = crud.farm.update(db, farm=farm, farm_in=farm_in)
     return farm
 
 @router.delete("/{farm_id}", tags=["farms"], response_model=Farm)
