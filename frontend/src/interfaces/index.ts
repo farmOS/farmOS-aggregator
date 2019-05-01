@@ -21,3 +21,24 @@ export interface IUserProfileCreate {
     is_active?: boolean;
     is_superuser?: boolean;
 }
+
+export interface FarmProfile {
+    farm_name: string;
+    url: string;
+    username: string;
+    id: number;
+}
+
+export interface FarmProfileUpdate {
+    farm_name?: string;
+    url?: string;
+    username?: string;
+    password?: string;
+}
+
+export interface FarmProfileCreate {
+    farm_name: string;
+    url: string;
+    username: string;
+    password: string;
+}
