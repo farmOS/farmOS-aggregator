@@ -37,7 +37,21 @@ def test_create_delete_farm():
     )
     assert 200 <= r.status_code < 300
 
-def test_get_existing_farm(test_farm):
+def test_get_all_farms(test_farm):
+    server_api = get_server_api()
+
+    farm_id = test_farm.id
+    r = requests.get(
+        f"{server_api}{config.API_V1_STR}/farms/",
+    )
+    assert 200 <= r.status_code < 300
+    response = r.json()
+    first_id = response[0]['id']
+    farm = crud.farm.get_by_id(db_session, farm_id=first_id)
+    assert farm.farm_name == response[0]["farm_name"]
+    assert not hasattr(response[0], 'password')
+
+def test_get_farm_by_id(test_farm):
     server_api = get_server_api()
 
     farm_id = test_farm.id
@@ -45,6 +59,7 @@ def test_get_existing_farm(test_farm):
         f"{server_api}{config.API_V1_STR}/farms/{farm_id}",
     )
     assert 200 <= r.status_code < 300
-    api_farm = r.json()
-    farm = crud.farm.get_by_id(db_session, farm_id=api_farm['id'])
-    assert farm.farm_name == api_farm["farm_name"]
+    response = r.json()
+    farm = crud.farm.get_by_id(db_session, farm_id=response['id'])
+    assert farm.farm_name == response["farm_name"]
+    assert not hasattr(response, 'password')
