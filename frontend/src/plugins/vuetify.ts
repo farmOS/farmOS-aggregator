@@ -3,4 +3,9 @@ import Vuetify from 'vuetify';
 
 Vue.use(Vuetify, {
   iconfont: 'md',
+  theme: {
+    primary: '#336633', //farmos-green-dark: #336633;
+    secondary: '#4e8b31', //farmos-green: #4e8b31;
+    accent: '#60af32', //farmos-green-light: #60af32;
+  }
 });

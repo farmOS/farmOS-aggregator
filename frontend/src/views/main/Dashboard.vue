@@ -38,11 +38,11 @@
       <v-card-text>
         <div class="subheading">Manage farmOS profiles</div>
         <v-card-actions>
-          <v-btn color="info" to="/main/farm/farms/">
+          <v-btn color="primary" to="/main/farm/farms/">
             Manage Farms
             <v-icon right dark>list</v-icon>
           </v-btn>
-          <v-btn color="success" to="/main/farm/farms/add">
+          <v-btn color="accent" to="/main/farm/farms/add">
             Add Farm
             <v-icon right dark>add</v-icon>
           </v-btn>
