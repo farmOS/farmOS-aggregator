@@ -13,7 +13,7 @@ def server_api():
 def superuser_token_headers():
     return get_superuser_token_headers()
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='package')
 def test_farm():
     return get_test_farm_instance()
 
