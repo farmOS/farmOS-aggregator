@@ -5,7 +5,7 @@
         Manage Farms
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn color="primary" to="/main/admin/farms/create">Add a farm</v-btn>
+      <v-btn color="primary" to="/main/farm/farms/add">Add a farm</v-btn>
     </v-toolbar>
     <v-data-table :headers="headers" :items="farms">
       <template slot="items" slot-scope="props">
