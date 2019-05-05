@@ -88,6 +88,10 @@ def test_update_asset(test_farm, test_asset):
 
     # Check farm ID included in response
     assert str(test_farm.id) in content
+    assert len(content[str(test_farm.id)]) == 1
+    response_asset = content[str(test_farm.id)][0]
+    assert 'id' in response_asset
+    assert test_asset['id'] == str(response_asset['id'])
 
     # Check that the updated asset has correct attributes
     response = requests.get(

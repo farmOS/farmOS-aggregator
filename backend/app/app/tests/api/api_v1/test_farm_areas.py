@@ -88,6 +88,10 @@ def test_update_area(test_farm, test_area):
 
     # Check farm ID included in response
     assert str(test_farm.id) in content
+    assert len(content[str(test_farm.id)]) == 1
+    response_area = content[str(test_farm.id)][0]
+    assert 'id' in response_area
+    assert test_area['id'] == str(response_area['id'])
 
     # Check that the updated area has correct attributes
     response = requests.get(

@@ -31,7 +31,7 @@ jinja2 = "*"
 psycopg2-binary = "*"
 alembic = "*"
 sqlalchemy = "*"
-farmOS = "*"
+farmOS = "0.0.2"
 
 [requires]
 python_version = "3.6"

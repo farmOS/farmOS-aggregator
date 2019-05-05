@@ -88,6 +88,10 @@ def test_update_term(test_farm, test_term):
 
     # Check farm ID included in response
     assert str(test_farm.id) in content
+    assert len(content[str(test_farm.id)]) == 1
+    response_term = content[str(test_farm.id)][0]
+    assert 'id' in response_term
+    assert test_term['id'] == str(response_term['id'])
 
     # Check that the updated term has correct attributes
     response = requests.get(

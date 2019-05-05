@@ -88,6 +88,10 @@ def test_update_log(test_farm, test_log):
 
     # Check farm ID included in response
     assert str(test_farm.id) in content
+    assert len(content[str(test_farm.id)]) == 1
+    response_log = content[str(test_farm.id)][0]
+    assert 'id' in response_log
+    assert test_log['id'] == str(response_log['id'])
 
     # Check that the updated log has correct attributes
     response = requests.get(
