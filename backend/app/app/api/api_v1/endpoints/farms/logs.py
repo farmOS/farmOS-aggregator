@@ -40,7 +40,7 @@ def get_all_farm_logs(
     else:
         farm_list = crud.farm.get_multi(db)
     query_params = {**request.query_params}
-    query_params.pop('farms')
+    query_params.pop('farms', None)
 
     data = {}
     for farm in farm_list:
