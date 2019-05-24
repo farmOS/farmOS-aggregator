@@ -848,3 +848,15 @@ cookiecutter --config-file ./cookiecutter-config-file.yml --output-dir ../projec
 ```
 
 That will use the file `cookiecutter-config-file.yml` in the current directory (in this project) to generate a new project inside a sibling directory `project-copy`.
+
+## MAINTAINERS
+
+ * Paul Weidner (paul121) - https://github.com/paul121
+
+This project has been sponsored by:
+
+ * [Farmier](https://farmier.com)
+ * [Pennsylvania Association for Sustainable Agriculture](https://pasafarming.org)
+ * [Our Sci](http://our-sci.net)
+ * [Bionutrient Food Association](https://bionutrient.org)
+ * [Foundation for Food and Agriculture Research](https://foundationfar.org/)
