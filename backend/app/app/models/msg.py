@@ -1,5 +1,5 @@
-from pydantic import BaseModel
+from app.models.api_model import APIModel
 
 
-class Msg(BaseModel):
+class Msg(APIModel):
     msg: str

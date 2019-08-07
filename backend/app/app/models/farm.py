@@ -1,9 +1,9 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from app.models.api_model import APIModel
 
 # Shared properties
-class FarmBase(BaseModel):
+class FarmBase(APIModel):
     farm_name: Optional[str] = None
     url: Optional[str] = None
     username: Optional[str] = None

@@ -1,8 +1,8 @@
-from pydantic import BaseModel
+from app.models.api_model import APIModel
 
 
 # Shared properties
-class ItemBase(BaseModel):
+class ItemBase(APIModel):
     title: str = None
     description: str = None
 

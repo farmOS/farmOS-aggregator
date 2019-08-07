@@ -1,15 +1,14 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from app.models.api_model import APIModel
 
 
 # Shared properties
-class UserBase(BaseModel):
+class UserBase(APIModel):
     email: Optional[str] = None
     is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False
     full_name: Optional[str] = None
-
 
 class UserBaseInDB(UserBase):
     id: int = None
