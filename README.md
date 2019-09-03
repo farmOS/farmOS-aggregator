@@ -15,7 +15,7 @@ farmOS-aggregator is built with:
 * [FastAPI Project Generator](https://github.com/tiangolo/full-stack-fastapi-postgresql) for the software stack and API documentation
 * [farmOS.py](https://github.com/farmOS/farmOS.py) client library for querying farmOS instances
 
-To run, clone this repository and run `docker-compose up`. The default credentials are `admin@localhost`:`admin`. These are defined in the `.env` files - changes these values for deployment!! (More [below](#deployment))
+To run, clone this repository and run `docker-compose up`. The default credentials are `admin@example.com`:`admin`. These are defined in the `.env` files - changes these values for deployment!! (More [below](#deployment))
 
 For more information on farmOS, visit [farmOS.org](https://farmOS.org).
 
