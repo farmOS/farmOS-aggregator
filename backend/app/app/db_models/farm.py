@@ -12,3 +12,4 @@ class Farm(Base):
     url = Column(String, index=True, unique=True)
     username = Column(String, index=True)
     password = Column(String, index=True)
+    notes = Column(String, nullable=True)
