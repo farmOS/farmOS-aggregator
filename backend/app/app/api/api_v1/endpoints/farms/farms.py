@@ -48,9 +48,12 @@ async def create_farm(
     """
     Create new farm
     """
-    # Check to see if farm authenticates
-    #farm_test = farmOS(farm_in.url, farm_in.username, farm_in.password)
-    #farm_in.is_authenticated = farm_test.authenticate()
+    existing_farm = crud.farm.get_by_url(db, farm_url=farm_in.url)
+    if existing_farm:
+        raise HTTPException(
+            status_code=409,
+            detail="A farm with this URL already exists.",
+        )
 
     farm = crud.farm.create(db, farm_in=farm_in)
 
