@@ -11,6 +11,7 @@
             <v-text-field label="url" v-model="url" required></v-text-field>
             <v-text-field label="username" v-model="username" required></v-text-field>
             <v-text-field label="Notes (optional)" v-model="notes"></v-text-field>
+            <v-text-field label="Tags (optional)" v-model="tags"></v-text-field>
 
             <v-layout align-center>
               <v-flex>
@@ -53,6 +54,7 @@ export default class AddFarm extends Vue {
   public password1: string = '';
   public password2: string = '';
   public notes: string = '';
+  public tags: string = '';
 
   public async mounted() {
     await dispatchGetFarms(this.$store);
@@ -65,6 +67,7 @@ export default class AddFarm extends Vue {
     this.farm_name = '';
     this.username = '';
     this.notes = '';
+    this.tags = '';
     this.$validator.reset();
   }
 
@@ -80,6 +83,7 @@ export default class AddFarm extends Vue {
         username: this.username,
         password: this.password1,
         notes: this.notes,
+        tags: this.tags,
       };
       await dispatchCreateFarm(this.$store, updatedFarm);
       this.$router.push('/main/farm/farms');

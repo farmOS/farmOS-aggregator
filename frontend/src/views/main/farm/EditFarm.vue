@@ -10,7 +10,8 @@
             <v-text-field label="Farm Name" v-model="farm_name" required></v-text-field>
             <v-text-field label="url" v-model="url" required></v-text-field>
             <v-text-field label="username" v-model="username" required></v-text-field>
-            <v-text-field label="Notes (optional)" v-model="notes" required></v-text-field>
+            <v-text-field label="Notes (optional)" v-model="notes" ></v-text-field>
+            <v-text-field label="Tags (optional)" v-model="tags" ></v-text-field>
 
             <v-layout align-center>
               <v-flex shrink>
@@ -78,6 +79,7 @@ export default class EditFarm extends Vue {
   public url: string = '';
   public username: string = '';
   public notes: string = '';
+  public tags: string = '';
   public setPassword = false;
   public password1: string = '';
   public password2: string = '';
@@ -97,6 +99,7 @@ export default class EditFarm extends Vue {
       this.url = this.farm.url;
       this.username = this.farm.username;
       this.notes = this.farm.notes;
+      this.tags = this.farm.tags;
     }
   }
 
@@ -118,6 +121,9 @@ export default class EditFarm extends Vue {
       }
       if (this.notes) {
         updatedFarm.notes = this.notes;
+      }
+      if (this.tags) {
+        updatedFarm.tags = this.tags;
       }
       if (this.setPassword) {
         updatedFarm.password = this.password1;
