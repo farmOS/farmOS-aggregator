@@ -25,6 +25,7 @@ def create(db_session: Session, *, farm_in: FarmCreate) -> Farm:
         username=farm_in.username,
         password=farm_in.password,
         notes=farm_in.notes,
+        tags=farm_in.tags,
     )
     db_session.add(farm)
     db_session.commit()

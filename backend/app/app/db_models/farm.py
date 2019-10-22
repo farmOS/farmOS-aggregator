@@ -13,3 +13,4 @@ class Farm(Base):
     username = Column(String, index=True)
     password = Column(String, index=True)
     notes = Column(String, nullable=True)
+    tags = Column(String, nullable=True)

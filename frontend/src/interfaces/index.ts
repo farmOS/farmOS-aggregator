@@ -30,6 +30,7 @@ export interface FarmProfile {
     url: string;
     username: string;
     notes?: string;
+    tags?: string;
 }
 
 export interface FarmProfileUpdate {
@@ -38,6 +39,7 @@ export interface FarmProfileUpdate {
     username?: string;
     password?: string;
     notes?: string;
+    tags?: string;
 }
 
 export interface FarmProfileCreate {
@@ -46,4 +48,5 @@ export interface FarmProfileCreate {
     username: string;
     password: string;
     notes?: string;
+    tags?: string;
 }
