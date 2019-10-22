@@ -8,6 +8,7 @@ class FarmBase(APIModel):
     farm_name: Optional[str] = None
     url: Optional[str] = None
     username: Optional[str] = None
+    notes: Optional[str] = None
 
 class FarmBaseInDB(FarmBase):
     id: int = None

@@ -52,6 +52,12 @@ export default class Farms extends Vue {
       align: 'left',
     },
     {
+      text: 'Notes',
+      sortable: true,
+      value: 'notes',
+      align: 'left',
+    },
+    {
       text: 'Time Updated',
       sortable: true,
       value: 'time_updated',
