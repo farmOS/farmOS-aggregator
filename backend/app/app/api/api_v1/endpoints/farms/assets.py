@@ -5,10 +5,8 @@ from starlette.requests import Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from app import crud
 from app.api.utils.db import get_db
-from app.db_models.farm import Farm as DBFarm
-from app.models.farm import Farm, FarmCreate, FarmUpdate, FarmInDB
+from app.api.utils.farms import get_farm_list
 
 from farmOS import farmOS
 
@@ -32,15 +30,15 @@ class AssetUpdate(BaseModel):
 @router.get("/")
 def get_all_farm_assets(
     request: Request,
-    farms: List[int] = Query(None),
+    farm_id: List[int] = Query(None),
+    farm_url: str = Query(None),
     db: Session = Depends(get_db),
 ):
-    if farms:
-        farm_list = crud.farm.get_by_multi_id(db, farm_id_list=farms)
-    else:
-        farm_list = crud.farm.get_multi(db)
+    farm_list = get_farm_list(db, farm_id_list=farm_id, farm_url=farm_url)
+
     query_params = {**request.query_params}
-    query_params.pop('farms', None)
+    query_params.pop('farm_id', None)
+    query_params.pop('farm_url', None)
 
     data = {}
     for farm in farm_list:
@@ -54,14 +52,12 @@ def get_all_farm_assets(
 @router.post("/")
 def create_farm_assets(
     asset: Asset,
-    farms: List[int] = Query(None),
+    farm_id: List[int] = Query(None),
+    farm_url: str = Query(None),
     #filters: Dict = Query(None),
     db: Session = Depends(get_db),
 ):
-    if farms:
-        farm_list = crud.farm.get_by_multi_id(db, farm_id_list=farms)
-    else:
-        farm_list = crud.farm.get_multi(db)
+    farm_list = get_farm_list(db, farm_id_list=farm_id, farm_url=farm_url)
 
     data = {}
     for farm in farm_list:
@@ -76,13 +72,11 @@ def create_farm_assets(
 @router.put("/")
 def update_farm_assets(
     asset: AssetUpdate,
-    farms: List[int] = Query(None),
+    farm_id: List[int] = Query(None),
+    farm_url: str = Query(None),
     db: Session = Depends(get_db),
 ):
-    if farms:
-        farm_list = crud.farm.get_by_multi_id(db, farm_id_list=farms)
-    else:
-        farm_list = crud.farm.get_multi(db)
+    farm_list = get_farm_list(db, farm_id_list=farm_id, farm_url=farm_url)
 
     data = {}
     for farm in farm_list:
@@ -96,13 +90,11 @@ def update_farm_assets(
 @router.delete("/")
 def delete_farm_assets(
     id: int,
-    farms: List[int] = Query(None),
+    farm_id: List[int] = Query(None),
+    farm_url: str = Query(None),
     db: Session = Depends(get_db),
 ):
-    if farms:
-        farm_list = crud.farm.get_by_multi_id(db, farm_id_list=farms)
-    else:
-        farm_list = crud.farm.get_multi(db)
+    farm_list = get_farm_list(db, farm_id_list=farm_id, farm_url=farm_url)
 
     data = {}
     for farm in farm_list:
