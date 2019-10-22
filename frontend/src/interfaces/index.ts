@@ -23,6 +23,9 @@ export interface IUserProfileCreate {
 }
 
 export interface FarmProfile {
+    id: number;
+    time_updated?: string;
+    time_created?: string;
     farm_name: string;
     url: string;
     username: string;
