@@ -8,15 +8,10 @@
       <v-btn color="primary" to="/main/farm/farms/add">Add a farm</v-btn>
     </v-toolbar>
     <v-data-table :headers="headers" :items="farms">
-      <template slot="items" slot-scope="props">
-       <td class="justify-center layout px-0">
-          <v-tooltip top>
-            <span>Edit</span>
-            <v-btn slot="activator" flat :to="{name: 'main-farm-farms-edit', params: {id: props.item.id}}">
-              <v-icon>edit</v-icon>
-            </v-btn>
-          </v-tooltip>
-        </td>
+      <template v-slot:item.action="{ item }">
+        <v-btn text icon :to="{name: 'main-farm-farms-edit', params: {id: item.id}}">
+          <v-icon>edit</v-icon>
+        </v-btn>
       </template>
     </v-data-table>
   </div>
@@ -77,7 +72,8 @@ export default class Farms extends Vue {
     },
     {
       text: 'Actions',
-      value: 'id',
+      sortable: false,
+      value: 'action',
     },
   ];
   get farms() {
