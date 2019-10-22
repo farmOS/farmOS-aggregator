@@ -1,4 +1,5 @@
 from typing import Optional
+from datetime import datetime
 
 from app.models.api_model import APIModel
 
@@ -11,7 +12,7 @@ class FarmBase(APIModel):
 class FarmBaseInDB(FarmBase):
     id: int = None
 
-# Properties to recieve via API on creation
+# Properties to receive via API on creation
 class FarmCreate(FarmBaseInDB):
     farm_name: str
     url: str
@@ -24,6 +25,8 @@ class FarmUpdate(FarmBaseInDB):
 
 # Additional properties to return via API
 class Farm(FarmBaseInDB):
+    time_created: Optional[datetime] = None
+    time_updated: Optional[datetime] = None
     pass
 
 # Additional properites stored in DB

@@ -9,10 +9,7 @@
     </v-toolbar>
     <v-data-table :headers="headers" :items="farms">
       <template slot="items" slot-scope="props">
-        <td>{{ props.item.farm_name }}</td>
-        <td>{{ props.item.url }}</td>
-        <td>{{ props.item.username }}</td>
-        <td class="justify-center layout px-0">
+       <td class="justify-center layout px-0">
           <v-tooltip top>
             <span>Edit</span>
             <v-btn slot="activator" flat :to="{name: 'main-farm-farms-edit', params: {id: props.item.id}}">
@@ -52,6 +49,18 @@ export default class Farms extends Vue {
       text: 'Username',
       sortable: true,
       value: 'username',
+      align: 'left',
+    },
+    {
+      text: 'Time Updated',
+      sortable: true,
+      value: 'time_updated',
+      align: 'left',
+    },
+    {
+      text: 'Time Created',
+      sortable: true,
+      value: 'time_created',
       align: 'left',
     },
     {
