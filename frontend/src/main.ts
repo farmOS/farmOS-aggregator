@@ -3,6 +3,8 @@ import '@babel/polyfill';
 import './component-hooks';
 import Vue from 'vue';
 import vuetify from './plugins/vuetify';
+import 'vuetify/dist/vuetify.min.css';
+import '@mdi/font/css/materialdesignicons.css'; // Ensure you are using css-loader
 import './plugins/vee-validate';
 import App from './App.vue';
 import router from './router';

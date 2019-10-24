@@ -7,7 +7,7 @@
       <v-card-text>
         <template>
           <v-form v-model="valid" ref="form" lazy-validation>
-            <v-text-field label="Farm Name" v-model="farm_name" required></v-text-field>
+            <v-text-field label="Farm Name" v-model="farmName" required></v-text-field>
             <v-text-field label="url" v-model="url" required></v-text-field>
             <v-text-field label="username" v-model="username" required></v-text-field>
             <v-text-field label="Notes (optional)" v-model="notes"></v-text-field>
@@ -39,8 +39,6 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import {
-  FarmProfile,
-  FarmProfileUpdate,
   FarmProfileCreate,
 } from '@/interfaces';
 import { dispatchGetFarms, dispatchCreateFarm } from '@/store/farm/actions';
@@ -48,7 +46,7 @@ import { dispatchGetFarms, dispatchCreateFarm } from '@/store/farm/actions';
 @Component
 export default class AddFarm extends Vue {
   public valid = false;
-  public farm_name: string = '';
+  public farmName: string = '';
   public url: string = '';
   public username: string = '';
   public password1: string = '';
@@ -64,7 +62,7 @@ export default class AddFarm extends Vue {
   public reset() {
     this.password1 = '';
     this.password2 = '';
-    this.farm_name = '';
+    this.farmName = '';
     this.username = '';
     this.notes = '';
     this.tags = '';
@@ -78,7 +76,7 @@ export default class AddFarm extends Vue {
   public async submit() {
     if (await this.$validator.validateAll()) {
       const updatedFarm: FarmProfileCreate = {
-        farm_name: this.farm_name,
+        farm_name: this.farmName,
         url: this.url,
         username: this.username,
         password: this.password1,

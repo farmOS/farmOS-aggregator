@@ -7,7 +7,7 @@
       <v-card-text>
         <template>
           <v-form v-model="valid" ref="form" lazy-validation>
-            <v-text-field label="Farm Name" v-model="farm_name" required></v-text-field>
+            <v-text-field label="Farm Name" v-model="farmName" required></v-text-field>
             <v-text-field label="url" v-model="url" required></v-text-field>
             <v-text-field label="username" v-model="username" required></v-text-field>
             <v-text-field label="Notes (optional)" v-model="notes" ></v-text-field>
@@ -68,14 +68,14 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { FarmProfile, FarmProfileUpdate } from '@/interfaces';
+import { FarmProfileUpdate } from '@/interfaces';
 import { dispatchGetFarms, dispatchUpdateFarm } from '@/store/farm/actions';
 import { readOneFarm } from '@/store/farm/getters';
 
 @Component
 export default class EditFarm extends Vue {
   public valid = false;
-  public farm_name: string = '';
+  public farmName: string = '';
   public url: string = '';
   public username: string = '';
   public notes: string = '';
@@ -95,11 +95,11 @@ export default class EditFarm extends Vue {
     this.password2 = '';
     this.$validator.reset();
     if (this.farm) {
-      this.farm_name = this.farm.farm_name;
+      this.farmName = this.farm.farm_name;
       this.url = this.farm.url;
       this.username = this.farm.username;
-      this.notes = this.farm.notes;
-      this.tags = this.farm.tags;
+      this.notes = this.farm.notes!;
+      this.tags = this.farm.tags!;
     }
   }
 
@@ -110,8 +110,8 @@ export default class EditFarm extends Vue {
   public async submit() {
     if (await this.$validator.validateAll()) {
       const updatedFarm: FarmProfileUpdate = {};
-      if (this.farm_name) {
-        updatedFarm.farm_name = this.farm_name;
+      if (this.farmName) {
+        updatedFarm.farm_name = this.farmName;
       }
       if (this.url) {
         updatedFarm.url = this.url;
