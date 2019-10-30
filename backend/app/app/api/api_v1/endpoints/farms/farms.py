@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app import crud
 from app.api.utils.db import get_db
-from app.api.utils.farms import get_farm_list
+from app.api.utils.farms import get_farm_list, get_farm_client, ClientError
 from app.models.farm import Farm, FarmCreate, FarmUpdate
 
 from farmOS import farmOS
@@ -105,8 +105,14 @@ def get_all_farm_info(
     data = {}
     for farm in farm_list:
         data[farm.id] = {}
-        f = farmOS(farm.url, farm.username, farm.password)
-        if f.authenticate() :
-            data[farm.id]['info'] = f.info()
+        try:
+            farm_client = get_farm_client(db_session=db, farm=farm)
+        except ClientError:
+            continue
+
+        try:
+            data[farm.id]['info'] = farm_client.info()
+        except:
+            continue
 
     return data
