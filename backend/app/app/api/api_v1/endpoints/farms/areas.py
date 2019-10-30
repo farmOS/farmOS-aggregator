@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.api.utils.db import get_db
-from app.api.utils.farms import get_farm_list
+from app.api.utils.farms import get_farm_list, get_farm_client, ClientError
 
 from farmOS import farmOS
 
@@ -44,9 +44,18 @@ def get_all_farm_areas(
     data = {}
     for farm in farm_list:
         data[farm.id] = []
-        f = farmOS(farm.url, farm.username, farm.password)
-        if f.authenticate() :
-            data[farm.id] = data[farm.id] + f.area.get(filters=query_params)
+
+        # Get a farmOS client.
+        try:
+            farm_client = get_farm_client(db_session=db, farm=farm)
+        except ClientError:
+            continue
+
+        # Make the request.
+        try:
+            data[farm.id] = data[farm.id] + farm_client.area.get(filters=query_params)['list']
+        except:
+            continue
 
     return data
 
@@ -62,9 +71,19 @@ def create_farm_area(
     data = {}
     for farm in farm_list:
         data[farm.id] = []
-        f = farmOS(farm.url, farm.username, farm.password)
-        if f.authenticate() :
-            data[farm.id].append(f.area.send(payload=area.dict()))
+
+        # Get a farmOS client.
+        try:
+            farm_client = get_farm_client(db_session=db, farm=farm)
+        except ClientError:
+            continue
+
+
+        # Make the request.
+        try:
+            data[farm.id].append(farm_client.area.send(payload=area.dict()))
+        except:
+            continue
 
     return data
 
@@ -80,9 +99,19 @@ def update_farm_area(
     data = {}
     for farm in farm_list:
         data[farm.id] = []
-        f = farmOS(farm.url, farm.username, farm.password)
-        if f.authenticate() :
-            data[farm.id].append(f.area.send(payload=area.dict()))
+
+        # Get a farmOS client.
+        try:
+            farm_client = get_farm_client(db_session=db, farm=farm)
+        except ClientError:
+            continue
+
+
+        # Make the request.
+        try:
+            data[farm.id].append(farm_client.area.send(payload=area.dict()))
+        except:
+            continue
 
     return data
 
@@ -98,8 +127,17 @@ def delete_farm_area(
     data = {}
     for farm in farm_list:
         data[farm.id] = []
-        f = farmOS(farm.url, farm.username, farm.password)
-        if f.authenticate() :
-            data[farm.id].append(f.area.delete(id=id))
+
+        # Get a farmOS client.
+        try:
+            farm_client = get_farm_client(db_session=db, farm=farm)
+        except ClientError:
+            continue
+
+        # Make the request.
+        try:
+            data[farm.id].append(farm_client.area.delete(id=id))
+        except:
+            continue
 
     return data
