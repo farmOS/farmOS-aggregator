@@ -4,7 +4,7 @@ import Vuetify from 'vuetify';
 Vue.use(Vuetify);
 
 export default new Vuetify({
-  icosn: {
+  icons: {
     iconfont: 'mdi',
   },
   theme: {
