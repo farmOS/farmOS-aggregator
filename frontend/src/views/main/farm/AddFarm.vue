@@ -4,34 +4,85 @@
       <v-card-title primary-title>
         <div class="headline primary--text">Add a Farm</div>
       </v-card-title>
-      <v-card-text>
-        <template>
-          <v-form v-model="valid" ref="form" lazy-validation>
-            <v-text-field label="Farm Name" v-model="farmName" required></v-text-field>
-            <v-text-field label="url" v-model="url" required></v-text-field>
-            <v-text-field label="username" v-model="username" required></v-text-field>
-            <v-text-field label="Notes (optional)" v-model="notes"></v-text-field>
-            <v-text-field label="Tags (optional)" v-model="tags"></v-text-field>
 
-            <v-layout align-center>
-              <v-flex>
-                <v-text-field type="password" ref="password" label="Set Password" data-vv-name="password" data-vv-delay="100" v-validate="{required: true}" v-model="password1" :error-messages="errors.first('password')">
+      <v-form v-model="valid" ref="form" lazy-validation>
+        <v-card-text>
+          <v-text-field label="Farm Name" v-model="farmName" required></v-text-field>
+          <v-text-field label="URL" v-model="url" required></v-text-field>
+          <v-text-field label="Notes (Optional)" v-model="notes"></v-text-field>
+          <v-text-field label="Tags (Optional)" v-model="tags"></v-text-field>
+
+
+          <div class="d-flex">
+            <v-checkbox
+                    v-model="includeCredentials"
+                    label="Include farmOS user credentials"
+            ></v-checkbox>
+          </div>
+
+          <v-expansion-panels
+                  multiple
+                  accordion
+          >
+            <v-expansion-panel
+                    :disabled="!includeCredentials"
+            >
+              <v-expansion-panel-header>
+                farmOS Credentials
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+
+                <v-text-field
+                        label="Username"
+                        v-model="username"
+                        :disabled="!includeCredentials"
+                >
                 </v-text-field>
-                <v-text-field type="password" label="Confirm Password" data-vv-name="password_confirmation" data-vv-delay="100" data-vv-as="password" v-validate="{required: true, confirmed: 'password'}" v-model="password2" :error-messages="errors.first('password_confirmation')">
+
+                <v-text-field
+                        type="password"
+                        ref="password"
+                        label="Set Password"
+                        data-vv-name="password"
+                        data-vv-delay="100"
+                        v-model="password1"
+                        :disabled="!includeCredentials"
+                        :error-messages="errors.first('password')"
+                >
                 </v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-form>
-        </template>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn @click="cancel">Cancel</v-btn>
-        <v-btn @click="reset">Reset</v-btn>
-        <v-btn @click="submit" :disabled="!valid">
-              Save
-            </v-btn>
-      </v-card-actions>
+                <v-text-field
+                        type="password"
+                        label="Confirm Password"
+                        data-vv-name="password_confirmation"
+                        data-vv-delay="100"
+                        data-vv-as="password"
+                        v-validate="{confirmed: 'password'}"
+                        v-model="password2"
+                        :disabled="!includeCredentials"
+                        :error-messages="errors.first('password_confirmation')"
+                >
+                </v-text-field>
+
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+
+          </v-expansion-panels>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="cancel">Cancel</v-btn>
+          <v-btn @click="reset">Reset</v-btn>
+          <v-btn
+                  @click="submit"
+                  :disabled="!valid"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+
+
+      </v-form>
     </v-card>
   </v-container>
 </template>
@@ -53,6 +104,8 @@ export default class AddFarm extends Vue {
   public password2: string = '';
   public notes: string = '';
   public tags: string = '';
+  public includeCredentials = false;
+
 
   public async mounted() {
     await dispatchGetFarms(this.$store);
@@ -60,6 +113,7 @@ export default class AddFarm extends Vue {
   }
 
   public reset() {
+    this.includeCredentials = false;
     this.password1 = '';
     this.password2 = '';
     this.farmName = '';
