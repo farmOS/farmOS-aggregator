@@ -7,9 +7,30 @@
       <v-spacer></v-spacer>
       <v-btn color="primary" to="/main/farm/farms/add">Add a farm</v-btn>
     </v-toolbar>
-    <v-data-table :headers="headers" :items="farms">
+    <v-data-table :headers="headers" :items="farms" loading-text="Loading... Please wait">
+      <template v-slot:item.is_authorized="{ item }">
+        <v-btn
+                v-if="item.is_authorized"
+                :to="{name: 'main-farm-farms-authorize', params: {id: item.id}}"
+                depressed
+                small
+                color="success"
+        >
+          Authorized
+        </v-btn>
+        <v-btn
+                v-else
+                :to="{name: 'main-farm-farms-authorize', params: {id: item.id}}"
+                depressed
+                small
+                color="error"
+        >
+          Re-Authorize
+          <v-icon right>error</v-icon>
+        </v-btn>
+      </template>
       <template v-slot:item.action="{ item }">
-        <v-btn text icon :to="{name: 'main-farm-farms-edit', params: {id: item.id}}">
+        <v-btn :to="{name: 'main-farm-farms-edit', params: {id: item.id}}">
           <v-icon>edit</v-icon>
         </v-btn>
       </template>
@@ -33,7 +54,6 @@ export default class Farms extends Vue {
       value: 'farm_name',
       align: 'left',
     },
-
     {
       text: 'URL',
       sortable: true,
@@ -41,31 +61,19 @@ export default class Farms extends Vue {
       align: 'left',
     },
     {
-      text: 'Username',
+      text: 'Authorized',
       sortable: true,
-      value: 'username',
+      value: 'is_authorized',
       align: 'left',
     },
     {
-      text: 'Notes',
-      sortable: true,
-      value: 'notes',
-      align: 'left',
-    },
-    {
-      text: 'Tags',
-      sortable: true,
-      value: 'tags',
-      align: 'left',
-    },
-    {
-      text: 'Time Updated',
+      text: 'Updated',
       sortable: true,
       value: 'time_updated',
       align: 'left',
     },
     {
-      text: 'Time Created',
+      text: 'Created',
       sortable: true,
       value: 'time_created',
       align: 'left',

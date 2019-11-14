@@ -31,6 +31,9 @@ export interface FarmProfile {
     username: string;
     notes?: string;
     tags?: string;
+
+    is_authorized: boolean;
+    token: FarmToken;
 }
 
 export interface FarmProfileUpdate {
