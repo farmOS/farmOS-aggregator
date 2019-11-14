@@ -112,6 +112,12 @@ export default new VueRouter({
                   component: () => import(
                     './views/main/farm/AddFarm.vue'),
                 },
+                {
+                  path: 'farms/authorize/:id',
+                  name: 'main-farm-farms-authorize',
+                  component: () => import(
+                      './views/main/farm/AuthorizeFarm.vue'),
+                },
 
               ],
             },

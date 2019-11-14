@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
 import { IUserProfile, IUserProfileUpdate, IUserProfileCreate } from './interfaces';
-import { FarmProfile, FarmProfileCreate, FarmProfileUpdate } from './interfaces';
+import { FarmProfile, FarmProfileCreate, FarmProfileUpdate, FarmProfileAuthorize } from './interfaces';
 
 function authHeaders(token: string) {
   return {
@@ -52,5 +52,8 @@ export const api = {
   },
   async createFarm(token: string, data: FarmProfileCreate) {
     return axios.post(`${apiUrl}/api/v1/farms/`, data, authHeaders(token));
+  },
+  async authorizeFarm(token: string, farmID: number, data: FarmProfileAuthorize) {
+    return axios.put(`${apiUrl}/api/v1/farms/${farmID}/authorize/`, data, authHeaders(token));
   },
 };

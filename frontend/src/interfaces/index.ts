@@ -50,3 +50,11 @@ export interface FarmProfileCreate {
     notes?: string;
     tags?: string;
 }
+
+export interface FarmProfileAuthorize {
+    grant_type: string;
+    code: string;
+    state: string;
+    client_id: string;
+    client_secret?: string;
+}
