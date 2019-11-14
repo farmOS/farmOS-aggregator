@@ -1,6 +1,6 @@
 import { api } from '@/api';
 import { ActionContext } from 'vuex';
-import { FarmProfileCreate, FarmProfileUpdate } from '@/interfaces';
+import { FarmProfileCreate, FarmProfileUpdate, FarmProfileAuthorize } from '@/interfaces';
 import { State } from '../state';
 import { FarmState } from './state';
 import { getStoreAccessors } from 'typesafe-vuex';
@@ -51,6 +51,20 @@ export const actions = {
             await dispatchCheckApiError(context, error);
         }
     },
+    async actionAuthorizeFarm(context: MainContext, payload: {id: number, authValues: FarmProfileAuthorize }) {
+      try {
+          const loadingNotification = { content: 'authorizing', showProgress: true };
+          commitAddNotification(context, loadingNotification);
+          const response = (await Promise.all([
+              api.authorizeFarm(context.rootState.main.token, payload.id, payload.authValues),
+              await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+          ]))[0];
+          commitRemoveNotification(context, loadingNotification);
+          commitAddNotification(context, { content: 'Farm authorized.', color: 'success' });
+      } catch (error) {
+          await dispatchCheckApiError(context, error);
+      }
+    },
 };
 
 const { dispatch } = getStoreAccessors<FarmState, State>('');
@@ -58,3 +72,4 @@ const { dispatch } = getStoreAccessors<FarmState, State>('');
 export const dispatchCreateFarm = dispatch(actions.actionCreateFarm);
 export const dispatchGetFarms = dispatch(actions.actionGetFarms);
 export const dispatchUpdateFarm = dispatch(actions.actionUpdateFarm);
+export const dispatchAuthorizeFarm = dispatch(actions.actionAuthorizeFarm);
