@@ -22,6 +22,13 @@ export interface IUserProfileCreate {
     is_superuser?: boolean;
 }
 
+export interface FarmToken {
+    access_token: string;
+    refresh_token: string;
+    expires_at: string;
+    expires_in: string;
+}
+
 export interface FarmProfile {
     id: number;
     time_updated?: string;

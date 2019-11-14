@@ -1,67 +1,101 @@
 <template>
   <v-container fluid>
-    <v-card class="ma-3 pa-3">
+    <v-card class="ma-3">
       <v-card-title primary-title>
         <div class="headline primary--text">Edit Farm</div>
       </v-card-title>
-      <v-card-text>
-        <template>
-          <v-form v-model="valid" ref="form" lazy-validation>
-            <v-text-field label="Farm Name" v-model="farmName" required></v-text-field>
-            <v-text-field label="url" v-model="url" required></v-text-field>
-            <v-text-field label="username" v-model="username" required></v-text-field>
-            <v-text-field label="Notes (optional)" v-model="notes" ></v-text-field>
-            <v-text-field label="Tags (optional)" v-model="tags" ></v-text-field>
 
-            <v-layout align-center>
-              <v-flex shrink>
-                <v-checkbox
-                  v-model="setPassword"
-                  class="mr-2"
-                ></v-checkbox>
-              </v-flex>
-              <v-flex>
+      <v-form v-model="valid" ref="form" lazy-validation>
+        <v-card-text>
+          <v-text-field label="Farm Name" v-model="farmName" required></v-text-field>
+          <v-text-field label="URL" v-model="url" required></v-text-field>
+
+          <div class="d-flex">
+            <v-checkbox
+                    v-model="includeCredentials"
+                    label="Include farmOS user credentials"
+            ></v-checkbox>
+          </div>
+
+          <v-expansion-panels
+                  multiple
+                  accordion
+          >
+            <v-expansion-panel
+                    :disabled="!includeCredentials"
+            >
+              <v-expansion-panel-header>
+                farmOS Credentials
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+
+                <v-text-field label="Username" v-model="username" ></v-text-field>
+
+                <div class="d-flex">
+                  <v-checkbox
+                          v-model="setPassword"
+                          label="Set Password"
+                  ></v-checkbox>
+                </div>
+
                 <v-text-field
-                  :disabled="!setPassword"
-                  type="password"
-                  ref="password"
-                  label="Set Password"
-                  data-vv-name="password"
-                  data-vv-delay="100"
-                  v-validate="{required: setPassword}"
-                  v-model="password1"
-                  :error-messages="errors.first('password')"
+                        v-show="setPassword"
+                        type="password"
+                        ref="password"
+                        label="Set Password"
+                        data-vv-name="password"
+                        data-vv-delay="100"
+                        v-validate="{required: setPassword}"
+                        v-model="password1"
+                        :error-messages="errors.first('password')"
+                        outlined
                 >
                 </v-text-field>
                 <v-text-field
-                  v-show="setPassword"
-                  type="password"
-                  label="Confirm Password"
-                  data-vv-name="password_confirmation"
-                  data-vv-delay="100"
-                  data-vv-as="password"
-                  v-validate="{required: setPassword, confirmed: 'password'}"
-                  v-model="password2"
-                  :error-messages="errors.first('password_confirmation')"
+                        v-show="setPassword"
+                        type="password"
+                        label="Confirm Password"
+                        data-vv-name="password_confirmation"
+                        data-vv-delay="100"
+                        data-vv-as="password"
+                        v-validate="{required: setPassword, confirmed: 'password'}"
+                        v-model="password2"
+                        :error-messages="errors.first('password_confirmation')"
+                        outlined
                 >
                 </v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-form>
-        </template>
-      </v-card-text>
 
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn @click="cancel">Cancel</v-btn>
-        <v-btn @click="reset">Reset</v-btn>
-        <v-btn
-          @click="submit"
-          :disabled="!valid"
-        >
-          Save
-        </v-btn>
-      </v-card-actions>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+
+            <v-expansion-panel
+                    :disabled = "!hasToken"
+            >
+              <v-expansion-panel-header>OAuth Token</v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-text-field   label="Access Token" v-model="accessToken" readonly ></v-text-field>
+                <v-text-field   label="Expires In" v-model="expiresIn" readonly ></v-text-field>
+                <v-text-field   label="Expires At" v-model="expiresAt" readonly ></v-text-field>
+                <v-text-field   label="Refresh Token" v-model="refreshToken" readonly ></v-text-field>
+
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="cancel">Cancel</v-btn>
+          <v-btn @click="reset">Reset</v-btn>
+          <v-btn
+                  @click="submit"
+                  :disabled="!valid"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+
+      </v-form>
     </v-card>
   </v-container>
 </template>
@@ -77,12 +111,19 @@ export default class EditFarm extends Vue {
   public valid = false;
   public farmName: string = '';
   public url: string = '';
+  public oldUrl: string = '';
   public username: string = '';
   public notes: string = '';
   public tags: string = '';
   public setPassword = false;
   public password1: string = '';
   public password2: string = '';
+  public includeCredentials = false;
+  public hasToken = false;
+  public accessToken: string = '';
+  public refreshToken: string = '';
+  public expiresIn: string = '';
+  public expiresAt: string = '';
 
   public async mounted() {
     await dispatchGetFarms(this.$store);
@@ -93,13 +134,27 @@ export default class EditFarm extends Vue {
     this.setPassword = false;
     this.password1 = '';
     this.password2 = '';
+    this.includeCredentials = false;
+    this.hasToken = false;
     this.$validator.reset();
     if (this.farm) {
       this.farmName = this.farm.farm_name;
+      this.oldUrl = this.farm.url;
       this.url = this.farm.url;
       this.username = this.farm.username;
       this.notes = this.farm.notes!;
       this.tags = this.farm.tags!;
+
+      if (this.farm.username) {
+        this.includeCredentials = true;
+      }
+      if (this.farm.token) {
+        this.hasToken = true;
+        this.accessToken = this.farm.token.access_token;
+        this.refreshToken = this.farm.token.refresh_token;
+        this.expiresIn = this.farm.token.expires_in;
+        this.expiresAt = this.farm.token.expires_at;
+      }
     }
   }
 
@@ -113,11 +168,9 @@ export default class EditFarm extends Vue {
       if (this.farmName) {
         updatedFarm.farm_name = this.farmName;
       }
-      if (this.url) {
+      // Only update the farm URL if it is different, avoid 409 error.
+      if (this.url !== this.oldUrl) {
         updatedFarm.url = this.url;
-      }
-      if (this.username) {
-        updatedFarm.username = this.username;
       }
       if (this.notes) {
         updatedFarm.notes = this.notes;
@@ -125,8 +178,13 @@ export default class EditFarm extends Vue {
       if (this.tags) {
         updatedFarm.tags = this.tags;
       }
-      if (this.setPassword) {
-        updatedFarm.password = this.password1;
+      if (this.includeCredentials) {
+          if (this.username) {
+            updatedFarm.username = this.username;
+          }
+          if (this.setPassword) {
+            updatedFarm.password = this.password1;
+          }
       }
       await dispatchUpdateFarm(this.$store, { id: this.farm!.id, farm: updatedFarm });
       this.$router.push('/main/farm/farms');
