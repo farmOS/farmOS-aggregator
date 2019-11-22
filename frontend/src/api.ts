@@ -12,10 +12,11 @@ function authHeaders(token: string) {
 }
 
 export const api = {
-  async logInGetToken(username: string, password: string) {
+  async logInGetToken(username: string, password: string, scope: string) {
     const params = new URLSearchParams();
     params.append('username', username);
     params.append('password', password);
+    params.append('scope', scope);
 
     return axios.post(`${apiUrl}/api/v1/login/access-token`, params);
   },
