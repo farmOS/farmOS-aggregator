@@ -1,49 +1,54 @@
 from typing import List
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, Security, HTTPException, Query
 from sqlalchemy.orm import Session
 import requests
 import time
 
 from app import crud
 from app.api.utils.db import get_db
-from app.api.utils.farms import get_farm_list, get_farm_client, ClientError
+from app.api.utils.farms import get_farm_client, ClientError, get_farms_url_or_list, get_farm_by_id
+from app.api.utils.security import get_farm_access
 from app.models.farm import Farm, FarmCreate, FarmUpdate
 from app.models.farm_token import FarmTokenCreate, FarmAuthorizationParams
-
-from farmOS import farmOS
 
 router = APIRouter()
 
 # /farms/ endpoints for farmOS instances
 
-@router.get("/", response_model=List[Farm])
+@router.get(
+    "/",
+    response_model=List[Farm],
+    dependencies=[Security(get_farm_access, scopes=['farm:read'])]
+)
 def read_farms(
-    db: Session = Depends(get_db),
-    farm_id: List[int] = Query(None),
-    farm_url: str = Query(None),
-    skip: int = 0,
-    limit: int = 100,
+    farms: List[Farm] = Depends(get_farms_url_or_list),
 ):
     """
     Retrieve farms
     """
-    farm_list = get_farm_list(db, farm_id_list=farm_id, farm_url=farm_url, skip=skip, limit=limit)
+    return farms
 
-    return farm_list
 
-@router.get("/{farm_id}", response_model=Farm)
+@router.get(
+    "/{farm_id}",
+    response_model=Farm,
+    dependencies=[Security(get_farm_access, scopes=['farm:read'])]
+)
 def read_farm_by_id(
-    farm_id: int,
-    db: Session = Depends(get_db),
+    farm: Farm = Depends(get_farm_by_id)
 ):
     """
     Get a specific farm by id
     """
-    farm = crud.farm.get_by_id(db, farm_id=farm_id)
     return farm
 
-@router.post("/", response_model=Farm)
+
+@router.post(
+    "/",
+    response_model=Farm,
+    dependencies=[Security(get_farm_access, scopes=['farm:create'])]
+)
 async def create_farm(
     *,
     db: Session = Depends(get_db),
@@ -63,23 +68,21 @@ async def create_farm(
 
     return farm
 
-@router.put("/{farm_id}", response_model=Farm)
+
+@router.put(
+    "/{farm_id}",
+    response_model=Farm,
+    dependencies=[Security(get_farm_access, scopes=['farm:update'])]
+)
 async def update_farm(
     *,
     db: Session = Depends(get_db),
-    farm_id: int,
+    farm: Farm = Depends(get_farm_by_id),
     farm_in: FarmUpdate,
 ):
     """
     Update farm
     """
-    farm = crud.farm.get_by_id(db, farm_id=farm_id)
-    if not farm:
-        raise HTTPException(
-            status_code=404,
-            detail="The farm with this ID does not exist in the system",
-        )
-
     if farm_in.url is not None:
         existing_farm = crud.farm.get_by_url(db, farm_url=farm_in.url)
         if existing_farm:
@@ -91,10 +94,16 @@ async def update_farm(
     farm = crud.farm.update(db, farm=farm, farm_in=farm_in)
     return farm
 
-@router.delete("/{farm_id}", response_model=Farm)
+
+@router.delete(
+    "/{farm_id}",
+    response_model=Farm,
+    dependencies=[Security(get_farm_access, scopes=['farm:delete'])]
+)
 async def delete_farm(
     farm_id: int,
     db: Session = Depends(get_db),
+    farm: Farm = Depends(get_farm_by_id)
 ):
     """
     Delete farm
@@ -104,9 +113,13 @@ async def delete_farm(
 
 # /farms/info/ endpoint for accessing farmOS info
 
-@router.put("/{farm_id}/authorize/")
-async def authorize_farm(
-    farm_id: int,
+
+@router.put(
+    "/{farm_id}/authorize/",
+    dependencies=[Security(get_farm_access, scopes=['farm:authorize'])]
+)
+def authorize_farm(
+    farm: Farm = Depends(get_farm_by_id),
     *,
     db: Session = Depends(get_db),
     auth_params: FarmAuthorizationParams,
@@ -114,8 +127,6 @@ async def authorize_farm(
     """
     Authorize a farm. Complete the OAuth Authorization Flow.
     """
-    farm = crud.farm.get_by_id(db, farm_id=farm_id)
-
     data = {}
     data['code'] = auth_params.code
     data['state'] = auth_params.state
@@ -139,7 +150,7 @@ async def authorize_farm(
             response_token['expires_at'] = str(time.time() + int(response_token['expires_in']))
         new_token = FarmTokenCreate(farm_id=farm.id, **response_token)
 
-        old_token = crud.farm_token.get_farm_token(db, farm_id)
+        old_token = crud.farm_token.get_farm_token(db, farm.id)
         if old_token is None:
             token = crud.farm_token.create_farm_token(db, token=new_token)
         else:
@@ -150,15 +161,15 @@ async def authorize_farm(
         return response.content
 
 
-
-@router.get("/info/", tags=["farm info"])
+@router.get(
+    "/info/",
+    dependencies=[Security(get_farm_access, scopes=['farm.info'])],
+    tags=["farm info"]
+)
 def get_all_farm_info(
-    farm_id: List[int] = Query(None),
-    farm_url: str = Query(None),
     db: Session = Depends(get_db),
+    farm_list: List[Farm] = Depends(get_farms_url_or_list)
 ):
-    farm_list = get_farm_list(db, farm_id_list=farm_id, farm_url=farm_url)
-
     data = {}
     for farm in farm_list:
         data[farm.id] = {}
@@ -173,3 +184,4 @@ def get_all_farm_info(
             continue
 
     return data
+
