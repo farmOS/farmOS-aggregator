@@ -1,5 +1,6 @@
 import os
 
+from celery.schedules import crontab
 
 def getenv_boolean(var_name, default_value=False):
     result = default_value
@@ -51,3 +52,5 @@ FIRST_SUPERUSER = os.getenv("FIRST_SUPERUSER")
 FIRST_SUPERUSER_PASSWORD = os.getenv("FIRST_SUPERUSER_PASSWORD")
 
 USERS_OPEN_REGISTRATION = getenv_boolean("USERS_OPEN_REGISTRATION")
+CELERY_WORKER_PING_INTERVAL = crontab(minute='0', hour='0,12')
+
