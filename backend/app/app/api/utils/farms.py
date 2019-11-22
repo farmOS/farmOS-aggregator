@@ -1,45 +1,109 @@
+from typing import List
+
+from fastapi import Query, Depends, HTTPException
+from starlette.status import HTTP_403_FORBIDDEN, HTTP_401_UNAUTHORIZED
+from sqlalchemy.orm import Session
 from functools import partial
 from farmOS import farmOS
 from farmOS.config import ClientConfig
 
 from app import crud
+from app.api.utils.db import get_db
 from app.models.farm_token import FarmTokenBase
 from app.crud.farm_token import create_farm_token, update_farm_token
-from app.models.farm import FarmUpdate
+from app.models.farm import Farm, FarmUpdate
+from app.models.token import FarmAccess
+from app.api.utils.security import get_farm_access
 
 
-def get_farm_list(
-        db,
-        farm_id=None,
-        farm_id_list=None,
-        farm_url=None,
-        get_all=True,
-        skip=0,
-        limit=100
-    ):
-    farm_list = []
+unauthorized_exception = HTTPException(
+    status_code = HTTP_401_UNAUTHORIZED,
+    detail="Not enough permissions to access this farm."
+)
 
-    if farm_id is not None:
-        farm = crud.farm.get_by_id(db, farm_id=farm_id)
-        if farm is not None:
-            farm_list.append(farm)
+farm_not_found_exception = HTTPException(
+    status_code = 404,
+    detail="Farm does not exist."
+)
 
-    if farm_id_list is not None:
-        farms = crud.farm.get_by_multi_id(db, farm_id_list=farm_id_list)
-        if farms is not None:
-            farm_list.extend(farms)
 
+def get_farm_by_url(
+    db: Session = Depends(get_db),
+    farm_url: str = Query(None),
+    farm_access: FarmAccess = Depends(get_farm_access)
+):
+    farm = None
     if farm_url is not None:
         farm = crud.farm.get_by_url(db, farm_url=farm_url)
-        if farm is not None:
-            farm_list.append(farm)
 
-    if get_all and not farm_url and not farm_id_list and not farm_id:
-        farms = crud.farm.get_multi(db, skip=skip, limit=limit)
-        if farms is not None:
-            farm_list.extend(farms)
+        if farm is None:
+            raise farm_not_found_exception
 
-    return farm_list
+        if not farm_access.can_access_farm(farm.id):
+            raise unauthorized_exception
+
+    return farm
+
+
+def get_farms_by_id_list(
+    db: Session = Depends(get_db),
+    farm_id: List[int] = Query(None),
+    farm_access: FarmAccess = Depends(get_farm_access)
+):
+    # Load all farms if the user can access all farms.
+    if farm_id is None and farm_access.all_farms:
+        farms = crud.farm.get_multi(db)
+        return farms
+
+    # Load all the farms the user has access to if none are provided.
+    if farm_id is None and farm_access.farm_id_list is not None:
+        farms = crud.farm.get_by_multi_id(db, farm_id_list=farm_access.farm_id_list)
+        return farms
+
+    # Load the requested farm(s) if the user has access.
+    if farm_id is not None:
+        for id in farm_id:
+            if not farm_access.can_access_farm(id):
+                raise unauthorized_exception
+
+        farms_by_id = crud.farm.get_by_multi_id(db, farm_id_list=farm_id)
+
+        if len(farms_by_id) > 0:
+            return farms_by_id
+        else:
+            raise farm_not_found_exception
+
+
+def get_farm_by_id(
+    farm_id: int,
+    db: Session = Depends(get_db),
+    farm_access: FarmAccess = Depends(get_farm_access)
+):
+    if not farm_access.can_access_farm(farm_id):
+        raise unauthorized_exception
+
+    farm = crud.farm.get_by_id(db, farm_id=farm_id)
+
+    if not farm:
+        raise farm_not_found_exception
+
+    return farm
+
+
+def get_farms_url_or_list(
+    farm_by_url: Farm = Depends(get_farm_by_url),
+    farms_by_list: List[Farm] = Depends(get_farms_by_id_list),
+):
+    farms = []
+
+    # Give priority to a farm requested by URL
+    # to avoid returning the same farm twice
+    if farm_by_url is not None:
+        farms.append(farm_by_url)
+    elif farms_by_list is not None:
+        farms.extend(farms_by_list)
+
+    return farms
 
 
 # A helper function to save OAuth Tokens to DB.

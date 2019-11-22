@@ -40,7 +40,8 @@ def login_access_token(
     access_token_expires = timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
     return {
         "access_token": create_access_token(
-            data={"user_id": user.id}, expires_delta=access_token_expires
+            data={"sub": user.id, "scopes": form_data.scopes},
+            expires_delta=access_token_expires
         ),
         "token_type": "bearer",
     }
