@@ -18,9 +18,9 @@ import { AppNotification, MainState } from './state';
 type MainContext = ActionContext<MainState, State>;
 
 export const actions = {
-    async actionLogIn(context: MainContext, payload: { username: string; password: string }) {
+    async actionLogIn(context: MainContext, payload: { username: string; password: string, scope: string }) {
         try {
-            const response = await api.logInGetToken(payload.username, payload.password);
+            const response = await api.logInGetToken(payload.username, payload.password, payload.scope);
             const token = response.data.access_token;
             if (token) {
                 saveLocalToken(token);

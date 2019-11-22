@@ -38,18 +38,21 @@ import { appName } from '@/env';
 import { readLoginError } from '@/store/main/getters';
 import { dispatchLogIn } from '@/store/main/actions';
 
+const defaultOAuthScopes = 'farm:create farm:read farm:update farm:delete farm:authorize';
+
 @Component
 export default class Login extends Vue {
   public email: string = '';
   public password: string = '';
   public appName = appName;
+  public defaultOAuthScopes = defaultOAuthScopes;
 
   public get loginError() {
     return readLoginError(this.$store);
   }
 
   public submit() {
-    dispatchLogIn(this.$store, {username: this.email, password: this.password});
+    dispatchLogIn(this.$store, {username: this.email, password: this.password, scope: this.defaultOAuthScopes});
   }
 }
 </script>
