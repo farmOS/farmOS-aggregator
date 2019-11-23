@@ -16,11 +16,11 @@ class FarmBaseInDB(FarmBase):
     id: int = None
 
 # Properties to receive via API on creation
-class FarmCreate(FarmBaseInDB):
+class FarmCreate(FarmBase):
     farm_name: str
     url: str
-    username: str
-    password: str
+    username: Optional[str]
+    password: Optional[str]
 
 # Properties to receive via API on update
 class FarmUpdate(FarmBase):

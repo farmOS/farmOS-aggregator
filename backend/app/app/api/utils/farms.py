@@ -130,8 +130,8 @@ def get_farm_client(db_session, farm):
         'Profile': {
             'development': 'True',
             'hostname': farm.url,
-            'username': farm.username,
-            'password': farm.password,
+            'username': (farm.username or ''),
+            'password': (farm.password or ''),
             'client_id': client_id,
             'client_secret': client_secret,
         }
