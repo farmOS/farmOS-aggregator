@@ -23,14 +23,14 @@ class FarmCreate(FarmBaseInDB):
     password: str
 
 # Properties to receive via API on update
-class FarmUpdate(FarmBaseInDB):
+class FarmUpdate(FarmBase):
     password: Optional[str] = None
-    is_authorized: Optional[bool] = None
 
 # Additional properties to return via API
 class Farm(FarmBaseInDB):
     time_created: Optional[datetime] = None
     time_updated: Optional[datetime] = None
+    last_accessed: Optional[datetime] = None
     token: Optional[FarmToken] = None
     is_authorized: Optional[bool] = None
 

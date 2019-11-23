@@ -1,4 +1,5 @@
 from typing import List, Optional
+import datetime
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
@@ -47,6 +48,22 @@ def delete(db_session: Session, *, farm_id: int):
     farm = get_by_id(db_session=db_session, farm_id=farm_id)
     db_session.delete(farm)
     db_session.commit()
+
+def update_last_accessed(db_session: Session, *, farm_id: int):
+    farm = get_by_id(db_session=db_session, farm_id=farm_id)
+    setattr(farm, "last_accessed", datetime.datetime.now())
+    db_session.add(farm)
+    db_session.commit()
+    db_session.refresh(farm)
+    return farm
+
+def update_is_authorized(db_session: Session, *, farm_id: int, is_authorized: bool):
+    farm = get_by_id(db_session=db_session, farm_id=farm_id)
+    setattr(farm, "is_authorized", is_authorized)
+    db_session.add(farm)
+    db_session.commit()
+    db_session.refresh(farm)
+    return farm
 
 def is_authenticated(Farm):
     return farm.is_authenticated
