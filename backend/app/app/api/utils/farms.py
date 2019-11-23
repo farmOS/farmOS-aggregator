@@ -147,11 +147,12 @@ def get_farm_client(db_session, farm):
 
     try:
         client = farmOS(config=config, profile_name="Profile", token_updater=token_updater)
+        crud.farm.update_last_accessed(db_session, farm_id=farm.id)
+        crud.farm.update_is_authorized(db_session, farm_id=farm.id, is_authorized=True)
     except Exception as e:
-        crud.farm.update(db_session, farm=farm, farm_in=FarmUpdate(is_authorized=False))
+        crud.farm.update_is_authorized(db_session, farm_id=farm.id, is_authorized=False)
         raise ClientError(e)
 
-    crud.farm.update(db_session, farm=farm, farm_in=FarmUpdate(is_authorized=True))
 
     return client
 
