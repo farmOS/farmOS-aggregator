@@ -33,6 +33,7 @@ export interface FarmProfile {
     id: number;
     time_updated?: string;
     time_created?: string;
+    last_accessed?: string;
     farm_name: string;
     url: string;
     username: string;

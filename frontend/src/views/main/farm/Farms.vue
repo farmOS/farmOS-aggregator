@@ -29,6 +29,21 @@
           <v-icon right>error</v-icon>
         </v-btn>
       </template>
+      <template v-slot:item.last_accessed="{ item }">
+           <span v-if="item.last_accessed" >
+                {{new Date(item.last_accessed).toLocaleString()}}
+           </span>
+      </template>
+      <template v-slot:item.time_updated="{ item }">
+           <span v-if="item.time_updated" >
+                {{new Date(item.time_updated).toLocaleString()}}
+           </span>
+      </template>
+      <template v-slot:item.time_created="{ item }">
+           <span v-if="item.time_created" >
+                {{new Date(item.time_created).toLocaleString()}}
+           </span>
+      </template>
       <template v-slot:item.action="{ item }">
         <v-btn :to="{name: 'main-farm-farms-edit', params: {id: item.id}}">
           <v-icon>edit</v-icon>
@@ -64,6 +79,12 @@ export default class Farms extends Vue {
       text: 'Authorized',
       sortable: true,
       value: 'is_authorized',
+      align: 'left',
+    },
+    {
+      text: 'Last Accessed',
+      sortable: true,
+      value: 'last_accessed',
       align: 'left',
     },
     {
