@@ -12,6 +12,7 @@
       <v-card-text>
         <v-text-field label="Farm Name" v-model="farmName" readonly></v-text-field>
         <v-text-field label="URL" v-model="url" readonly></v-text-field>
+        <v-text-field label="User Email" v-model="userEmail" :loading="farmInfoLoading" readonly></v-text-field>
 
       </v-card-text>
 
@@ -55,23 +56,36 @@
              Request Authorization
          </v-btn>
 
-        <v-btn
-                class="white--text"
-                color="primary"
-                @click="openSignInWindow"
-        >
-            Authorize Now
-        </v-btn>
-
         <v-dialog
                 v-model="authorizationDialog"
-                max-width="300"
+                max-width="600"
         >
             <v-card>
                 <v-card-title class="headline">Request Authorization</v-card-title>
 
                 <v-card-text>
-                    Select an email to send the Authorization Request to.
+                    Input the email to send a verification link. By default, this is the farmOS admin email.
+
+                    <v-text-field type="email" label="farmOS Admin Email" v-model="userEmail"></v-text-field>
+
+                    OR
+
+                    <v-btn
+                            class="ma-2"
+                            :loading="authLinkLoading"
+                            :disabled="authLinkLoaded"
+                            color="secondary"
+                            @click="generateAuthLink(farm.id)"
+                    >
+                        Generate Authorization Link
+                    </v-btn>
+
+                    <v-text-field
+                            label="Authorization Link"
+                            v-if="authLinkLoaded"
+                            v-model="authLink"
+                            readonly
+                    ></v-text-field>
                 </v-card-text>
 
                 <v-card-actions>
@@ -80,7 +94,7 @@
                     <v-btn
                             color="green darken-1"
                             text
-                            @click="dialog = false"
+                            @click="authorizationDialog = false"
                     >
                         Cancel
                     </v-btn>
@@ -103,14 +117,12 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { FarmProfileAuthorize } from '@/interfaces';
-import { dispatchGetFarms, dispatchAuthorizeFarm} from '@/store/farm/actions';
+import { dispatchGetFarms, dispatchAuthorizeFarm, dispatchCreateFarmAuthLink, dispatchGetFarmInfo } from '@/store/farm/actions';
 import { readOneFarm } from '@/store/farm/getters';
 
 @Component
 export default class EditFarm extends Vue {
-  public valid = false;
-  public authorizationDialog = false;
+  // Properties from the Farm Profile.
   public farmName: string = '';
   public url: string = '';
   public username: string = '';
@@ -123,11 +135,24 @@ export default class EditFarm extends Vue {
   public expiresIn: string = '';
   public expiresAt: string = '';
 
-  public windowObjectReference: any = null;
+  // Properties from the farmOS server, retrieved via API.
+  public farmInfoLoading: boolean = false;
+  public userEmail: string = 'Loading...';
+
+  // Properties for the Authorization Diaglog.
+  public authorizationDialog = false;
+  public authLinkLoading: boolean = false;
+  public authLinkLoaded: boolean = false;
+  public authLink: string = '';
 
   public async mounted() {
     await dispatchGetFarms(this.$store);
     this.reset();
+    if (this.farm) {
+        this.farmInfoLoading = true;
+        await dispatchGetFarmInfo(this.$store, { farmID: this.farm.id }).then(this.setFarmInfo);
+        this.farmInfoLoading = false;
+    }
   }
 
   public reset() {
@@ -155,49 +180,24 @@ export default class EditFarm extends Vue {
     this.$router.back();
   }
 
-  public openSignInWindow() {
-      const windowFeatures = 'toolbar=no, menubar=no, width=600, height=700, top=100, left=100';
-
-      const oauthPath = '/oauth2/authorize';
-      const queryParams = '?response_type=code&client_id=farmos_api_client&redirect_uri=http://192.168.1.9/api/authorized&state=p4W8P5f7gJCIDbC1Mv78zHhlpJOidy';
-
-      if (this.windowObjectReference === null || this.windowObjectReference.closed) {
-          this.windowObjectReference = window.open(this.url + oauthPath + queryParams, 'farmOS Login', windowFeatures);
-          this.windowObjectReference.focus();
-      } else {
-          this.windowObjectReference.focus();
-      }
-
-      // Add listener to retrieve the OAuth Code
-      window.addEventListener('message', (event) => this.receiveMessage(event), false);
+  public setFarmInfo(farmInfo) {
+    // Save farm info retrieved via API in the Vue state.
+    if (farmInfo.info) {
+        this.userEmail = farmInfo.info.user.mail;
+    } else {
+        this.userEmail = 'No email found.';
+    }
   }
 
-  public async receiveMessage(event) {
-      // Make sure the message came from the farmOS server.
-      if (event.origin !== this.url) {
-          return;
+  public async generateAuthLink(farmID) {
+      // Query the API to get an Authorization link with an API token embedded in the query params.
+      this.authLinkLoading = true;
+      const link = await dispatchCreateFarmAuthLink(this.$store, { farmID });
+      if (link) {
+          this.authLink = link;
+          this.authLinkLoaded = true;
       }
-      console.log(event);
-
-      // Build a URLSearchParams from the message data.
-      const params = new URLSearchParams(event.data.substr(1));
-
-      // Parse out the `code` and `state` values.
-      const code = params.get('code') as string;
-      const state = params.get('state') as string;
-
-      // Build the payload for the backend to request a token.
-      const authValues: FarmProfileAuthorize = {
-          grant_type: 'authorization_code',
-          code,
-          state,
-          client_id: 'farmos_api_client',
-          client_secret: 'client_secret',
-      };
-
-      // Dispatch API call to backend.
-      dispatchAuthorizeFarm(this.$store, { id: this.farm!.id, authValues });
-      // this.$router.push('/main/farm/farms/authorize/' + this.farm!.id);
+      this.authLinkLoading = false;
   }
 
   get farm() {
