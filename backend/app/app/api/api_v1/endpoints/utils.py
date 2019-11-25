@@ -20,15 +20,15 @@ from app.utils import send_test_email, generate_farm_authorization_link
 router = APIRouter()
 
 
-@router.post("/test-celery/", response_model=Msg, status_code=201)
-def test_celery(
-    msg: Msg, current_user: UserInDB = Depends(get_current_active_superuser)
+@router.post("/ping-farms/", response_model=Msg, status_code=201)
+def ping_farms(
+    current_user: UserInDB = Depends(get_current_active_superuser)
 ):
     """
-    Test Celery worker.
+    Ping all farms.
     """
-    celery_app.send_task("app.worker.test_celery", args=[msg.msg])
-    return {"msg": "Word received"}
+    celery_app.send_task("app.worker.ping_farms")
+    return {"msg": "Task created. Check farm last_updated values."}
 
 
 @router.post("/test-email/", response_model=Msg, status_code=201)
