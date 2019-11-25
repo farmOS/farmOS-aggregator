@@ -38,7 +38,7 @@ import { appName } from '@/env';
 import { readLoginError } from '@/store/main/getters';
 import { dispatchLogIn } from '@/store/main/actions';
 
-const defaultOAuthScopes = 'farm:create farm:read farm:update farm:delete farm:authorize';
+const defaultOAuthScopes = 'farm:create farm:read farm:update farm:delete farm:authorize farm.info';
 
 @Component
 export default class Login extends Vue {
