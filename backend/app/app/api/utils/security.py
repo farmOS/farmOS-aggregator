@@ -1,6 +1,6 @@
 import jwt
 from fastapi import Depends, HTTPException, Security, Query
-from fastapi.security import OAuth2PasswordBearer, APIKeyQuery, SecurityScopes
+from fastapi.security import OAuth2PasswordBearer, APIKeyQuery, APIKeyHeader, SecurityScopes
 from jwt import PyJWTError
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_403_FORBIDDEN, HTTP_401_UNAUTHORIZED
@@ -39,7 +39,7 @@ reusable_oauth2 = OAuth2PasswordBearer(
 )
 
 API_KEY_NAME = "api_token"
-api_key_query = APIKeyQuery(name=API_KEY_NAME, auto_error=False)
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 
 
 def get_current_user(
@@ -136,7 +136,7 @@ def get_current_user_farm_access(
 
 def get_api_token_farm_access(
     security_scopes: SecurityScopes,
-    api_token: str = Security(api_key_query),
+    api_token: str = Security(api_key_header),
 ):
     if api_token is None:
         return None
