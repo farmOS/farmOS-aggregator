@@ -3,12 +3,31 @@ import { apiUrl } from '@/env';
 import { IUserProfile, IUserProfileUpdate, IUserProfileCreate } from './interfaces';
 import { FarmProfile, FarmProfileCreate, FarmProfileUpdate, FarmProfileAuthorize } from './interfaces';
 
-function authHeaders(token: string) {
+function accessTokenAuthHeaders(token: string) {
   return {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   };
+}
+
+function apiTokenAuthHeaders(apiToken: string) {
+  return {
+    headers: {
+      api_token: apiToken,
+    },
+  };
+}
+
+function authHeaders(token?: string, apiToken?: string) {
+  let headers = { headers: {} };
+  if (apiToken) {
+    headers = apiTokenAuthHeaders(apiToken);
+  }
+  if (token) {
+    headers = accessTokenAuthHeaders(token);
+  }
+  return headers;
 }
 
 export const api = {
