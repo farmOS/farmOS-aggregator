@@ -73,7 +73,24 @@ export const api = {
   async createFarm(token: string, data: FarmProfileCreate) {
     return axios.post(`${apiUrl}/api/v1/farms/`, data, authHeaders(token));
   },
-  async authorizeFarm(token: string, farmID: number, data: FarmProfileAuthorize) {
-    return axios.put(`${apiUrl}/api/v1/farms/${farmID}/authorize/`, data, authHeaders(token));
+  async authorizeFarm(token: string, farmID: number, data: FarmProfileAuthorize, apiToken?: string) {
+    const headers = authHeaders(token, apiToken);
+    return axios.post(`${apiUrl}/api/v1/utils/authorize-farm/${farmID}`, data, headers);
   },
+  async createFarmAuthLink(token: string, farmID: number) {
+    return axios.post(`${apiUrl}/api/v1/utils/farm-auth-link/${farmID}`, null, authHeaders(token));
+  },
+  async getOneFarm(token: string, farmID: number, apiToken?: string ) {
+    return axios.get<FarmProfile>(`${apiUrl}/api/v1/farms/${farmID}`, authHeaders(token, apiToken));
+  },
+  async getFarmInfo(token: string, farmID: number) {
+    const params = new URLSearchParams();
+    params.append('farm_id', farmID.toString());
+    return axios.get(
+        `${apiUrl}/api/v1/farms/info/`,
+        {params, headers: authHeaders(token).headers},
+    );
+  },
+  // Anonymous User Farm APIs
+
 };
