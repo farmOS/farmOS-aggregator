@@ -9,6 +9,7 @@ from emails.template import JinjaTemplate
 from jwt.exceptions import InvalidTokenError
 
 from app.core import config
+from app.core.jwt import create_farm_api_token
 
 password_reset_jwt_subject = "preset"
 
@@ -109,3 +110,13 @@ def verify_password_reset_token(token) -> Optional[str]:
         return decoded_token["email"]
     except InvalidTokenError:
         return None
+
+
+def generate_farm_authorization_link(farm_id):
+    token = create_farm_api_token(farm_id=[farm_id], scopes=["farm:read", "farm:authorize", "farm.info"])
+
+    server_host = config.SERVER_HOST
+    api_path = config.API_V1_STR
+    link = f"{server_host}/authorize-farm/{farm_id}?api_token={token.decode()}"
+
+    return link
