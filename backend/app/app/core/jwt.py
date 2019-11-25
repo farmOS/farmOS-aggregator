@@ -1,3 +1,4 @@
+from typing import List
 from datetime import datetime, timedelta
 
 import jwt
@@ -18,7 +19,7 @@ def create_access_token(*, data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 
-def create_farm_api_token(farm_id, scopes):
+def create_farm_api_token(farm_id: List[int], scopes: List[str]):
     delta = timedelta(hours=config.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
     now = datetime.utcnow()
     expires = now + delta
