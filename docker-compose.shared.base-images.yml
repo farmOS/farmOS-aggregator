@@ -3,4 +3,4 @@ services:
   db:
     image: postgres:11
   queue:
-    image: rabbitmq:3
+    image: rabbitmq:3-management
