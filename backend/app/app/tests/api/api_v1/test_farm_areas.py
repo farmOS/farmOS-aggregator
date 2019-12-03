@@ -10,10 +10,41 @@ def farm_areas_headers():
     return get_scope_token_headers("farm:read farm.areas")
 
 
-def test_create_area(test_farm, test_area, farm_areas_headers):
+@pytest.fixture(autouse=True)
+def areas_vid(test_farm, all_scopes_token_headers):
+    server_api = get_server_api()
+
+    response = requests.get(
+        f"{server_api}{config.API_V1_STR}/farms/info/?farm_id={test_farm.id}",
+        headers=all_scopes_token_headers,
+    )
+    # Check response
+    assert 200 <= response.status_code < 300
+    content = response.json()
+
+    # Check farm ID included in response
+    assert str(test_farm.id) in content
+    content = content[str(test_farm.id)]
+
+    # Check that farm info includes farm_areas vid
+    assert 'info' in content
+    assert 'resources' in content['info']
+    assert 'taxonomy_term' in content['info']['resources']
+    assert 'farm_areas' in content['info']['resources']['taxonomy_term']
+    assert 'vid' in content['info']['resources']['taxonomy_term']['farm_areas']
+
+    # Assign AREAS_VID to use the farm_areas vid value in later tests.
+    areas_vid = content['info']['resources']['taxonomy_term']['farm_areas']['vid']
+    yield areas_vid
+
+
+def test_create_area(test_farm, test_area, areas_vid, farm_areas_headers):
     server_api = get_server_api()
 
     data = test_area
+    # Update the vid of the farm_areas term.
+    data['vocabulary'] = areas_vid
+    print(areas_vid)
 
     response = requests.post(
         f"{server_api}{config.API_V1_STR}/farms/areas/?farm_id={test_farm.id}",
@@ -80,13 +111,16 @@ def test_get_areas(test_farm, farm_areas_headers):
         assert "area_type" in area
 
 
-def test_update_area(test_farm, test_area, farm_areas_headers):
+def test_update_area(test_farm, test_area, areas_vid, farm_areas_headers):
     server_api = get_server_api()
 
     # Change area attributes
     test_area['name'] = "Updated name from farmOS-aggregator"
     test_area['description'] = "Update description"
+
     data = test_area
+    # Update the vid of the farm_areas term.
+    data['vocabulary'] = areas_vid
 
     response = requests.put(
         f"{server_api}{config.API_V1_STR}/farms/areas/?farm_id={test_farm.id}",
