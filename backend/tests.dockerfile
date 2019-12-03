@@ -14,8 +14,9 @@ COPY ./app /app
 ENV PYTHONPATH=/app
 
 COPY ./app/tests-start.sh /tests-start.sh
+COPY ./app/single-test-start.sh /single-test-start.sh
 
-RUN chmod +x /tests-start.sh
+RUN chmod +x /tests-start.sh /single-test-start.sh
 
 # This will make the container wait, doing nothing, but alive
 CMD ["bash", "-c", "while true; do sleep 1; done"]
