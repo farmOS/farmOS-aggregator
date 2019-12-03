@@ -114,7 +114,7 @@ async def delete_farm(
 
 @router.get(
     "/info/",
-    dependencies=[Security(get_farm_access, scopes=['farm.info'])],
+    dependencies=[Security(get_farm_access, scopes=['farm:read', 'farm.info'])],
     tags=["farm info"]
 )
 def get_all_farm_info(
