@@ -19,3 +19,8 @@ def get_test_farm_instance():
     farm_in = FarmCreate(**test_farm_credentials)
     test_farm = crud.farm.create(db_session, farm_in=farm_in)
     return test_farm
+
+
+def delete_test_farm_instance(farm_id):
+    """Removes the testing farm from the database"""
+    crud.farm.delete(db_session, farm_id=farm_id)

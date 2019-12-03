@@ -19,7 +19,11 @@ def all_scopes_token_headers():
 
 @pytest.fixture(scope='package')
 def test_farm():
-    return get_test_farm_instance()
+    farm = get_test_farm_instance()
+    yield farm
+
+    # Delete the test farm from the DB for cleanup.
+    delete_test_farm_instance(farm.id)
 
 @pytest.fixture(scope='module')
 def test_log():
