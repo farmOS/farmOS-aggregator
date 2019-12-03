@@ -1,15 +1,21 @@
 import requests
+import pytest
 
-from app import crud
 from app.core import config
-from app.db.session import db_session
-from app.tests.utils.utils import get_server_api, random_lower_string
+from app.tests.utils.utils import get_server_api, get_scope_token_headers
 
-def test_get_logs(test_farm):
+
+@pytest.fixture
+def farm_logs_headers():
+    return get_scope_token_headers("farm:read farm.logs")
+
+
+def test_get_logs(test_farm, farm_logs_headers):
     server_api = get_server_api()
 
     r = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/logs/?farms={test_farm.id}&page=1",
+        f"{server_api}{config.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
+        headers=farm_logs_headers,
     )
     # Check response
     assert 200 <= r.status_code < 300
@@ -31,13 +37,15 @@ def test_get_logs(test_farm):
     for log in test_farm_logs:
         assert "type" in log
 
-def test_create_log(test_farm, test_log):
+
+def test_create_log(test_farm, test_log, farm_logs_headers):
     server_api = get_server_api()
 
     data = test_log
 
     response = requests.post(
-        f"{server_api}{config.API_V1_STR}/farms/logs/?farms={test_farm.id}",
+        f"{server_api}{config.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
+        headers=farm_logs_headers,
         json=data,
     )
     # Check response
@@ -54,9 +62,10 @@ def test_create_log(test_farm, test_log):
     created_log_id = test_farm_logs[0]['id']
     test_log['id'] = created_log_id
 
-    # Check that the creats log has correct attributes
+    # Check that the created log has correct attributes
     response = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/logs/?farms={test_farm.id}&id={test_log['id']}",
+        f"{server_api}{config.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
+        headers=farm_logs_headers,
         json=data,
     )
     # Check response
@@ -70,7 +79,8 @@ def test_create_log(test_farm, test_log):
     # Check that an optional attribute was populated
     assert bool(int(created_log['done'])) == data['done']
 
-def test_update_log(test_farm, test_log):
+
+def test_update_log(test_farm, test_log, farm_logs_headers):
     server_api = get_server_api()
 
     # Change log attributes
@@ -79,7 +89,8 @@ def test_update_log(test_farm, test_log):
     data = test_log
 
     response = requests.put(
-        f"{server_api}{config.API_V1_STR}/farms/logs/?farms={test_farm.id}",
+        f"{server_api}{config.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
+        headers=farm_logs_headers,
         json=data,
     )
     # Check response
@@ -95,7 +106,8 @@ def test_update_log(test_farm, test_log):
 
     # Check that the updated log has correct attributes
     response = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/logs/?farms={test_farm.id}&id={test_log['id']}",
+        f"{server_api}{config.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
+        headers=farm_logs_headers,
     )
     # Check response
     assert 200 <= response.status_code < 300
@@ -108,13 +120,22 @@ def test_update_log(test_farm, test_log):
     # Check that an optional attribute was updated
     assert bool(int(updated_log['done'])) == data['done']
 
-def test_delete_log(test_farm, test_log):
+
+def test_delete_log(test_farm, test_log, farm_logs_headers):
     server_api = get_server_api()
 
     response = requests.delete(
-        f"{server_api}{config.API_V1_STR}/farms/logs/?farms={test_farm.id}&id={test_log['id']}",
+        f"{server_api}{config.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
+        headers=farm_logs_headers,
     )
 
     # Check response
     assert 200 <= response.status_code < 300
     content = response.json()
+
+
+def test_farm_logs_oauth_scope():
+    server_api = get_server_api()
+
+    r = requests.get(f"{server_api}{config.API_V1_STR}/farms/logs")
+    assert r.status_code == 401
