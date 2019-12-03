@@ -51,7 +51,15 @@ def test_create_delete_farm(farm_create_headers, farm_delete_headers):
     assert 200 <= r.status_code < 300
     created_farm = r.json()
     farm = crud.farm.get_by_id(db_session, farm_id=created_farm['id'])
-    assert farm.farm_name == created_farm["farm_name"]
+
+    # Check that submitted values match those returned, and in db
+    assert farm.farm_name == created_farm["farm_name"] == data['farm_name']
+    assert farm.url == created_farm["url"] == data['url']
+    assert farm.username == created_farm["username"] == data['username']
+    assert farm.password == data['password']
+
+    # Check that raw password is not returned via API
+    assert 'password' not in created_farm
 
     # Delete the farm
     r = requests.delete(
