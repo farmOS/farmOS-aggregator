@@ -16,6 +16,12 @@ def get_test_farm_instance():
 
     Returns: the test_farm object
     """
+    # Remove existing farm from DB if it has the testing URL
+    old_farm = crud.farm.get_by_url(db_session, farm_url=test_farm_credentials['url'])
+    if old_farm is not None:
+        crud.farm.delete(db_session, farm_id=old_farm.id)
+
+    # Create test farm
     farm_in = FarmCreate(**test_farm_credentials)
     test_farm = crud.farm.create(db_session, farm_in=farm_in)
     return test_farm
