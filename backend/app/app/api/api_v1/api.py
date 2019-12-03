@@ -21,7 +21,7 @@ api_router.include_router(
     logs.router,
     prefix="/farms/logs",
     tags=["farm logs"],
-    dependencies=[Security(get_farm_access, scopes=["farm.logs"])]
+    dependencies=[Security(get_farm_access, scopes=['farm:read', 'farm.logs'])]
 )
 
 # Include /farms/assets endpoints.
@@ -29,7 +29,7 @@ api_router.include_router(
     assets.router,
     prefix="/farms/assets",
     tags=["farm assets"],
-    dependencies=[Security(get_farm_access, scopes=["farm.assets"])]
+    dependencies=[Security(get_farm_access, scopes=['farm:read', 'farm.assets'])]
 )
 
 # Include /farms/terms endpoints.
@@ -37,7 +37,7 @@ api_router.include_router(
     terms.router,
     prefix="/farms/terms",
     tags=["farm terms"],
-    dependencies=[Security(get_farm_access, scopes=["farm.terms"])]
+    dependencies=[Security(get_farm_access, scopes=['farm:read', 'farm.terms'])]
 )
 
 # Include /farms/areas endpoints.
@@ -45,5 +45,5 @@ api_router.include_router(
     areas.router,
     prefix="/farms/areas",
     tags=["farm areas"],
-    dependencies=[Security(get_farm_access, scopes=["farm.areas"])]
+    dependencies=[Security(get_farm_access, scopes=['farm:read', 'farm.areas'])]
 )
