@@ -1,7 +1,7 @@
 import pytest
 
-from app.tests.utils.utils import get_server_api, get_superuser_token_headers
-from app.tests.utils.farm import get_test_farm_instance
+from app.tests.utils.utils import get_server_api, get_superuser_token_headers, get_all_scopes_token_headers
+from app.tests.utils.farm import get_test_farm_instance, delete_test_farm_instance
 
 
 @pytest.fixture(scope="module")
@@ -12,6 +12,10 @@ def server_api():
 @pytest.fixture(scope="module")
 def superuser_token_headers():
     return get_superuser_token_headers()
+
+@pytest.fixture(scope="module")
+def all_scopes_token_headers():
+    return get_all_scopes_token_headers()
 
 @pytest.fixture(scope='package')
 def test_farm():

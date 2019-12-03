@@ -20,6 +20,8 @@ from app.utils import (
     verify_password_reset_token,
 )
 
+import logging
+
 router = APIRouter()
 
 
@@ -38,6 +40,7 @@ def login_access_token(
     elif not crud.user.is_active(user):
         raise HTTPException(status_code=400, detail="Inactive user")
     access_token_expires = timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
+    logging.error(form_data.scopes);
     return {
         "access_token": create_access_token(
             data={"sub": user.id, "scopes": form_data.scopes},
