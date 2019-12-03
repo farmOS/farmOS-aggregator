@@ -1,17 +1,23 @@
 import requests
+import pytest
 
-from app import crud
 from app.core import config
-from app.db.session import db_session
-from app.tests.utils.utils import get_server_api, random_lower_string
+from app.tests.utils.utils import get_server_api, get_scope_token_headers
 
-def test_create_area(test_farm, test_area):
+
+@pytest.fixture
+def farm_areas_headers():
+    return get_scope_token_headers("farm:read farm.areas")
+
+
+def test_create_area(test_farm, test_area, farm_areas_headers):
     server_api = get_server_api()
 
     data = test_area
 
     response = requests.post(
-        f"{server_api}{config.API_V1_STR}/farms/areas/?farms={test_farm.id}",
+        f"{server_api}{config.API_V1_STR}/farms/areas/?farm_id={test_farm.id}",
+        headers=farm_areas_headers,
         json=data,
     )
     # Check response
@@ -28,9 +34,10 @@ def test_create_area(test_farm, test_area):
     created_area_id = test_farm_areas[0]['id']
     test_area['id'] = created_area_id
 
-    # Check that the creats area has correct attributes
+    # Check that the created area has correct attributes
     response = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/areas/?farms={test_farm.id}&tid={test_area['id']}",
+        f"{server_api}{config.API_V1_STR}/farms/areas/?farm_id={test_farm.id}&tid={test_area['id']}",
+        headers=farm_areas_headers,
         json=data,
     )
     # Check response
@@ -44,11 +51,13 @@ def test_create_area(test_farm, test_area):
     # Check that an optional attribute was populated
     assert data['description'] in created_area['description']
 
-def test_get_areas(test_farm):
+
+def test_get_areas(test_farm, farm_areas_headers):
     server_api = get_server_api()
 
     r = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/areas/?farms={test_farm.id}",
+        f"{server_api}{config.API_V1_STR}/farms/areas/?farm_id={test_farm.id}",
+        headers=farm_areas_headers,
     )
     # Check response
     assert 200 <= r.status_code < 300
@@ -70,7 +79,8 @@ def test_get_areas(test_farm):
     for area in test_farm_areas:
         assert "area_type" in area
 
-def test_update_area(test_farm, test_area):
+
+def test_update_area(test_farm, test_area, farm_areas_headers):
     server_api = get_server_api()
 
     # Change area attributes
@@ -79,7 +89,8 @@ def test_update_area(test_farm, test_area):
     data = test_area
 
     response = requests.put(
-        f"{server_api}{config.API_V1_STR}/farms/areas/?farms={test_farm.id}",
+        f"{server_api}{config.API_V1_STR}/farms/areas/?farm_id={test_farm.id}",
+        headers=farm_areas_headers,
         json=data,
     )
     # Check response
@@ -95,7 +106,8 @@ def test_update_area(test_farm, test_area):
 
     # Check that the updated area has correct attributes
     response = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/areas/?farms={test_farm.id}&tid={test_area['id']}",
+        f"{server_api}{config.API_V1_STR}/farms/areas/?farm_id={test_farm.id}&tid={test_area['id']}",
+        headers=farm_areas_headers,
     )
     # Check response
     assert 200 <= response.status_code < 300
@@ -108,13 +120,22 @@ def test_update_area(test_farm, test_area):
     # Check that an optional attribute was updated
     assert data['description'] in updated_area['description']
 
-def test_delete_area(test_farm, test_area):
+
+def test_delete_area(test_farm, test_area, farm_areas_headers):
     server_api = get_server_api()
 
     response = requests.delete(
-        f"{server_api}{config.API_V1_STR}/farms/areas/?farms={test_farm.id}&id={test_area['id']}",
+        f"{server_api}{config.API_V1_STR}/farms/areas/?farm_id={test_farm.id}&id={test_area['id']}",
+        headers=farm_areas_headers,
     )
 
     # Check response
     assert 200 <= response.status_code < 300
     content = response.json()
+
+
+def test_farm_areas_oauth_scope():
+    server_api = get_server_api()
+
+    r = requests.get(f"{server_api}{config.API_V1_STR}/farms/areas")
+    assert r.status_code == 401
