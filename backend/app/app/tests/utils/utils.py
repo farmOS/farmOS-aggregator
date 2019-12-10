@@ -2,8 +2,15 @@ import random
 import string
 
 import requests
+import pytest
 
 from app.core import config
+
+
+farmOS_testing_server = pytest.mark.skipif(
+    not config.has_valid_test_configuration(),
+    reason="farmOS Testing Server not configured. Skipping farmOS test server integration tests.",
+)
 
 
 def random_lower_string():

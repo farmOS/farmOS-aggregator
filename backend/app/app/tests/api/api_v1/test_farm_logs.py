@@ -2,7 +2,7 @@ import requests
 import pytest
 
 from app.core import config
-from app.tests.utils.utils import get_server_api, get_scope_token_headers
+from app.tests.utils.utils import farmOS_testing_server, get_server_api, get_scope_token_headers
 
 
 @pytest.fixture
@@ -10,6 +10,7 @@ def farm_logs_headers():
     return get_scope_token_headers("farm:read farm.logs")
 
 
+@farmOS_testing_server
 def test_get_logs(test_farm, farm_logs_headers):
     server_api = get_server_api()
 
@@ -38,6 +39,7 @@ def test_get_logs(test_farm, farm_logs_headers):
         assert "type" in log
 
 
+@farmOS_testing_server
 def test_create_log(test_farm, test_log, farm_logs_headers):
     server_api = get_server_api()
 
@@ -80,6 +82,7 @@ def test_create_log(test_farm, test_log, farm_logs_headers):
     assert bool(int(created_log['done'])) == data['done']
 
 
+@farmOS_testing_server
 def test_update_log(test_farm, test_log, farm_logs_headers):
     server_api = get_server_api()
 
@@ -121,6 +124,7 @@ def test_update_log(test_farm, test_log, farm_logs_headers):
     assert bool(int(updated_log['done'])) == data['done']
 
 
+@farmOS_testing_server
 def test_delete_log(test_farm, test_log, farm_logs_headers):
     server_api = get_server_api()
 
@@ -134,6 +138,7 @@ def test_delete_log(test_farm, test_log, farm_logs_headers):
     content = response.json()
 
 
+@farmOS_testing_server
 def test_farm_logs_oauth_scope():
     server_api = get_server_api()
 

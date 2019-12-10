@@ -2,7 +2,7 @@ import requests
 import pytest
 
 from app.core import config
-from app.tests.utils.utils import get_server_api, get_scope_token_headers
+from app.tests.utils.utils import farmOS_testing_server, get_server_api, get_scope_token_headers
 
 
 @pytest.fixture
@@ -10,6 +10,7 @@ def farm_terms_headers():
     return get_scope_token_headers("farm:read farm.terms")
 
 
+@farmOS_testing_server
 def test_create_term(test_farm, test_term, farm_terms_headers):
     server_api = get_server_api()
 
@@ -52,6 +53,7 @@ def test_create_term(test_farm, test_term, farm_terms_headers):
     assert data['description'] in created_term['description']
 
 
+@farmOS_testing_server
 def test_get_terms(test_farm, farm_terms_headers):
     server_api = get_server_api()
 
@@ -80,6 +82,7 @@ def test_get_terms(test_farm, farm_terms_headers):
         assert "name" in term
 
 
+@farmOS_testing_server
 def test_update_term(test_farm, test_term, farm_terms_headers):
     server_api = get_server_api()
 
@@ -121,6 +124,7 @@ def test_update_term(test_farm, test_term, farm_terms_headers):
     assert data['description'] in updated_term['description']
 
 
+@farmOS_testing_server
 def test_delete_term(test_farm, test_term, farm_terms_headers):
     server_api = get_server_api()
 
@@ -134,6 +138,7 @@ def test_delete_term(test_farm, test_term, farm_terms_headers):
     content = response.json()
 
 
+@farmOS_testing_server
 def test_farm_terms_oauth_scope():
     server_api = get_server_api()
 

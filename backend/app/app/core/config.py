@@ -54,3 +54,12 @@ FIRST_SUPERUSER_PASSWORD = os.getenv("FIRST_SUPERUSER_PASSWORD")
 USERS_OPEN_REGISTRATION = getenv_boolean("USERS_OPEN_REGISTRATION")
 CELERY_WORKER_PING_INTERVAL = crontab(minute='0', hour='0,12')
 
+TEST_FARM_NAME = "farmOS-test-instance"
+TEST_FARM_URL = os.getenv("TEST_FARM_URL")
+TEST_FARM_USERNAME = os.getenv("TEST_FARM_USERNAME")
+TEST_FARM_PASSWORD = os.getenv("TEST_FARM_PASSWORD")
+
+
+def has_valid_test_configuration():
+    """Check if sufficient info is provided to run integration tests with a farmOS server."""
+    return TEST_FARM_URL is not None and TEST_FARM_USERNAME is not None and TEST_FARM_PASSWORD is not None

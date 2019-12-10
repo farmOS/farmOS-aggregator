@@ -2,7 +2,7 @@ import requests
 import pytest
 
 from app.core import config
-from app.tests.utils.utils import get_server_api, get_scope_token_headers
+from app.tests.utils.utils import farmOS_testing_server, get_server_api, get_scope_token_headers
 
 
 @pytest.fixture
@@ -38,6 +38,7 @@ def areas_vid(test_farm, all_scopes_token_headers):
     yield areas_vid
 
 
+@farmOS_testing_server
 def test_create_area(test_farm, test_area, areas_vid, farm_areas_headers):
     server_api = get_server_api()
 
@@ -83,6 +84,7 @@ def test_create_area(test_farm, test_area, areas_vid, farm_areas_headers):
     assert data['description'] in created_area['description']
 
 
+@farmOS_testing_server
 def test_get_areas(test_farm, farm_areas_headers):
     server_api = get_server_api()
 
@@ -111,6 +113,7 @@ def test_get_areas(test_farm, farm_areas_headers):
         assert "area_type" in area
 
 
+@farmOS_testing_server
 def test_update_area(test_farm, test_area, areas_vid, farm_areas_headers):
     server_api = get_server_api()
 
@@ -155,6 +158,7 @@ def test_update_area(test_farm, test_area, areas_vid, farm_areas_headers):
     assert data['description'] in updated_area['description']
 
 
+@farmOS_testing_server
 def test_delete_area(test_farm, test_area, farm_areas_headers):
     server_api = get_server_api()
 
@@ -168,6 +172,7 @@ def test_delete_area(test_farm, test_area, farm_areas_headers):
     content = response.json()
 
 
+@farmOS_testing_server
 def test_farm_areas_oauth_scope():
     server_api = get_server_api()
 
