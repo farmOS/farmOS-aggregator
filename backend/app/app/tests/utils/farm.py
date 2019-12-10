@@ -1,13 +1,10 @@
 import farmOS
 
+from app.core import config
 from app import crud
 from app.db.session import db_session
 from app.models.farm import FarmCreate
 
-from .test_farm_credentials import test_farm_credentials
-
-def get_test_farm_credentials():
-    return test_farm_credentials
 
 def get_test_farm_instance():
     """Populates database with a farmOS testing farm
@@ -17,12 +14,17 @@ def get_test_farm_instance():
     Returns: the test_farm object
     """
     # Remove existing farm from DB if it has the testing URL
-    old_farm = crud.farm.get_by_url(db_session, farm_url=test_farm_credentials['url'])
+    old_farm = crud.farm.get_by_url(db_session, farm_url=config.TEST_FARM_URL)
     if old_farm is not None:
         crud.farm.delete(db_session, farm_id=old_farm.id)
 
     # Create test farm
-    farm_in = FarmCreate(**test_farm_credentials)
+    farm_in = FarmCreate(
+        farm_name=config.TEST_FARM_NAME,
+        url=config.TEST_FARM_URL,
+        username=config.TEST_FARM_USERNAME,
+        password=config.TEST_FARM_PASSWORD,
+    )
     test_farm = crud.farm.create(db_session, farm_in=farm_in)
     return test_farm
 

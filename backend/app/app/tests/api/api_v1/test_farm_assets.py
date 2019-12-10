@@ -2,7 +2,7 @@ import requests
 import pytest
 
 from app.core import config
-from app.tests.utils.utils import get_server_api, get_scope_token_headers
+from app.tests.utils.utils import farmOS_testing_server, get_server_api, get_scope_token_headers
 
 
 @pytest.fixture
@@ -10,6 +10,7 @@ def farm_assets_headers():
     return get_scope_token_headers("farm:read farm.assets")
 
 
+@farmOS_testing_server
 def test_create_asset(test_farm, test_asset, farm_assets_headers):
     server_api = get_server_api()
 
@@ -52,6 +53,7 @@ def test_create_asset(test_farm, test_asset, farm_assets_headers):
     assert created_asset['serial_number'] == data['serial_number']
 
 
+@farmOS_testing_server
 def test_get_assets(test_farm, farm_assets_headers):
     server_api = get_server_api()
 
@@ -80,6 +82,7 @@ def test_get_assets(test_farm, farm_assets_headers):
         assert "type" in asset
 
 
+@farmOS_testing_server
 def test_update_asset(test_farm, test_asset, farm_assets_headers):
     server_api = get_server_api()
 
@@ -121,6 +124,7 @@ def test_update_asset(test_farm, test_asset, farm_assets_headers):
     assert int(updated_asset['serial_number']) == data['serial_number']
 
 
+@farmOS_testing_server
 def test_delete_asset(test_farm, test_asset, farm_assets_headers):
     server_api = get_server_api()
 
@@ -134,6 +138,7 @@ def test_delete_asset(test_farm, test_asset, farm_assets_headers):
     content = response.json()
 
 
+@farmOS_testing_server
 def test_farm_assets_oauth_scope():
     server_api = get_server_api()
 
