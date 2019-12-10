@@ -89,3 +89,30 @@ def test_get_farm_auth_link(test_farm, superuser_token_headers):
     assert token_data.farm_id == [test_farm.id]
     assert token_data.scopes is not None
     assert len(token_data.scopes) > 0
+
+    # Test that the api_token has access to read /api/v1/farms/{id}
+    r = requests.get(
+        f"{server_api}{config.API_V1_STR}/farms/{test_farm.id}",
+        headers={'api_token': token},
+    )
+    assert 200 <= r.status_code < 300
+    farm_info = r.json()
+    assert farm_info['id'] == test_farm.id
+    assert farm_info['farm_name'] == test_farm.farm_name
+
+    # Test that the returned link has access to the utils/authorize-farm endpoint
+    data = FarmAuthorizationParams(
+        grant_type="authorization_code",
+        code=random_lower_string(),
+        state=random_lower_string(),
+        client_id="farmos_api_client",
+    )
+
+    r = requests.post(
+        f"{server_api}{config.API_V1_STR}/utils/authorize-farm/{test_farm.id}",
+        headers={'api_token': token},
+        json=data.dict(),
+    )
+    # This request should return 200, but no token will be created.
+    # This is because we cannot write an integration test for the OAuth Auth code flow at this time.
+    assert 200 <= r.status_code < 300
