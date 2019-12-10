@@ -1,6 +1,7 @@
 # farmOS-aggregator
 
 [![Licence](https://img.shields.io/badge/Licence-GPL%203.0-blue.svg)](https://opensource.org/licenses/GPL-3.0/)
+[![pipeline status](https://gitlab.com/paul.weidner/farmOS-aggregator/badges/master/pipeline.svg)](https://gitlab.com/paul.weidner/farmOS-aggregator/commits/master)
 [![Release](https://img.shields.io/github/release/farmOS/farmOS.svg?style=flat)](https://github.com/farmOS/farmOS-aggregator/releases)
 [![Last commit](https://img.shields.io/github/last-commit/farmOS/farmOS.svg?style=flat)](https://github.com/farmOS/farmOS-aggregator/commits)
 [![Twitter](https://img.shields.io/twitter/follow/farmOSorg.svg?label=%40farmOSorg&style=flat)](https://twitter.com/farmOSorg)
