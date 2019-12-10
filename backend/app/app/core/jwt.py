@@ -27,7 +27,6 @@ def create_farm_api_token(farm_id: List[int], scopes: List[str]):
         {
             'exp': expires.timestamp(),
             'nbf': now.timestamp(),
-            "sub": 0,
             "farm_id": farm_id,
             "scopes": scopes,
         },
