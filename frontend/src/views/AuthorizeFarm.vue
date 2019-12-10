@@ -16,24 +16,6 @@
               <br>
               <div class="headline text--primary">
                 Farm Info
-                <v-chip
-                        v-if="isAuthorized"
-                        depressed
-                        small
-                        color="success"
-                        class="ma-3"
-                >
-                  Authorized
-                </v-chip>
-                <v-chip
-                        v-else
-                        depressed
-                        small
-                        color="error"
-                        class="ma-3"
-                >
-                  Not Authorized
-                </v-chip>
               </div>
               <div class="text--primary">
                 Verify that the following information is correct:

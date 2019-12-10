@@ -14,28 +14,12 @@
         <v-text-field label="URL" v-model="url" readonly></v-text-field>
         <v-text-field label="User Email" v-model="userEmail" :loading="farmInfoLoading" readonly></v-text-field>
 
+        <FarmAuthorizationStatus v-bind:farm=farm></FarmAuthorizationStatus>
+
       </v-card-text>
 
       <v-card-title>
           OAuth Token
-          <v-chip
-                  v-if="isAuthorized"
-                  depressed
-                  small
-                  color="success"
-                  class="ma-3"
-          >
-              Authorized
-          </v-chip>
-          <v-chip
-                  v-else
-                  depressed
-                  small
-                  color="error"
-                  class="ma-3"
-          >
-              Not Authorized
-          </v-chip>
       </v-card-title>
         <v-card-text>
             <v-text-field  :disabled="!hasToken" label="Access Token" v-model="accessToken" readonly ></v-text-field>
@@ -119,8 +103,11 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { dispatchGetFarms, dispatchAuthorizeFarm, dispatchCreateFarmAuthLink, dispatchGetFarmInfo } from '@/store/farm/actions';
 import { readOneFarm } from '@/store/farm/getters';
+import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
 
-@Component
+@Component({
+    components: {FarmAuthorizationStatus},
+})
 export default class EditFarm extends Vue {
   // Properties from the Farm Profile.
   public farmName: string = '';

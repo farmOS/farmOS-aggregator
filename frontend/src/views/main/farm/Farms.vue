@@ -9,25 +9,7 @@
     </v-toolbar>
     <v-data-table :headers="headers" :items="farms" loading-text="Loading... Please wait">
       <template v-slot:item.is_authorized="{ item }">
-        <v-btn
-                v-if="item.is_authorized"
-                :to="{name: 'main-farm-farms-authorize', params: {id: item.id}}"
-                depressed
-                small
-                color="success"
-        >
-          Authorized
-        </v-btn>
-        <v-btn
-                v-else
-                :to="{name: 'main-farm-farms-authorize', params: {id: item.id}}"
-                depressed
-                small
-                color="error"
-        >
-          Re-Authorize
-          <v-icon right>error</v-icon>
-        </v-btn>
+        <FarmAuthorizationStatus v-bind:farm=item ></FarmAuthorizationStatus>
       </template>
       <template v-slot:item.last_accessed="{ item }">
            <span v-if="item.last_accessed" >
@@ -59,8 +41,11 @@ import { Store } from 'vuex';
 import { FarmProfile } from '@/interfaces';
 import { readFarms } from '@/store/farm/getters';
 import { dispatchGetFarms } from '@/store/farm/actions';
+import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
 
-@Component
+@Component({
+    components: {FarmAuthorizationStatus},
+})
 export default class Farms extends Vue {
   public headers = [
     {

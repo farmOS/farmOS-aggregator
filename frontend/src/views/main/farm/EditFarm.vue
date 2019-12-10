@@ -9,6 +9,7 @@
         <v-card-text>
           <v-text-field label="Farm Name" v-model="farmName" required></v-text-field>
           <v-text-field label="URL" v-model="url" required></v-text-field>
+          <FarmAuthorizationStatus v-bind:farm=farm></FarmAuthorizationStatus>
 
           <div class="d-flex">
             <v-checkbox
@@ -105,8 +106,12 @@ import { Component, Vue } from 'vue-property-decorator';
 import { FarmProfileUpdate } from '@/interfaces';
 import { dispatchGetFarms, dispatchUpdateFarm } from '@/store/farm/actions';
 import { readOneFarm } from '@/store/farm/getters';
+import Farm from '@/views/main/farm/Farm.vue';
+import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
 
-@Component
+@Component({
+  components: {FarmAuthorizationStatus, Farm},
+})
 export default class EditFarm extends Vue {
   public valid = false;
   public farmName: string = '';
