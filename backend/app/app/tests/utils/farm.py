@@ -19,12 +19,21 @@ def get_test_farm_instance():
         crud.farm.delete(db_session, farm_id=old_farm.id)
 
     # Create test farm
-    farm_in = FarmCreate(
-        farm_name=config.TEST_FARM_NAME,
-        url=config.TEST_FARM_URL,
-        username=config.TEST_FARM_USERNAME,
-        password=config.TEST_FARM_PASSWORD,
-    )
+    if config.has_valid_test_configuration():
+        farm_in = FarmCreate(
+            farm_name=config.TEST_FARM_NAME,
+            url=config.TEST_FARM_URL,
+            username=config.TEST_FARM_USERNAME,
+            password=config.TEST_FARM_PASSWORD,
+        )
+    else:
+        farm_in = FarmCreate(
+            farm_name=config.TEST_FARM_NAME,
+            url="http://localhost",
+            username="username",
+            password="password",
+        )
+
     test_farm = crud.farm.create(db_session, farm_in=farm_in)
     return test_farm
 
