@@ -34,14 +34,32 @@
          <v-btn @click="cancel">Cancel</v-btn>
          <v-btn
                  color="secondary"
-                 @click.stop="authorizationDialog = true"
+                 @click.stop="authorizationFormDialog = true"
+         >
+             Authorize Now
+         </v-btn>
+         <v-btn
+                 color="primary"
+                 @click.stop="authorizationRequestDialog = true"
 
          >
              Request Authorization
          </v-btn>
 
+
         <v-dialog
-                v-model="authorizationDialog"
+            v-model="authorizationFormDialog"
+            max-width="450"
+        >
+            <FarmAuthorizationFormCard
+                    v-bind:appName=appName
+                    v-bind:farm=farm
+                    v-on:close="authorizationFormDialog = $event"
+            />
+        </v-dialog>
+
+        <v-dialog
+                v-model="authorizationRequestDialog"
                 max-width="600"
         >
             <v-card>
@@ -78,7 +96,7 @@
                     <v-btn
                             color="green darken-1"
                             text
-                            @click="authorizationDialog = false"
+                            @click="authorizationRequestDialog = false"
                     >
                         Cancel
                     </v-btn>
@@ -100,15 +118,19 @@
 </template>
 
 <script lang="ts">
+import { appName } from '@/env';
 import { Component, Vue } from 'vue-property-decorator';
-import { dispatchGetFarms, dispatchAuthorizeFarm, dispatchCreateFarmAuthLink, dispatchGetFarmInfo } from '@/store/farm/actions';
+import { dispatchGetFarms, dispatchCreateFarmAuthLink, dispatchGetFarmInfo } from '@/store/farm/actions';
 import { readOneFarm } from '@/store/farm/getters';
 import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
+import FarmAuthorizationFormCard from '@/components/FarmAuthorizationFormCard.vue';
 
 @Component({
-    components: {FarmAuthorizationStatus},
+    components: {FarmAuthorizationStatus, FarmAuthorizationFormCard},
 })
 export default class EditFarm extends Vue {
+  public appName = appName;
+
   // Properties from the Farm Profile.
   public farmName: string = '';
   public url: string = '';
@@ -126,8 +148,11 @@ export default class EditFarm extends Vue {
   public farmInfoLoading: boolean = false;
   public userEmail: string = 'Loading...';
 
-  // Properties for the Authorization Diaglog.
-  public authorizationDialog = false;
+  // Properties for the Authorization Form Dialog.
+  public authorizationFormDialog = false;
+
+  // Properties for the Authorization Request Dialog.
+  public authorizationRequestDialog = false;
   public authLinkLoading: boolean = false;
   public authLinkLoaded: boolean = false;
   public authLink: string = '';
