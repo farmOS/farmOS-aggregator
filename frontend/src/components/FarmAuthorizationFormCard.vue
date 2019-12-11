@@ -46,6 +46,8 @@
                     class="white--text"
                     color="primary"
                     @click="openSignInWindow"
+                    :loading="authorizationStarted && !authorizationComplete"
+                    :disabled="authorizationComplete"
             >
                 Authorize Now
             </v-btn>
@@ -66,6 +68,10 @@
         @Prop({default: false}) public farm!: FarmProfile;
         @Prop({default: false}) public apiToken!: string;
 
+        // Track the authorization status
+        public authorizationStarted = false;
+        public authorizationComplete = false;
+
         // Enable the farmos_restws_access scope by default.
         public oauthScopes: string[] = ['farmos_restws_access'];
 
@@ -79,6 +85,7 @@
 
 
         public openSignInWindow() {
+            this.authorizationStarted = true;
             const windowFeatures = 'toolbar=no, menubar=no, width=600, height=700, top=100, left=100';
 
             // Build the OAuth query parameters.
@@ -133,6 +140,9 @@
 
             // Dispatch API call to backend.
             await dispatchAuthorizeFarm(this.$store, { id: this.farm!.id, authValues, apiToken: this.apiToken });
+
+            // Disable the authorize button.
+            this.authorizationComplete = true;
         }
 
         public cleanOAuthStrings() {
