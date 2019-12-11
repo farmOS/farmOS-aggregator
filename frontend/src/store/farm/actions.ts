@@ -22,8 +22,8 @@ export const actions = {
         }
     },
     async actionUpdateFarm(context: MainContext, payload: { id: number, farm: FarmProfileUpdate }) {
+        const loadingNotification = { content: 'saving', showProgress: true };
         try {
-            const loadingNotification = { content: 'saving', showProgress: true };
             commitAddNotification(context, loadingNotification);
             const response = (await Promise.all([
                 api.updateFarm(context.rootState.main.token, payload.id, payload.farm),
@@ -33,12 +33,17 @@ export const actions = {
             commitRemoveNotification(context, loadingNotification);
             commitAddNotification(context, { content: 'Farm successfully updated', color: 'success' });
         } catch (error) {
-            await dispatchCheckApiError(context, error);
+            if (error.response!.status === 409) {
+                commitRemoveNotification(context, loadingNotification);
+                commitAddNotification(context, {content: 'A farm with that URL already exists.', color: 'error' });
+            } else {
+                await dispatchCheckApiError(context, error);
+            }
         }
     },
     async actionCreateFarm(context: MainContext, payload: FarmProfileCreate) {
+        const loadingNotification = { content: 'saving', showProgress: true };
         try {
-            const loadingNotification = { content: 'saving', showProgress: true };
             commitAddNotification(context, loadingNotification);
             const response = (await Promise.all([
                 api.createFarm(context.rootState.main.token, payload),
@@ -48,7 +53,12 @@ export const actions = {
             commitRemoveNotification(context, loadingNotification);
             commitAddNotification(context, { content: 'Farm successfully created', color: 'success' });
         } catch (error) {
-            await dispatchCheckApiError(context, error);
+            if (error.response!.status === 409) {
+                commitRemoveNotification(context, loadingNotification);
+                commitAddNotification(context, {content: 'A farm with that URL already exists.', color: 'error' });
+            } else {
+                await dispatchCheckApiError(context, error);
+            }
         }
     },
     async actionAuthorizeFarm(
