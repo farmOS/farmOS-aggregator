@@ -109,30 +109,4 @@ async def delete_farm(
     farm = crud.farm.delete(db, farm_id=farm_id)
     return farm
 
-# /farms/info/ endpoint for accessing farmOS info
-
-
-@router.get(
-    "/info/",
-    dependencies=[Security(get_farm_access, scopes=['farm:read', 'farm.info'])],
-    tags=["farm info"]
-)
-def get_all_farm_info(
-    db: Session = Depends(get_db),
-    farm_list: List[Farm] = Depends(get_farms_url_or_list)
-):
-    data = {}
-    for farm in farm_list:
-        data[farm.id] = {}
-        try:
-            farm_client = get_farm_client(db_session=db, farm=farm)
-        except ClientError:
-            continue
-
-        try:
-            data[farm.id]['info'] = farm_client.info()
-        except:
-            continue
-
-    return data
 
