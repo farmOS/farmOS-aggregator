@@ -3,6 +3,7 @@ from datetime import datetime
 
 from app.models.api_model import APIModel
 from app.models.farm_token import FarmToken
+from app.models.farm_info import FarmInfo
 
 # Shared properties
 class FarmBase(APIModel):
@@ -11,6 +12,7 @@ class FarmBase(APIModel):
     username: Optional[str] = None
     notes: Optional[str] = None
     tags: Optional[str] = None
+    info: Optional[FarmInfo] = None
 
 class FarmBaseInDB(FarmBase):
     id: int = None

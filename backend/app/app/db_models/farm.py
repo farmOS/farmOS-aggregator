@@ -1,6 +1,7 @@
 from sqlalchemy import Boolean, Column, Integer, String, DateTime
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import JSONB
 
 from app.db.base_class import Base
 from app.db_models.farm_token import FarmToken
@@ -19,6 +20,9 @@ class Farm(Base):
     password = Column(String, index=True)
     notes = Column(String, nullable=True)
     tags = Column(String, nullable=True)
+
+    # Store farm info in a JSONB column
+    info = Column(JSONB, nullable=True)
 
     is_authorized = Column(Boolean, default=False)
     token = relationship("FarmToken", uselist=False, back_populates="farm")

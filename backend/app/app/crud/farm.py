@@ -1,3 +1,4 @@
+import logging
 from typing import List, Optional
 import datetime
 
@@ -6,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.db_models.farm import Farm
 from app.models.farm import FarmCreate, FarmUpdate
+from app.models.farm_info import FarmInfo
 
 def get_by_id(db_session: Session, *, farm_id: int):
     return db_session.query(Farm).filter(Farm.id == farm_id).first()
@@ -27,6 +29,7 @@ def create(db_session: Session, *, farm_in: FarmCreate) -> Farm:
         password=farm_in.password,
         notes=farm_in.notes,
         tags=farm_in.tags,
+        info=farm_in.info,
     )
     db_session.add(farm)
     db_session.commit()
@@ -39,6 +42,13 @@ def update(db_session: Session, *, farm: Farm, farm_in: FarmUpdate):
     for field in farm_data:
         if field in update_data:
             setattr(farm, field, update_data[field])
+    db_session.add(farm)
+    db_session.commit()
+    db_session.refresh(farm)
+    return farm
+
+def update_info(db_session: Session, *, farm: Farm, info: FarmInfo):
+    setattr(farm, 'info', info)
     db_session.add(farm)
     db_session.commit()
     db_session.refresh(farm)
