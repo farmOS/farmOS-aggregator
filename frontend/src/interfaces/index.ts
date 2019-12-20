@@ -39,6 +39,7 @@ export interface FarmProfile {
     username: string;
     notes?: string;
     tags?: string;
+    info?: object[];
 
     is_authorized: boolean;
     token: FarmToken;

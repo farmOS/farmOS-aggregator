@@ -67,6 +67,12 @@ export default class Farms extends Vue {
       align: 'left',
     },
     {
+      text: 'API Version',
+      sortable: true,
+      value: 'info.api_version',
+      align: 'left',
+    },
+    {
       text: 'Last Accessed',
       sortable: true,
       value: 'last_accessed',

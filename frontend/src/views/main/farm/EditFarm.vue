@@ -23,6 +23,28 @@
                   accordion
           >
             <v-expansion-panel
+                    :disabled="!hasServerInfo"
+            >
+              <v-expansion-panel-header>
+                farmOS Server Info
+              </v-expansion-panel-header>
+
+              <v-expansion-panel-content>
+                <template v-if="hasServerInfo">
+                  <v-text-field   label="Server Name" v-model="farm.info.name" readonly ></v-text-field>
+                  <v-text-field   label="URL" v-model="farm.info.url" readonly ></v-text-field>
+                  <v-text-field   label="API Version" v-model="farm.info.api_version" readonly ></v-text-field>
+                  <v-text-field   label="System Of Measurement" v-model="farm.info.system_of_measurement" readonly ></v-text-field>
+                  <v-text-field   label="Authorized User Email" v-model="farm.info.user.mail" readonly ></v-text-field>
+                </template>
+                <v-treeview
+                        dense
+                        :items="this.resources"
+                        :open-on-click="true"
+                ></v-treeview>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+            <v-expansion-panel
                     :disabled="!includeCredentials"
             >
               <v-expansion-panel-header>
@@ -130,6 +152,9 @@ export default class EditFarm extends Vue {
   public expiresIn: string = '';
   public expiresAt: string = '';
 
+  public hasServerInfo: boolean = false;
+  public resources: object[] = [];
+
   public async mounted() {
     await dispatchGetFarms(this.$store);
     this.reset();
@@ -159,6 +184,10 @@ export default class EditFarm extends Vue {
         this.refreshToken = this.farm.token.refresh_token;
         this.expiresIn = this.farm.token.expires_in;
         this.expiresAt = this.farm.token.expires_at;
+      }
+      if (this.farm.info) {
+        this.hasServerInfo = true;
+        this.resources = this.buildResourcesTree(this.farm);
       }
     }
   }
@@ -194,6 +223,33 @@ export default class EditFarm extends Vue {
       await dispatchUpdateFarm(this.$store, { id: this.farm!.id, farm: updatedFarm });
       this.$router.push('/main/farm/farms');
     }
+  }
+
+  public buildResourcesTree(farm) {
+    let i = 1;
+    const output: object[] = [];
+    if (farm.info) {
+      for (const resource of Object.keys(farm.info.resources)) {
+        const startID = i;
+        i += 1;
+        const child: object[] = [];
+        for (const type of Object.keys(farm.info.resources[resource])) {
+          child.push(
+                  {id: i, name: type},
+          );
+          i += 1;
+        }
+        const res = {
+          id: i,
+          name: resource,
+          children: child,
+        };
+        output.push(res);
+        i += 1;
+      }
+    }
+
+    return [ {id: 0, name: 'Resources', children: output}];
   }
 
   get farm() {
