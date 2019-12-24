@@ -4,7 +4,6 @@ from app.models.api_model import APIModel
 
 # Farm Token Models
 class FarmTokenBase(APIModel):
-    farm_id: int
     access_token: Optional[str] = None
     expires_in: Optional[str] = None
     refresh_token: Optional[str] = None
@@ -12,6 +11,7 @@ class FarmTokenBase(APIModel):
 
 
 class FarmTokenCreate(FarmTokenBase):
+    farm_id: int
     pass
 
 

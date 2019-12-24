@@ -2,7 +2,7 @@ from typing import Optional
 from datetime import datetime
 
 from app.models.api_model import APIModel
-from app.models.farm_token import FarmToken
+from app.models.farm_token import FarmTokenBase, FarmToken
 from app.models.farm_info import FarmInfo
 
 # Shared properties
@@ -23,6 +23,7 @@ class FarmCreate(FarmBase):
     url: str
     username: Optional[str]
     password: Optional[str]
+    token: Optional[FarmTokenBase]
 
 # Properties to receive via API on update
 class FarmUpdate(FarmBase):

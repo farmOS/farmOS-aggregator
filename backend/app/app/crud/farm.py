@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.db_models.farm import Farm
 from app.models.farm import FarmCreate, FarmUpdate
+from app.db_models.farm_token import FarmToken
 from app.models.farm_info import FarmInfo
 
 def get_by_id(db_session: Session, *, farm_id: int):
@@ -33,6 +34,14 @@ def create(db_session: Session, *, farm_in: FarmCreate) -> Farm:
     )
     db_session.add(farm)
     db_session.commit()
+    db_session.refresh(farm)
+
+    if farm_in.token is not None:
+        new_token = FarmToken(farm_id=farm.id, **farm_in.token.dict())
+        db_session.add(new_token)
+        db_session.commit()
+        db_session.refresh(new_token)
+
     db_session.refresh(farm)
     return farm
 
