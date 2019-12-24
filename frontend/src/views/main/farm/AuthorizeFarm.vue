@@ -35,6 +35,8 @@
          <v-btn
                  color="secondary"
                  @click.stop="authorizationFormDialog = true"
+                 :loading="authStatus == 'started'"
+                 :disabled="authStatus == 'completed'"
          >
              Authorize Now
          </v-btn>
@@ -51,11 +53,41 @@
             v-model="authorizationFormDialog"
             max-width="450"
         >
-            <FarmAuthorizationFormCard
-                    v-bind:appName=appName
-                    v-bind:farm=farm
-                    v-on:close="authorizationFormDialog = $event"
-            />
+            <v-card class="">
+                <v-toolbar dark color="primary">
+                    <v-toolbar-title class="headline">Authorize farmOS</v-toolbar-title>
+                </v-toolbar>
+
+                <v-card-text>
+                    <FarmAuthorizationForm
+                            ref="authForm"
+                            v-bind:authstatus.sync="authStatus"
+                            v-bind:appName="appName"
+                            v-bind:farmUrl="url"
+                            v-bind:farmName="farmName"
+                            v-bind:farmId="farm.id"
+                            v-on:authorizationcomplete="authorizationFormDialog = false"
+                    />
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                            @click="authorizationFormDialog = false"
+                    >
+                        Cancel
+                    </v-btn>
+
+                    <v-btn
+                            class="white--text"
+                            color="primary"
+                            @click="$refs.authForm.openSignInWindow()"
+                            :disabled="authStatus == 'completed'"
+                    >
+                        Authorize Now
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
         </v-dialog>
 
         <v-dialog
@@ -123,10 +155,10 @@ import { Component, Vue } from 'vue-property-decorator';
 import { dispatchGetFarms, dispatchCreateFarmAuthLink, dispatchGetFarmInfo } from '@/store/farm/actions';
 import { readOneFarm } from '@/store/farm/getters';
 import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
-import FarmAuthorizationFormCard from '@/components/FarmAuthorizationFormCard.vue';
+import FarmAuthorizationForm from '@/components/FarmAuthorizationForm.vue';
 
 @Component({
-    components: {FarmAuthorizationStatus, FarmAuthorizationFormCard},
+    components: {FarmAuthorizationStatus, FarmAuthorizationForm},
 })
 export default class EditFarm extends Vue {
   public appName = appName;
@@ -150,6 +182,7 @@ export default class EditFarm extends Vue {
 
   // Properties for the Authorization Form Dialog.
   public authorizationFormDialog = false;
+  public authStatus = 'not started';
 
   // Properties for the Authorization Request Dialog.
   public authorizationRequestDialog = false;

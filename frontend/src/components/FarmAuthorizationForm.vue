@@ -1,76 +1,46 @@
 <template>
-    <v-card class="">
-        <v-toolbar dark color="primary">
-            <v-toolbar-title class="headline">Authorize farmOS</v-toolbar-title>
-        </v-toolbar>
-
-        <v-card-text>
-            <div class="subtitle-1 text--primary">
-                Authorize your farmOS server with the {{appName}}. This will give the {{appName}} access to your data
-                at the level you define.
-            </div>
-            <br>
-            <div class="headline text--primary">
-                Farm Info
-            </div>
-            <div class="text--primary">
-                Verify that the following information is correct:
-            </div>
-            <v-text-field label="Farm Name" v-model="farm.farm_name" readonly></v-text-field>
-            <v-text-field label="URL" v-model="farm.url" readonly></v-text-field>
+    <form>
+        <div class="subtitle-1 text--primary">
+            Authorize your farmOS server with the {{appName}}. This will give the {{appName}} access to your data
+            at the level you define.
+        </div>
+        <br>
+        <div class="headline text--primary">
+            Farm Info
+        </div>
+        <div class="text--primary">
+            Verify that the following information is correct:
+        </div>
+        <v-text-field label="Farm Name" v-model="farmName" readonly></v-text-field>
+        <v-text-field label="URL" v-model="farmUrl" readonly></v-text-field>
 
 
-            <div class="headline text--primary">
-                Permissions
-            </div>
-            <v-checkbox
-                    v-model="oauthScopes"
-                    label="farmOS API Access"
-                    hint="Allow access to the entire farmOS API"
-                    value="farmos_restws_access"
-                    persistent-hint
-                    disabled
-            ></v-checkbox>
-            <br>
-        </v-card-text>
-
-        <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn
-                    @click="$emit('close', false)"
-            >
-                Cancel
-            </v-btn>
-
-            <v-btn
-                    class="white--text"
-                    color="primary"
-                    @click="openSignInWindow"
-                    :loading="authorizationStarted && !authorizationComplete"
-                    :disabled="authorizationComplete"
-            >
-                Authorize Now
-            </v-btn>
-
-        </v-card-actions>
-
-    </v-card>
+        <div class="headline text--primary">
+            Permissions
+        </div>
+        <v-checkbox
+                v-model="oauthScopes"
+                label="farmOS API Access"
+                hint="Allow access to the entire farmOS API"
+                value="farmos_restws_access"
+                persistent-hint
+                disabled
+        ></v-checkbox>
+    </form>
 </template>
 
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
-    import {FarmProfile, FarmProfileAuthorize} from '@/interfaces';
+    import {FarmProfileAuthorize} from '@/interfaces';
     import {dispatchAuthorizeFarm} from '@/store/farm/actions';
 
     @Component
-    export default class FarmAuthorizationFormCard extends Vue {
+    export default class FarmAuthorizationForm extends Vue {
         @Prop({default: false}) public appName!: string;
-        @Prop({default: false}) public farm!: FarmProfile;
+        @Prop({default: false}) public farmUrl!: string;
+        @Prop({default: false}) public farmName!: string;
+        @Prop({default: false}) public farmId!: number;
         @Prop({default: false}) public apiToken!: string;
-
-        // Track the authorization status
-        public authorizationStarted = false;
-        public authorizationComplete = false;
 
         // Enable the farmos_restws_access scope by default.
         public oauthScopes: string[] = ['farmos_restws_access'];
@@ -82,17 +52,17 @@
         // Reference to popup window.
         public windowObjectReference: any = null;
 
-
-
         public openSignInWindow() {
-            this.authorizationStarted = true;
+            // Emit event to update authstatus.
+            this.$emit('update:authstatus', 'started');
+
             const windowFeatures = 'toolbar=no, menubar=no, width=600, height=700, top=100, left=100';
 
             // Build the OAuth query parameters.
             const responseType = 'code';
             const clientID = 'farmos_api_client';
             const scopes = this.cleanOAuthStrings();
-            const redirectURI = `${this.farm.url}/api/authorized`;
+            const redirectURI = `${this.farmUrl}/api/authorized`;
             const state = this.authState;
             const queryParams = `?response_type=${responseType}&client_id=${clientID}&scope=${scopes}&redirect_uri=${redirectURI}&state=${state}`;
 
@@ -101,7 +71,7 @@
             // Open a pop up window with the OAuth Authorization URL.
             if (this.windowObjectReference === null || this.windowObjectReference.closed) {
                 this.windowObjectReference =
-                    window.open(this.farm.url + oauthPath + queryParams, 'farmOS Login', windowFeatures);
+                    window.open(this.farmUrl + oauthPath + queryParams, 'farmOS Login', windowFeatures);
                 this.windowObjectReference.focus();
             } else {
                 this.windowObjectReference.focus();
@@ -113,7 +83,7 @@
 
         public async receiveMessage(event) {
             // Make sure the message came from the farmOS server.
-            if (event.origin !== this.farm.url) {
+            if (event.origin !== this.farmUrl) {
                 return;
             }
 
@@ -139,10 +109,11 @@
             };
 
             // Dispatch API call to backend.
-            await dispatchAuthorizeFarm(this.$store, { id: this.farm!.id, authValues, apiToken: this.apiToken });
+            await dispatchAuthorizeFarm(this.$store, { id: this.farmId, authValues, apiToken: this.apiToken });
 
-            // Disable the authorize button.
-            this.authorizationComplete = true;
+            // Emit events to update authorization status.
+            this.$emit('update:authstatus', 'completed');
+            this.$emit('authorizationcomplete');
         }
 
         public cleanOAuthStrings() {
