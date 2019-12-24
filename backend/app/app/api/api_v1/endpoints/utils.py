@@ -1,7 +1,4 @@
-import time
-
-import requests
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, Security, HTTPException
 from pydantic.types import EmailStr
 from sqlalchemy.orm import Session
 
@@ -13,7 +10,7 @@ from app.models.msg import Msg
 from app.models.user import UserInDB
 from app.models.farm import Farm
 from app.models.farm_token import FarmTokenCreate, FarmAuthorizationParams
-from app.api.utils.farms import get_farm_by_id
+from app.api.utils.farms import get_farm_by_id, get_oauth_token
 from app.api.utils.security import get_farm_access
 from app.utils import send_test_email, generate_farm_authorization_link
 
@@ -62,35 +59,14 @@ def authorize_farm(
     """
     Authorize a farm. Complete the OAuth Authorization Flow.
     """
-    data = {}
-    data['code'] = auth_params.code
-    data['state'] = auth_params.state
-    data['grant_type'] = auth_params.grant_type
-    data['client_id'] = auth_params.client_id
-    data['redirect_uri'] = farm.url + "/api/authorized"
+    token = get_oauth_token(farm.url, auth_params)
 
-    if auth_params.client_secret is not None:
-        data['client_secret'] = auth_params.client_secret
+    new_token = FarmTokenCreate(farm_id=farm.id, **token.dict())
 
-    if auth_params.redirect_uri is not None:
-        data['redirect_uri'] = auth_params.redirect_uri
-
-    token_url = farm.url + "/oauth2/token"
-
-    response = requests.post(token_url, data)
-
-    if response.status_code == 200:
-        response_token = response.json()
-        if "expires_at" not in response_token:
-            response_token['expires_at'] = str(time.time() + int(response_token['expires_in']))
-        new_token = FarmTokenCreate(farm_id=farm.id, **response_token)
-
-        old_token = crud.farm_token.get_farm_token(db, farm.id)
-        if old_token is None:
-            token = crud.farm_token.create_farm_token(db, token=new_token)
-        else:
-            token = crud.farm_token.update_farm_token(db, token=old_token, token_in=new_token)
-
-        return token
+    old_token = crud.farm_token.get_farm_token(db, farm.id)
+    if old_token is None:
+        token = crud.farm_token.create_farm_token(db, token=new_token)
     else:
-        return response.content
+        token = crud.farm_token.update_farm_token(db, token=old_token, token_in=new_token)
+
+    return token
