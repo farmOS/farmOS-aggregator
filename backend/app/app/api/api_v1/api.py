@@ -1,13 +1,20 @@
 from fastapi import APIRouter, Depends, Security
 
 from app.api.api_v1.endpoints import login, users, utils
-from app.api.api_v1.endpoints.farms import farms, info, logs, assets, terms, areas
+from app.api.api_v1.endpoints.farms import farms_public, farms, info, logs, assets, terms, areas
 from app.api.utils.security import get_farm_access
 
 api_router = APIRouter()
 api_router.include_router(login.router, tags=["login"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
 api_router.include_router(utils.router, prefix="/utils", tags=["utils"])
+
+# Include public /farms endpoints
+api_router.include_router(
+    farms_public.router,
+    prefix="/public/farms",
+    tags=["farms public"],
+)
 
 # Include /farms endpoints.
 api_router.include_router(
