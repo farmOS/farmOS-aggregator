@@ -1,5 +1,7 @@
 from typing import List
+import time
 
+import requests
 from fastapi import Query, Depends, HTTPException
 from starlette.status import HTTP_403_FORBIDDEN, HTTP_401_UNAUTHORIZED
 from sqlalchemy.orm import Session
@@ -9,7 +11,7 @@ from farmOS.config import ClientConfig
 
 from app import crud
 from app.api.utils.db import get_db
-from app.models.farm_token import FarmTokenBase
+from app.models.farm_token import FarmTokenBase, FarmTokenCreate
 from app.crud.farm_token import create_farm_token, update_farm_token
 from app.models.farm import Farm, FarmUpdate
 from app.models.token import FarmAccess
@@ -108,7 +110,7 @@ def get_farms_url_or_list(
 
 # A helper function to save OAuth Tokens to DB.
 def _save_token(token, db_session=None, farm=None):
-    token_in = FarmTokenBase(farm_id=farm.id, **token)
+    token_in = FarmTokenCreate(farm_id=farm.id, **token)
 
     # Make sure we have a DB session and Farm object.
     if db_session is not None and farm is not None:
@@ -155,6 +157,34 @@ def get_farm_client(db_session, farm):
 
 
     return client
+
+def get_oauth_token(farm_url, auth_params):
+    data = {}
+    data['code'] = auth_params.code
+    data['state'] = auth_params.state
+    data['grant_type'] = auth_params.grant_type
+    data['client_id'] = auth_params.client_id
+    data['redirect_uri'] = farm_url + "/api/authorized"
+
+    if auth_params.client_secret is not None:
+        data['client_secret'] = auth_params.client_secret
+
+    if auth_params.redirect_uri is not None:
+        data['redirect_uri'] = auth_params.redirect_uri
+
+    token_url = farm_url + "/oauth2/token"
+
+    response = requests.post(token_url, data)
+
+    if response.status_code == 200:
+        response_token = response.json()
+        if "expires_at" not in response_token:
+            response_token['expires_at'] = str(time.time() + int(response_token['expires_in']))
+
+        new_token = FarmTokenBase(**response_token)
+        return new_token
+    else:
+        raise HTTPException(status_code=400, detail="Could not retrieve an access token.")
 
 
 class ClientError(Exception):
