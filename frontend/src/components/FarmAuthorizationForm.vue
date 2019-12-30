@@ -32,15 +32,15 @@
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import {FarmProfileAuthorize} from '@/interfaces';
-    import {dispatchAuthorizeFarm} from '@/store/farm/actions';
+    import {dispatchAuthorizeFarm, dispatchPublicAuthorizeFarm} from '@/store/farm/actions';
 
     @Component
     export default class FarmAuthorizationForm extends Vue {
         @Prop({default: false}) public appName!: string;
         @Prop({default: false}) public farmUrl!: string;
-        @Prop({default: false}) public farmName!: string;
-        @Prop({default: false}) public farmId!: number;
-        @Prop({default: false}) public apiToken!: string;
+        @Prop({default: null}) public farmName!: string;
+        @Prop({default: null}) public farmId!: number;
+        @Prop({default: null}) public apiToken!: string;
 
         // Enable the farmos_restws_access scope by default.
         public oauthScopes: string[] = ['farmos_restws_access'];
@@ -109,7 +109,15 @@
             };
 
             // Dispatch API call to backend.
-            await dispatchAuthorizeFarm(this.$store, { id: this.farmId, authValues, apiToken: this.apiToken });
+            if (this.farmId != null) {
+                await dispatchAuthorizeFarm(this.$store, { id: this.farmId, authValues, apiToken: this.apiToken });
+            } else {
+                const data = await dispatchPublicAuthorizeFarm(
+                    this.$store,
+                    { farmUrl: this.farmUrl, authValues, apiToken: this.apiToken });
+                this.$emit('update:authtoken', data.token);
+                this.$emit('update:farminfo', data.info);
+            }
 
             // Emit events to update authorization status.
             this.$emit('update:authstatus', 'completed');
