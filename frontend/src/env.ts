@@ -12,3 +12,5 @@ if (env === 'production') {
 
 export const apiUrl = envApiUrl;
 export const appName = process.env.VUE_APP_NAME;
+export const openFarmRegistration = process.env.VUE_APP_OPEN_FARM_REGISTRATION;
+export const inviteFarmRegistration = process.env.VUE_APP_INVITE_FARM_REGISTRATION;
