@@ -107,6 +107,53 @@ export const actions = {
             await dispatchCheckApiError(context, error);
         }
     },
+    async actionPublicCreateFarm(
+        context: MainContext,
+        payload: {data: FarmProfileCreate, apiToken?: string },
+    ) {
+        const loadingNotification = { content: 'saving', showProgress: true };
+        try {
+            commitAddNotification(context, loadingNotification);
+            const response = (await Promise.all([
+                api.publicCreateFarm(context.rootState.main.token, payload.data, payload.apiToken),
+                await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+            ]))[0];
+            commitSetFarm(context, response.data);
+            commitRemoveNotification(context, loadingNotification);
+            commitAddNotification(context, { content: 'Farm successfully created', color: 'success' });
+        } catch (error) {
+            if (error.response!.status === 409) {
+                commitRemoveNotification(context, loadingNotification);
+                commitAddNotification(context, {content: 'A farm with that URL already exists.', color: 'error' });
+            } else {
+                await dispatchCheckApiError(context, error);
+            }
+        }
+    },
+    async actionPublicAuthorizeFarm(
+        context: MainContext,
+        payload: {farmUrl: string, authValues: FarmProfileAuthorize, apiToken?: string }) {
+        try {
+            const loadingNotification = { content: 'authorizing', showProgress: true };
+            commitAddNotification(context, loadingNotification);
+            const response = (await Promise.all([
+                api.publicAuthorizeFarm(
+                    context.rootState.main.token,
+                    payload.farmUrl,
+                    payload.authValues,
+                    payload.apiToken,
+                ),
+                await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+            ]))[0];
+            commitRemoveNotification(context, loadingNotification);
+            commitAddNotification(context, { content: 'Farm authorized.', color: 'success' });
+            if (response) {
+                return response.data;
+            }
+        } catch (error) {
+            await dispatchCheckApiError(context, error);
+        }
+    },
 };
 
 const { dispatch } = getStoreAccessors<FarmState, State>('');
@@ -118,3 +165,7 @@ export const dispatchAuthorizeFarm = dispatch(actions.actionAuthorizeFarm);
 export const dispatchCreateFarmAuthLink = dispatch(actions.actionCreateFarmAuthLink);
 export const dispatchGetFarmInfo = dispatch(actions.actionGetFarmInfo);
 export const dispatchGetOneFarm = dispatch(actions.actionGetOneFarm);
+
+// Public Actions
+export const dispatchPublicCreateFarm = dispatch(actions.actionPublicCreateFarm);
+export const dispatchPublicAuthorizeFarm = dispatch(actions.actionPublicAuthorizeFarm);

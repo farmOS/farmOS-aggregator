@@ -57,10 +57,11 @@ export interface FarmProfileUpdate {
 export interface FarmProfileCreate {
     farm_name: string;
     url: string;
-    username: string;
-    password: string;
+    username?: string;
+    password?: string;
     notes?: string;
     tags?: string;
+    token?: FarmToken;
 }
 
 export interface FarmProfileAuthorize {
