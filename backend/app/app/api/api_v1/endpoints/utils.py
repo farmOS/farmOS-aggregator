@@ -12,7 +12,7 @@ from app.models.farm import Farm
 from app.models.farm_token import FarmTokenCreate, FarmAuthorizationParams
 from app.api.utils.farms import get_farm_by_id, get_oauth_token
 from app.api.utils.security import get_farm_access
-from app.utils import send_test_email, generate_farm_authorization_link
+from app.utils import send_test_email, generate_farm_authorization_link, generate_farm_registration_link
 
 router = APIRouter()
 
@@ -37,6 +37,14 @@ def test_email(
     """
     send_test_email(email_to=email_to)
     return {"msg": "Test email sent"}
+
+
+@router.post("/farm-registration-link")
+def farm_registration_link(
+):
+    link = generate_farm_registration_link()
+    return link
+
 
 @router.post("/farm-auth-link/{farm_id}")
 def farm_auth_link(

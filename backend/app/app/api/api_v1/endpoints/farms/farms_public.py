@@ -13,7 +13,6 @@ from app.core import config
 from app import crud
 from app.api.utils.db import get_db
 from app.api.utils.farms import get_oauth_token
-from app.api.utils.security import get_farm_access, get_api_token_farm_access
 from app.models.farm import Farm, FarmCreate
 from app.models.farm_token import FarmAuthorizationParams
 
@@ -26,13 +25,11 @@ router = APIRouter()
 @router.post(
     "/",
     response_model=Farm,
-    dependencies=[Security(get_farm_access, scopes=['farm:create'])],
 )
 async def create_farm(
     *,
     db: Session = Depends(get_db),
     farm_in: FarmCreate,
-    api_token_access: dict = Depends(get_api_token_farm_access)
 ):
     """
     Create new farm

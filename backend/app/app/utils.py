@@ -120,3 +120,13 @@ def generate_farm_authorization_link(farm_id):
     link = f"{server_host}/authorize-farm/{farm_id}?api_token={token.decode()}"
 
     return link
+
+
+def generate_farm_registration_link():
+    token = create_farm_api_token(farm_id=[], scopes=["farm:create", "farm:info"])
+
+    server_host = config.SERVER_HOST
+    api_path = config.API_V1_STR
+    link = f"{server_host}/add-farm?api_token={token.decode()}"
+
+    return link
