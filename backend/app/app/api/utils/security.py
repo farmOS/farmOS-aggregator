@@ -1,3 +1,4 @@
+import logging
 import jwt
 from fastapi import Depends, HTTPException, Security, Query
 from fastapi.security import OAuth2PasswordBearer, APIKeyQuery, APIKeyHeader, SecurityScopes
@@ -13,6 +14,9 @@ from app.core.jwt import ALGORITHM
 from app.db_models.user import User
 from app.models.token import TokenData, FarmAccess
 
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 oauth_scopes = {
     "farm:create": "Create farm profiles",
@@ -166,12 +170,15 @@ def get_farm_access(
     farm_access = None
 
     if user_access is not None:
+        logger.debug(f"Request has user_access: {user_access}")
         farm_access = user_access
 
     if api_token_access is not None:
+        logger.debug(f"Request has api_token access: {api_token_access}")
         farm_access = api_token_access
 
     if farm_access is None:
+        logger.debug(f"Request has no farm access.")
         raise HTTPException(
             status_code=HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials"
