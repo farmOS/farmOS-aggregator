@@ -87,6 +87,16 @@ export const actions = {
             await dispatchCheckApiError(context, error);
         }
     },
+    async actionCreateFarmRegistrationLink(context: MainContext) {
+        try {
+            const response = await api.createFarmRegistrationLink(context.rootState.main.token);
+            if (response) {
+                return response.data;
+            }
+        } catch (error) {
+            await dispatchCheckApiError(context, error);
+        }
+    },
     async actionGetFarmInfo(context: MainContext, payload: {farmID: number}) {
         try {
             const response = await api.getFarmInfo(context.rootState.main.token, payload.farmID);
@@ -163,6 +173,7 @@ export const dispatchGetFarms = dispatch(actions.actionGetFarms);
 export const dispatchUpdateFarm = dispatch(actions.actionUpdateFarm);
 export const dispatchAuthorizeFarm = dispatch(actions.actionAuthorizeFarm);
 export const dispatchCreateFarmAuthLink = dispatch(actions.actionCreateFarmAuthLink);
+export const dispatchCreateFarmRegistrationLink = dispatch(actions.actionCreateFarmRegistrationLink);
 export const dispatchGetFarmInfo = dispatch(actions.actionGetFarmInfo);
 export const dispatchGetOneFarm = dispatch(actions.actionGetOneFarm);
 
