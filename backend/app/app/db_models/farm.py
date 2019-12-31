@@ -21,6 +21,9 @@ class Farm(Base):
     notes = Column(String, nullable=True)
     tags = Column(String, nullable=True)
 
+    # active attribute allows admins to disable farmOS profiles
+    active = Column(Boolean, default=False)
+
     # Store farm info in a JSONB column
     info = Column(JSONB, nullable=True)
 
