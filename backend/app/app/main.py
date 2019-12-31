@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
@@ -5,6 +7,9 @@ from starlette.requests import Request
 from app.api.api_v1.api import api_router
 from app.core import config
 from app.db.session import Session
+
+# Configure logging. Change INFO to DEBUG for development logging.
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(title=config.PROJECT_NAME, openapi_url="/api/v1/openapi.json")
 
