@@ -5,10 +5,16 @@ import datetime
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
+from app.core import config
 from app.db_models.farm import Farm
 from app.models.farm import FarmCreate, FarmUpdate
 from app.db_models.farm_token import FarmToken
 from app.models.farm_info import FarmInfo
+
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler)
+
 
 def get_by_id(db_session: Session, *, farm_id: int):
     return db_session.query(Farm).filter(Farm.id == farm_id).first()
@@ -23,6 +29,19 @@ def get_multi(db_session: Session, *, skip=0, limit=100) -> List[Optional[Farm]]
     return db_session.query(Farm).offset(skip).limit(limit).all()
 
 def create(db_session: Session, *, farm_in: FarmCreate) -> Farm:
+    logging.debug(f"Adding new farm: {farm_in.farm_name}")
+    # Disable new farm profiles by default.
+    active = False
+
+    # If the active attribute is assigned, use it.
+    if farm_in.active is not None:
+        logging.debug(f"New farm provided 'active = {farm_in.active}'")
+        active = farm_in.active
+    # Enable farm profile if configured and not overridden above.
+    elif config.FARM_ACTIVE_AFTER_REGISTRATION:
+        logging.debug(f"FARM_ACTIVE_AFTER_REGISTRATION is enabled. New farm will be active.")
+        active = True
+
     farm = Farm(
         farm_name=farm_in.farm_name,
         url=farm_in.url,
@@ -31,12 +50,14 @@ def create(db_session: Session, *, farm_in: FarmCreate) -> Farm:
         notes=farm_in.notes,
         tags=farm_in.tags,
         info=farm_in.info,
+        active=active,
     )
     db_session.add(farm)
     db_session.commit()
     db_session.refresh(farm)
 
     if farm_in.token is not None:
+        logging.debug("Saving provided token with new farm profile.")
         new_token = FarmToken(farm_id=farm.id, **farm_in.token.dict())
         db_session.add(new_token)
         db_session.commit()
