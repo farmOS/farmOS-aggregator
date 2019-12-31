@@ -1,20 +1,28 @@
+import logging
+
 from fastapi import APIRouter, Depends, Security
 
+from app.core import config
 from app.api.api_v1.endpoints import login, users, utils
 from app.api.api_v1.endpoints.farms import farms_public, farms, info, logs, assets, terms, areas
 from app.api.utils.security import get_farm_access
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 api_router = APIRouter()
 api_router.include_router(login.router, tags=["login"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
 api_router.include_router(utils.router, prefix="/utils", tags=["utils"])
 
-# Include public /farms endpoints
-api_router.include_router(
-    farms_public.router,
-    prefix="/public/farms",
-    tags=["farms public"],
-)
+# Include public /farms endpoints if enabled in config.
+if (config.AGGREGATOR_OPEN_FARM_REGISTRATION):
+    logger.info("Open Farm Registration is enabled. Adding API to router.")
+    api_router.include_router(
+        farms_public.router,
+        prefix="/public/farms",
+        tags=["farms public"],
+    )
 
 # Include /farms endpoints.
 api_router.include_router(

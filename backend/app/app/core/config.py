@@ -63,3 +63,7 @@ TEST_FARM_PASSWORD = os.getenv("TEST_FARM_PASSWORD")
 def has_valid_test_configuration():
     """Check if sufficient info is provided to run integration tests with a farmOS server."""
     return TEST_FARM_URL is not None and TEST_FARM_USERNAME is not None and TEST_FARM_PASSWORD is not None
+
+
+AGGREGATOR_OPEN_FARM_REGISTRATION = getenv_boolean("AGGREGATOR_OPEN_FARM_REGISTRATION")
+AGGREGATOR_INVITE_FARM_REGISTRATION = getenv_boolean("AGGREGATOR_INVITE_FARM_REGISTRATION")
