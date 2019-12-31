@@ -92,7 +92,7 @@
                     <v-btn
                             color="primary"
                             @click="$refs.authForm.openSignInWindow()"
-                            :disabled="authStatus == 'completed'"
+                            :disabled="authStatus === 'completed'"
                     >
                       Authorize
                     </v-btn>
@@ -233,7 +233,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { FarmProfileCreate, FarmToken } from '@/interfaces';
 import { appName, openFarmRegistration, inviteFarmRegistration } from '@/env';
 import { commitAddNotification } from '@/store/main/mutations';
-import { dispatchPublicCreateFarm } from '@/store/farm/actions';
+import { dispatchCreateFarm, dispatchPublicCreateFarm } from '@/store/farm/actions';
 import FarmAuthorizationForm from '@/components/FarmAuthorizationForm.vue';
 
 @Component({
@@ -347,7 +347,11 @@ export default class PublicAddFarm extends Vue {
       tags: this.tags,
       token: this.authToken,
     };
-    dispatchPublicCreateFarm(this.$store, {data: newFarm, apiToken: this.apiToken});
+    if (this.apiToken) {
+      dispatchCreateFarm(this.$store, { data: newFarm, apiToken: this.apiToken } );
+    } else {
+      dispatchPublicCreateFarm(this.$store, { data: newFarm });
+    }
   }
 
   public checkApiToken(token) {
