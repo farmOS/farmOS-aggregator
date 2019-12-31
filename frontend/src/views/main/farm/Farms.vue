@@ -5,7 +5,26 @@
         Manage Farms
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn color="primary" to="/main/farm/farms/add">Add a farm</v-btn>
+        <div class="text-center">
+          <v-btn
+                  color="secondary"
+                  class="ma-2"
+                  @click="$refs.RequestRegistrationDialog.openDialog()"
+          >
+              Request Registration
+          </v-btn>
+          <FarmRequestRegistrationDialog
+                  ref="RequestRegistrationDialog"
+          />
+
+          <v-btn
+                  color="primary"
+                  class="ma-2"
+                  to="/main/farm/farms/add"
+          >
+            Add a farm
+          </v-btn>
+        </div>
     </v-toolbar>
     <v-data-table :headers="headers" :items="farms" loading-text="Loading... Please wait">
       <template v-slot:item.is_authorized="{ item }">
@@ -37,14 +56,13 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { Store } from 'vuex';
-import { FarmProfile } from '@/interfaces';
 import { readFarms } from '@/store/farm/getters';
 import { dispatchGetFarms } from '@/store/farm/actions';
 import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
+import FarmRequestRegistrationDialog from '@/components/FarmRequestRegistrationDialog.vue';
 
 @Component({
-    components: {FarmAuthorizationStatus},
+    components: {FarmAuthorizationStatus, FarmRequestRegistrationDialog},
 })
 export default class Farms extends Vue {
   public headers = [
