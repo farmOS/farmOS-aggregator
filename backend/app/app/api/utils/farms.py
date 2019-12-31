@@ -47,6 +47,24 @@ def get_farm_by_url(
     return farm
 
 
+def get_active_farm_by_url(
+    db: Session = Depends(get_db),
+    farm_url: str = Query(None),
+    farm_access: FarmAccess = Depends(get_farm_access)
+):
+    farm = None
+    if farm_url is not None:
+        farm = crud.farm.get_by_url(db, farm_url=farm_url, active=True)
+
+        if farm is None:
+            raise farm_not_found_exception
+
+        if not farm_access.can_access_farm(farm.id):
+            raise unauthorized_exception
+
+    return farm
+
+
 def get_farms_by_id_list(
     db: Session = Depends(get_db),
     farm_id: List[int] = Query(None),
@@ -76,6 +94,35 @@ def get_farms_by_id_list(
             raise farm_not_found_exception
 
 
+def get_active_farms_by_id_list(
+    db: Session = Depends(get_db),
+    farm_id: List[int] = Query(None),
+    farm_access: FarmAccess = Depends(get_farm_access),
+):
+    # Load all farms if the user can access all farms.
+    if farm_id is None and farm_access.all_farms:
+        farms = crud.farm.get_multi(db, active=True)
+        return farms
+
+    # Load all the farms the user has access to if none are provided.
+    if farm_id is None and farm_access.farm_id_list is not None:
+        farms = crud.farm.get_by_multi_id(db, farm_id_list=farm_access.farm_id_list, active=True)
+        return farms
+
+    # Load the requested farm(s) if the user has access.
+    if farm_id is not None:
+        for id in farm_id:
+            if not farm_access.can_access_farm(id):
+                raise unauthorized_exception
+
+        farms_by_id = crud.farm.get_by_multi_id(db, farm_id_list=farm_id, active=True)
+
+        if len(farms_by_id) > 0:
+            return farms_by_id
+        else:
+            raise farm_not_found_exception
+
+
 def get_farm_by_id(
     farm_id: int,
     db: Session = Depends(get_db),
@@ -95,6 +142,22 @@ def get_farm_by_id(
 def get_farms_url_or_list(
     farm_by_url: Farm = Depends(get_farm_by_url),
     farms_by_list: List[Farm] = Depends(get_farms_by_id_list),
+):
+    farms = []
+
+    # Give priority to a farm requested by URL
+    # to avoid returning the same farm twice
+    if farm_by_url is not None:
+        farms.append(farm_by_url)
+    elif farms_by_list is not None:
+        farms.extend(farms_by_list)
+
+    return farms
+
+
+def get_active_farms_url_or_list(
+    farm_by_url: Farm = Depends(get_active_farm_by_url),
+    farms_by_list: List[Farm] = Depends(get_active_farms_by_id_list),
 ):
     farms = []
 
