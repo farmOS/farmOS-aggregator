@@ -29,9 +29,9 @@ def test_authorize_farm(test_farm, farm_authorize_headers):
         headers=farm_authorize_headers,
         json=data.dict(),
     )
-    # This request should return 200, but no token will be created.
+    # This request should return 400, and no token will be created.
     # This is because we cannot write an integration test for the OAuth Auth code flow at this time.
-    assert 200 <= r.status_code < 300
+    assert r.status_code == 400
 
     '''
     # Values to test if we could write an integration test.
@@ -113,6 +113,6 @@ def test_get_farm_auth_link(test_farm, superuser_token_headers):
         headers={'api_token': token},
         json=data.dict(),
     )
-    # This request should return 200, but no token will be created.
+    # This request should return 400, but no token will be created.
     # This is because we cannot write an integration test for the OAuth Auth code flow at this time.
-    assert 200 <= r.status_code < 300
+    assert r.status_code == 400
