@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.api.utils.db import get_db
-from app.api.utils.farms import get_farms_url_or_list, get_farm_client, ClientError
+from app.api.utils.farms import get_active_farms_url_or_list, get_farm_client, ClientError
 from app.models.farm import Farm
 
 router = APIRouter()
@@ -32,7 +32,7 @@ class AssetUpdate(BaseModel):
 @router.get("/")
 def get_all_farm_assets(
     request: Request,
-    farm_list: List[Farm] = Depends(get_farms_url_or_list),
+    farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
 ):
     query_params = {**request.query_params}
@@ -61,7 +61,7 @@ def get_all_farm_assets(
 @router.post("/")
 def create_farm_assets(
     asset: Asset,
-    farm_list: List[Farm] = Depends(get_farms_url_or_list),
+    farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
 ):
     data = {}
@@ -86,7 +86,7 @@ def create_farm_assets(
 @router.put("/")
 def update_farm_assets(
     asset: AssetUpdate,
-    farm_list: List[Farm] = Depends(get_farms_url_or_list),
+    farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
 ):
     data = {}
@@ -111,7 +111,7 @@ def update_farm_assets(
 @router.delete("/")
 def delete_farm_assets(
     id: int,
-    farm_list: List[Farm] = Depends(get_farms_url_or_list),
+    farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
 ):
     data = {}

@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.api.utils.db import get_db
-from app.api.utils.farms import get_farms_url_or_list, get_farm_client, ClientError
+from app.api.utils.farms import get_active_farms_url_or_list, get_farm_client, ClientError
 from app.models.farm import Farm
 
 router = APIRouter()
@@ -32,7 +32,7 @@ class LogUpdate(BaseModel):
 @router.get("/")
 def get_all_farm_logs(
     request: Request,
-    farm_list: List[Farm] = Depends(get_farms_url_or_list),
+    farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
 ):
     query_params = {**request.query_params}
@@ -61,7 +61,7 @@ def get_all_farm_logs(
 @router.post("/")
 def create_farm_logs(
     log: Log,
-    farm_list: List[Farm] = Depends(get_farms_url_or_list),
+    farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
 ):
     data = {}
@@ -87,7 +87,7 @@ def create_farm_logs(
 @router.put("/")
 def update_farm_logs(
     log: LogUpdate,
-    farm_list: List[Farm] = Depends(get_farms_url_or_list),
+    farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
 ):
     data = {}
@@ -112,7 +112,7 @@ def update_farm_logs(
 @router.delete("/")
 def delete_farm_logs(
     id: int,
-    farm_list: List[Farm] = Depends(get_farms_url_or_list),
+    farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
 ):
     data = {}
