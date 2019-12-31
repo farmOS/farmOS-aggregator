@@ -16,17 +16,33 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler)
 
 
-def get_by_id(db_session: Session, *, farm_id: int):
-    return db_session.query(Farm).filter(Farm.id == farm_id).first()
+def get_by_id(db_session: Session, *, farm_id: int, active: bool = None):
+    if active is not None:
+        return db_session.query(Farm).filter(Farm.active.is_(active)).filter(Farm.id == farm_id).first()
+    else:
+        return db_session.query(Farm).filter(Farm.id == farm_id).first()
 
-def get_by_multi_id(db_session: Session, *, farm_id_list: List[int]):
-    return db_session.query(Farm).filter(Farm.id.in_((farm_id_list))).all()
 
-def get_by_url(db_session: Session, *, farm_url: str):
-    return db_session.query(Farm).filter(Farm.url == farm_url).first()
+def get_by_multi_id(db_session: Session, *, farm_id_list: List[int], active: bool = None):
+    if active is not None:
+        return db_session.query(Farm).filter(Farm.active.is_(active)).filter(Farm.id.in_(farm_id_list)).all()
+    else:
+        return db_session.query(Farm).filter(Farm.id.in_(farm_id_list)).all()
 
-def get_multi(db_session: Session, *, skip=0, limit=100) -> List[Optional[Farm]]:
-    return db_session.query(Farm).offset(skip).limit(limit).all()
+
+def get_by_url(db_session: Session, *, farm_url: str, active: bool = None):
+    if active is not None:
+        return db_session.query(Farm).filter(Farm.active.is_(active)).filter(Farm.url == farm_url).first()
+    else:
+        return db_session.query(Farm).filter(Farm.url == farm_url).first()
+
+
+def get_multi(db_session: Session, *, skip=0, limit=100, active: bool = None) -> List[Optional[Farm]]:
+    if active is not None:
+        return db_session.query(Farm).filter(Farm.active.is_(active)).offset(skip).limit(limit).all()
+    else:
+        return db_session.query(Farm).offset(skip).limit(limit).all()
+
 
 def create(db_session: Session, *, farm_in: FarmCreate) -> Farm:
     logging.debug(f"Adding new farm: {farm_in.farm_name}")
@@ -66,6 +82,7 @@ def create(db_session: Session, *, farm_in: FarmCreate) -> Farm:
     db_session.refresh(farm)
     return farm
 
+
 def update(db_session: Session, *, farm: Farm, farm_in: FarmUpdate):
     farm_data = jsonable_encoder(farm)
     update_data = farm_in.dict(skip_defaults=True)
@@ -77,6 +94,7 @@ def update(db_session: Session, *, farm: Farm, farm_in: FarmUpdate):
     db_session.refresh(farm)
     return farm
 
+
 def update_info(db_session: Session, *, farm: Farm, info: FarmInfo):
     setattr(farm, 'info', info)
     db_session.add(farm)
@@ -84,10 +102,12 @@ def update_info(db_session: Session, *, farm: Farm, info: FarmInfo):
     db_session.refresh(farm)
     return farm
 
+
 def delete(db_session: Session, *, farm_id: int):
     farm = get_by_id(db_session=db_session, farm_id=farm_id)
     db_session.delete(farm)
     db_session.commit()
+
 
 def update_last_accessed(db_session: Session, *, farm_id: int):
     farm = get_by_id(db_session=db_session, farm_id=farm_id)
@@ -97,6 +117,7 @@ def update_last_accessed(db_session: Session, *, farm_id: int):
     db_session.refresh(farm)
     return farm
 
+
 def update_is_authorized(db_session: Session, *, farm_id: int, is_authorized: bool):
     farm = get_by_id(db_session=db_session, farm_id=farm_id)
     setattr(farm, "is_authorized", is_authorized)
@@ -105,5 +126,6 @@ def update_is_authorized(db_session: Session, *, farm_id: int, is_authorized: bo
     db_session.refresh(farm)
     return farm
 
-def is_authenticated(Farm):
+
+def is_authenticated(farm):
     return farm.is_authenticated
