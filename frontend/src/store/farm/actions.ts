@@ -41,17 +41,21 @@ export const actions = {
             }
         }
     },
-    async actionCreateFarm(context: MainContext, payload: FarmProfileCreate) {
+    async actionCreateFarm(
+        context: MainContext,
+        payload: {data: FarmProfileCreate, apiToken?: string },
+    ) {
         const loadingNotification = { content: 'saving', showProgress: true };
         try {
             commitAddNotification(context, loadingNotification);
             const response = (await Promise.all([
-                api.createFarm(context.rootState.main.token, payload),
+                api.createFarm(context.rootState.main.token, payload.data, payload.apiToken),
                 await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
             ]))[0];
             commitSetFarm(context, response.data);
             commitRemoveNotification(context, loadingNotification);
             commitAddNotification(context, { content: 'Farm successfully created', color: 'success' });
+            return response;
         } catch (error) {
             if (error.response!.status === 409) {
                 commitRemoveNotification(context, loadingNotification);
