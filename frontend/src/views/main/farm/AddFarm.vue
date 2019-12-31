@@ -69,11 +69,17 @@
           </v-expansion-panels>
         </v-card-text>
 
+        <FarmRequestRegistrationDialog
+                ref="RequestRegistrationDialog"
+        />
+
         <v-card-actions>
           <v-spacer></v-spacer>
+          <v-btn color="secondary" @click="$refs.RequestRegistrationDialog.openDialog()">Request Registration</v-btn>
           <v-btn @click="cancel">Cancel</v-btn>
           <v-btn @click="reset">Reset</v-btn>
           <v-btn
+                  color="primary"
                   @click="submit"
                   :disabled="!valid"
           >
@@ -93,8 +99,11 @@ import {
   FarmProfileCreate,
 } from '@/interfaces';
 import { dispatchGetFarms, dispatchCreateFarm } from '@/store/farm/actions';
+import FarmRequestRegistrationDialog from '@/components/FarmRequestRegistrationDialog.vue';
 
-@Component
+@Component({
+    components: {FarmRequestRegistrationDialog},
+})
 export default class AddFarm extends Vue {
   public valid = false;
   public farmName: string = '';
