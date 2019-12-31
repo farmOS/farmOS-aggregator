@@ -13,6 +13,13 @@
 
           <div class="d-flex">
             <v-checkbox
+                    v-model="active"
+                    label="Active"
+            ></v-checkbox>
+          </div>
+
+          <div class="d-flex">
+            <v-checkbox
                     v-model="includeCredentials"
                     label="Include farmOS user credentials"
             ></v-checkbox>
@@ -142,10 +149,13 @@ export default class EditFarm extends Vue {
   public username: string = '';
   public notes: string = '';
   public tags: string = '';
+  public active: boolean = false;
+
   public setPassword = false;
   public password1: string = '';
   public password2: string = '';
   public includeCredentials = false;
+
   public hasToken = false;
   public accessToken: string = '';
   public refreshToken: string = '';
@@ -174,6 +184,7 @@ export default class EditFarm extends Vue {
       this.username = this.farm.username;
       this.notes = this.farm.notes!;
       this.tags = this.farm.tags!;
+      this.active = this.farm.active!;
 
       if (this.farm.username) {
         this.includeCredentials = true;
@@ -212,6 +223,9 @@ export default class EditFarm extends Vue {
       if (this.tags) {
         updatedFarm.tags = this.tags;
       }
+
+      updatedFarm.active = this.active;
+
       if (this.includeCredentials) {
           if (this.username) {
             updatedFarm.username = this.username;
@@ -220,8 +234,11 @@ export default class EditFarm extends Vue {
             updatedFarm.password = this.password1;
           }
       }
-      await dispatchUpdateFarm(this.$store, { id: this.farm!.id, farm: updatedFarm });
-      this.$router.push('/main/farm/farms');
+      await dispatchUpdateFarm(this.$store, { id: this.farm!.id, farm: updatedFarm }).then( (result) => {
+          if (result) {
+              this.$router.push('/main/farm/farms');
+          }
+      });
     }
   }
 

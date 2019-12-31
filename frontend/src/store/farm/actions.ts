@@ -32,6 +32,7 @@ export const actions = {
             commitSetFarm(context, response.data);
             commitRemoveNotification(context, loadingNotification);
             commitAddNotification(context, { content: 'Farm successfully updated', color: 'success' });
+            return response;
         } catch (error) {
             if (error.response!.status === 409) {
                 commitRemoveNotification(context, loadingNotification);
