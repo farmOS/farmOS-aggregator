@@ -27,6 +27,14 @@
         </div>
     </v-toolbar>
     <v-data-table :headers="headers" :items="farms" loading-text="Loading... Please wait">
+      <template v-slot:item.active="{ item } ">
+         <span v-if="item.active">
+            <v-icon>check_box</v-icon>
+         </span>
+        <span v-else>
+            <v-icon>check_box_outline_blank</v-icon>
+        </span>
+      </template>
       <template v-slot:item.is_authorized="{ item }">
         <FarmAuthorizationStatus v-bind:farm=item ></FarmAuthorizationStatus>
       </template>
@@ -66,6 +74,12 @@ import FarmRequestRegistrationDialog from '@/components/FarmRequestRegistrationD
 })
 export default class Farms extends Vue {
   public headers = [
+    {
+        text: 'Active',
+        sortable: true,
+        value: 'active',
+        align: 'left',
+    },
     {
       text: 'Farm Name',
       sortable: true,
