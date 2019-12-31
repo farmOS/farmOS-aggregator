@@ -13,6 +13,7 @@ class FarmBase(APIModel):
     notes: Optional[str] = None
     tags: Optional[str] = None
     info: Optional[FarmInfo] = None
+    active: Optional[bool] = None
 
 class FarmBaseInDB(FarmBase):
     id: int = None
