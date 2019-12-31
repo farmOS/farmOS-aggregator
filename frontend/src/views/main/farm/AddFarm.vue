@@ -15,6 +15,13 @@
 
           <div class="d-flex">
             <v-checkbox
+                    v-model="active"
+                    label="Active"
+            ></v-checkbox>
+          </div>
+
+          <div class="d-flex">
+            <v-checkbox
                     v-model="includeCredentials"
                     label="Include farmOS user credentials"
             ></v-checkbox>
@@ -113,6 +120,7 @@ export default class AddFarm extends Vue {
   public password2: string = '';
   public notes: string = '';
   public tags: string = '';
+  public active: boolean = false;
   public includeCredentials = false;
 
 
@@ -145,6 +153,7 @@ export default class AddFarm extends Vue {
         password: this.password1,
         notes: this.notes,
         tags: this.tags,
+        active: this.active,
       };
       await dispatchCreateFarm(this.$store, { data: updatedFarm }).then( (response) => {
         if (response) {
