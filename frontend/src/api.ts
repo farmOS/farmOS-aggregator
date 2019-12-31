@@ -70,8 +70,8 @@ export const api = {
   async updateFarm(token: string, farmId: number, data: FarmProfileUpdate) {
     return axios.put(`${apiUrl}/api/v1/farms/${farmId}`, data, authHeaders(token));
   },
-  async createFarm(token: string, data: FarmProfileCreate) {
-    return axios.post(`${apiUrl}/api/v1/farms/`, data, authHeaders(token));
+  async createFarm(token: string, data: FarmProfileCreate, apiToken?: string) {
+    return axios.post(`${apiUrl}/api/v1/farms/`, data, authHeaders(token, apiToken));
   },
   async authorizeFarm(token: string, farmID: number, data: FarmProfileAuthorize, apiToken?: string) {
     const headers = authHeaders(token, apiToken);

@@ -146,8 +146,11 @@ export default class AddFarm extends Vue {
         notes: this.notes,
         tags: this.tags,
       };
-      await dispatchCreateFarm(this.$store, updatedFarm);
-      this.$router.push('/main/farm/farms');
+      await dispatchCreateFarm(this.$store, { data: updatedFarm }).then( (response) => {
+        if (response) {
+          this.$router.push('/main/farm/farms');
+        }
+      } );
     }
   }
 }
