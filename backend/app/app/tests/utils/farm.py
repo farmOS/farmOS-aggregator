@@ -25,6 +25,7 @@ def get_test_farm_instance():
             url=config.TEST_FARM_URL,
             username=config.TEST_FARM_USERNAME,
             password=config.TEST_FARM_PASSWORD,
+            active=True
         )
     else:
         farm_in = FarmCreate(
@@ -32,6 +33,7 @@ def get_test_farm_instance():
             url="http://localhost",
             username="username",
             password="password",
+            active=True
         )
 
     test_farm = crud.farm.create(db_session, farm_in=farm_in)
