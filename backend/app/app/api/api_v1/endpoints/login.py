@@ -22,7 +22,6 @@ from app.utils import (
 )
 
 logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler)
 
 router = APIRouter()
 

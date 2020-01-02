@@ -17,7 +17,6 @@ from app.models.farm import Farm, FarmCreate
 from app.models.farm_token import FarmAuthorizationParams
 
 logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
 
 router = APIRouter()
 

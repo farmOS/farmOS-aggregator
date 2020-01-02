@@ -16,7 +16,6 @@ from app.models.token import TokenData, FarmAccess
 
 
 logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
 
 oauth_scopes = {
     "farm:create": "Create farm profiles",

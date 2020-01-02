@@ -8,7 +8,6 @@ from app.api.api_v1.endpoints.farms import farms_public, farms, info, logs, asse
 from app.api.utils.security import get_farm_access
 
 logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
 
 api_router = APIRouter()
 api_router.include_router(login.router, tags=["login"])

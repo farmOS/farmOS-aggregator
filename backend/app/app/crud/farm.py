@@ -13,7 +13,6 @@ from app.models.farm_info import FarmInfo
 
 
 logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler)
 
 
 def get_by_id(db_session: Session, *, farm_id: int, active: bool = None):
