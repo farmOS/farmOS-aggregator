@@ -28,3 +28,20 @@ def ping_farms():
 
     db_session.close()
     return f"Pinged {total_response}/{len(farm_list)} farms."
+
+
+@celery_app.task(bind=True)
+def ping_farm(self, farm_id):
+    db_session = Session()
+    farm = crud.farm.get_by_id(db_session=db_session, farm_id=farm_id)
+
+    if farm is not None:
+        try:
+            farm_client = get_farm_client(db_session=db_session, farm=farm)
+            info = farm_client.info()
+            return f"Success: pinged farm {farm_id}: {farm.farm_name}"
+
+        except Exception as e:
+            return f"Error: Can't connect to farm {farm_id}: {farm.farm_name}."
+    else:
+        return f"Error: farm {farm_id} does not exist"

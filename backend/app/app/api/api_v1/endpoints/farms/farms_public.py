@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 import requests
 from farmOS import farmOS
 from farmOS.config import ClientConfig
+from app.core.celery_app import celery_app
 
 
 from app.core import config
@@ -41,6 +42,8 @@ async def create_farm(
         )
 
     farm = crud.farm.create(db, farm_in=farm_in)
+
+    celery_app.send_task("app.worker.ping_farm", [farm.id])
 
     return farm
 

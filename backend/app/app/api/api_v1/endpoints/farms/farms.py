@@ -9,6 +9,7 @@ from app.api.utils.db import get_db
 from app.api.utils.farms import get_farm_client, ClientError, get_farms_url_or_list, get_farm_by_id
 from app.api.utils.security import get_farm_access
 from app.models.farm import Farm, FarmCreate, FarmUpdate
+from app.core.celery_app import celery_app
 
 router = APIRouter()
 
@@ -63,6 +64,8 @@ async def create_farm(
         )
 
     farm = crud.farm.create(db, farm_in=farm_in)
+
+    celery_app.send_task("app.worker.ping_farm", [farm.id])
 
     return farm
 
