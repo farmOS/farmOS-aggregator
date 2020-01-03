@@ -112,10 +112,11 @@ export const actions = {
             await dispatchCheckApiError(context, error);
         }
     },
-    async actionGetOneFarm(context: MainContext, payload: { farmID: number, apiToken: string }) {
+    async actionGetOneFarm(context: MainContext, payload: { farmID: number, apiToken?: string }) {
         try {
             const response = await api.getOneFarm(context.rootState.main.token, payload.farmID, payload.apiToken);
             if (response) {
+                commitSetFarm(context, response.data);
                 return response.data;
             }
         } catch (error) {

@@ -90,7 +90,7 @@ export const api = {
     const params = new URLSearchParams();
     params.append('farm_id', farmID.toString());
     return axios.get(
-        `${apiUrl}/api/v1/farms/info/`,
+        `${apiUrl}/api/v1/farms/info/?use_cached=false`,
         {params, headers: authHeaders(token).headers},
     );
   },

@@ -26,7 +26,7 @@
           </v-btn>
         </div>
     </v-toolbar>
-    <v-data-table :headers="headers" :items="farms" loading-text="Loading... Please wait">
+    <v-data-table :headers="headers" :items="farms" :loading="loading" loading-text="Loading... Please wait">
       <template v-slot:item.active="{ item } ">
          <span v-if="item.active">
             <v-icon>check_box</v-icon>
@@ -57,6 +57,9 @@
         <v-btn :to="{name: 'main-farm-farms-edit', params: {id: item.id}}">
           <v-icon>edit</v-icon>
         </v-btn>
+        <v-btn  @click="loadFarmInfo(item.id)">
+          <v-icon>info</v-icon>
+        </v-btn>
       </template>
     </v-data-table>
   </div>
@@ -65,9 +68,10 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { readFarms } from '@/store/farm/getters';
-import { dispatchGetFarms } from '@/store/farm/actions';
+import { dispatchGetFarms, dispatchGetFarmInfo, dispatchGetOneFarm } from '@/store/farm/actions';
 import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
 import FarmRequestRegistrationDialog from '@/components/FarmRequestRegistrationDialog.vue';
+import {FarmProfile} from '@/interfaces';
 
 @Component({
     components: {FarmAuthorizationStatus, FarmRequestRegistrationDialog},
@@ -128,12 +132,26 @@ export default class Farms extends Vue {
       value: 'action',
     },
   ];
+
+  public loading: boolean = false;
+
   get farms() {
     return readFarms(this.$store);
   }
 
   public async mounted() {
     await dispatchGetFarms(this.$store);
+  }
+
+  public async loadFarmInfo(farmID) {
+      this.loading = true;
+      await dispatchGetFarmInfo(this.$store, {farmID}).then( (info) => {
+            dispatchGetOneFarm(this.$store, {farmID}).then( (response) => {
+                this.loading = false;
+            });
+          },
+
+      );
   }
 }
 </script>
