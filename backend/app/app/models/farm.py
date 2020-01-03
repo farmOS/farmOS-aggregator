@@ -37,6 +37,7 @@ class Farm(FarmBaseInDB):
     last_accessed: Optional[datetime] = None
     token: Optional[FarmToken] = None
     is_authorized: Optional[bool] = None
+    auth_error: Optional[str] = None
 
 # Additional properites stored in DB
 class FarmInDB(FarmBaseInDB):
