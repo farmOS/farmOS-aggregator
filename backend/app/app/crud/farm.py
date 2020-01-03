@@ -117,9 +117,10 @@ def update_last_accessed(db_session: Session, *, farm_id: int):
     return farm
 
 
-def update_is_authorized(db_session: Session, *, farm_id: int, is_authorized: bool):
+def update_is_authorized(db_session: Session, *, farm_id: int, is_authorized: bool, auth_error: str = None):
     farm = get_by_id(db_session=db_session, farm_id=farm_id)
     setattr(farm, "is_authorized", is_authorized)
+    setattr(farm, "auth_error", auth_error)
     db_session.add(farm)
     db_session.commit()
     db_session.refresh(farm)

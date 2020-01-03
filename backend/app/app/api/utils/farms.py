@@ -1,3 +1,4 @@
+import logging
 from typing import List
 import time
 
@@ -17,6 +18,8 @@ from app.models.farm import Farm, FarmUpdate
 from app.models.token import FarmAccess
 from app.api.utils.security import get_farm_access
 
+
+logger = logging.getLogger(__name__)
 
 unauthorized_exception = HTTPException(
     status_code = HTTP_401_UNAUTHORIZED,
@@ -215,7 +218,8 @@ def get_farm_client(db_session, farm):
         crud.farm.update_last_accessed(db_session, farm_id=farm.id)
         crud.farm.update_is_authorized(db_session, farm_id=farm.id, is_authorized=True)
     except Exception as e:
-        crud.farm.update_is_authorized(db_session, farm_id=farm.id, is_authorized=False)
+        #logging.exception("Cannot authenticate farmOS client" + repr(e) + str(e))
+        crud.farm.update_is_authorized(db_session, farm_id=farm.id, is_authorized=False, auth_error=str(e))
         raise ClientError(e)
 
 
