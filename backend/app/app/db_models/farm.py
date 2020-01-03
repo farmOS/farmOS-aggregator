@@ -29,4 +29,5 @@ class Farm(Base):
 
     is_authorized = Column(Boolean, default=False)
     token = relationship("FarmToken", uselist=False, back_populates="farm")
+    auth_error = Column(String, nullable=True)
 
