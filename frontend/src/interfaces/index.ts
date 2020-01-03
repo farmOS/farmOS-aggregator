@@ -43,6 +43,7 @@ export interface FarmProfile {
     active?: boolean;
 
     is_authorized: boolean;
+    auth_error?: string;
     token: FarmToken;
 }
 
