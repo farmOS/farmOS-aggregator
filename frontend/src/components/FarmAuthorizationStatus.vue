@@ -9,16 +9,21 @@
         >
             Authorized
         </v-btn>
-        <v-btn
-                v-else
-                :to="{name: 'main-farm-farms-authorize', params: {id: farm.id}}"
-                depressed
-                small
-                color="error"
-        >
-            Re-Authorize
-            <v-icon right>error</v-icon>
-        </v-btn>
+        <v-tooltip v-else bottom>
+            <template v-slot:activator="{ on }">
+                <v-btn
+                        v-on="on"
+                        :to="{name: 'main-farm-farms-authorize', params: {id: farm.id}}"
+                        depressed
+                        small
+                        color="error"
+                >
+                    Re-Authorize
+                    <v-icon right>error</v-icon>
+                </v-btn>
+            </template>
+            <span>{{ farm.auth_error }}</span>
+        </v-tooltip>
     </div>
 </template>
 

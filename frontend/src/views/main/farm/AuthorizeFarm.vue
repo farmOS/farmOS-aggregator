@@ -12,7 +12,7 @@
       <v-card-text>
         <v-text-field label="Farm Name" v-model="farmName" readonly></v-text-field>
         <v-text-field label="URL" v-model="url" readonly></v-text-field>
-        <v-text-field label="User Email" v-model="userEmail" :loading="farmInfoLoading" readonly></v-text-field>
+        <v-text-field v-if="hasError" label="Authentication Error" v-model="authError" readonly/>
 
         <FarmAuthorizationStatus v-bind:farm=farm></FarmAuthorizationStatus>
 
@@ -65,7 +65,7 @@
                             v-bind:appName="appName"
                             v-bind:farmUrl="url"
                             v-bind:farmName="farmName"
-                            v-bind:farmId="farm.id"
+                            v-bind:farmId="farmId"
                             v-on:authorizationcomplete="authorizationFormDialog = false"
                     />
                 </v-card-text>
@@ -100,7 +100,7 @@
                 <v-card-text>
                     Input the email to send a verification link. By default, this is the farmOS admin email.
 
-                    <v-text-field type="email" label="farmOS Admin Email" v-model="userEmail"></v-text-field>
+                    <v-text-field type="email" label="farmOS Admin Email" ></v-text-field>
 
                     OR
 
@@ -156,29 +156,29 @@ import { dispatchGetFarms, dispatchCreateFarmAuthLink, dispatchGetFarmInfo } fro
 import { readOneFarm } from '@/store/farm/getters';
 import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
 import FarmAuthorizationForm from '@/components/FarmAuthorizationForm.vue';
+import {FarmProfile} from '@/interfaces';
 
 @Component({
     components: {FarmAuthorizationStatus, FarmAuthorizationForm},
 })
-export default class EditFarm extends Vue {
+export default class AuthorizeFarm extends Vue {
   public appName = appName;
 
   // Properties from the Farm Profile.
   public farmName: string = '';
+  public farmId: number = 0;
   public url: string = '';
   public username: string = '';
   public notes: string = '';
   public tags: string = '';
   public isAuthorized = false;
+  public authError?: string;
+  public hasError: boolean = false;
   public hasToken = false;
   public accessToken: string = '';
   public refreshToken: string = '';
   public expiresIn: string = '';
   public expiresAt: string = '';
-
-  // Properties from the farmOS server, retrieved via API.
-  public farmInfoLoading: boolean = false;
-  public userEmail: string = 'Loading...';
 
   // Properties for the Authorization Form Dialog.
   public authorizationFormDialog = false;
@@ -193,11 +193,6 @@ export default class EditFarm extends Vue {
   public async mounted() {
     await dispatchGetFarms(this.$store);
     this.reset();
-    if (this.farm) {
-        this.farmInfoLoading = true;
-        await dispatchGetFarmInfo(this.$store, { farmID: this.farm.id }).then(this.setFarmInfo);
-        this.farmInfoLoading = false;
-    }
   }
 
   public reset() {
@@ -205,11 +200,17 @@ export default class EditFarm extends Vue {
     this.$validator.reset();
     if (this.farm) {
       this.farmName = this.farm.farm_name;
+      this.farmId = this.farm.id;
       this.url = this.farm.url;
       this.username = this.farm.username;
       this.notes = this.farm.notes!;
       this.tags = this.farm.tags!;
       this.isAuthorized = this.farm.is_authorized;
+
+      if (this.farm.auth_error) {
+          this.hasError = true;
+          this.authError = this.farm.auth_error!;
+      }
 
       if (this.farm.token) {
         this.hasToken = true;
@@ -223,15 +224,6 @@ export default class EditFarm extends Vue {
 
   public cancel() {
     this.$router.back();
-  }
-
-  public setFarmInfo(farmInfo) {
-    // Save farm info retrieved via API in the Vue state.
-    if (farmInfo.info) {
-        this.userEmail = farmInfo.info.user.mail;
-    } else {
-        this.userEmail = 'No email found.';
-    }
   }
 
   public async generateAuthLink(farmID) {
