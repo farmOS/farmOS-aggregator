@@ -12,5 +12,7 @@ if (env === 'production') {
 
 export const apiUrl = envApiUrl;
 export const appName = process.env.VUE_APP_NAME;
-export const openFarmRegistration = process.env.VUE_APP_OPEN_FARM_REGISTRATION;
-export const inviteFarmRegistration = process.env.VUE_APP_INVITE_FARM_REGISTRATION;
+// tslint:disable-next-line:max-line-length
+export const openFarmRegistration: boolean = process.env.VUE_APP_OPEN_FARM_REGISTRATION == null ? false : process.env.VUE_APP_OPEN_FARM_REGISTRATION === 'true';
+// tslint:disable-next-line:max-line-length
+export const inviteFarmRegistration: boolean = process.env.VUE_APP_INVITE_FARM_REGISTRATION == null ? false : process.env.VUE_APP_INVITE_FARM_REGISTRATION === 'true';
