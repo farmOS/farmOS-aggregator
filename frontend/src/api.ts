@@ -106,4 +106,12 @@ export const api = {
         {farm_url: farmUrl, auth_params: data},
         headers);
   },
+  async publicValidateFarmUrl(token: string, farmUrl: string, apiToken?: string) {
+    const headers = authHeaders(token, apiToken);
+    return axios.post(
+        `${apiUrl}/api/v1/public/farms/validate-farm-url`,
+        {farm_url: farmUrl},
+        headers,
+    );
+  },
 };

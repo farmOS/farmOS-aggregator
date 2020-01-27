@@ -44,11 +44,11 @@
                       </template>
                       <form data-vv-scope="urlForm">
                         <v-text-field
-                              v-model="url"
+                              v-model="farmUrl"
                               v-validate="{ required: true, url: { require_protocol: true } }"
-                              data-vv-name="url"
+                              data-vv-name="farmUrl"
                               data-vv-scope="urlForm"
-                              :error-messages="errors.first('urlForm.url')"
+                              :error-messages="errors.first('urlForm.farmUrl')"
                               required
                               hint="https://yourfarm.farmos.net"
                         />
@@ -60,7 +60,7 @@
                       <v-btn @click="cancel">Cancel</v-btn>
                       <v-btn
                               color="primary"
-                              @click="submitForm('urlForm')"
+                              @click="submitUrl"
                       >
                         Next
                       </v-btn>
@@ -78,13 +78,16 @@
                   <v-card-text>
                     <FarmAuthorizationForm
                             ref="authForm"
-                            v-bind:authstatus.sync="authStatus"
+                            v-bind:authStarted.sync="authStarted"
+                            v-bind:authFinished.sync="authFinished"
+                            v-bind:appName="appName"
+                            v-bind:redirectUri="'/add-farm'"
+                            v-bind:apiToken.sync="apiToken"
+                            v-bind:farmUrl.sync="farmUrl"
+                            v-bind:farmName.sync="farmName"
                             v-bind:authtoken.sync="authToken"
                             v-bind:farminfo.sync="farmInfo"
-                            v-bind:appName="appName"
-                            v-bind:farmUrl="url"
-                            v-bind:farmName="farmName"
-                            v-on:authorizationcomplete="nextStep(2)"
+                            v-on:authorizationcomplete="currentStep = 3"
                     />
                   </v-card-text>
                   <v-card-actions>
@@ -92,7 +95,8 @@
                     <v-btn
                             color="primary"
                             @click="$refs.authForm.openSignInWindow()"
-                            :disabled="authStatus === 'completed'"
+                            :loading="authStarted === true && authFinished !== true"
+                            :disabled="authStarted === true || authFinished === true"
                     >
                       Authorize
                     </v-btn>
@@ -112,7 +116,7 @@
                     <form data-vv-scope="farmInfoForm">
                       <v-text-field
                               label="Farm Name"
-                              v-model="farmInfo.name"
+                              v-model="this.farmName"
                               v-validate="'required'"
                               data-vv-name="name"
                               data-vv-scope="farmInfoForm"
@@ -121,7 +125,7 @@
                       />
                       <v-text-field
                               label="URL"
-                              v-model="url"
+                              v-model="this.farmUrl"
                               v-validate="{ required: true, url: {require_protocol: true } }"
                               data-vv-name="url"
                               data-vv-scope="farmInfoForm"
@@ -151,7 +155,7 @@
                     <v-spacer></v-spacer>
                     <v-btn
                             color="primary"
-                            @click="submitForm('farmInfoForm')"
+                            @click="submitFarmInfo"
                     >
                       Next
                     </v-btn>
@@ -167,23 +171,23 @@
               >
                 <v-card>
                   <v-card-text>
-                    <form data-vv-scope="farmInfoForm">
+                    <form data-vv-scope="farmVerifyForm">
                       <v-text-field
                               label="Farm Name"
-                              v-model="farmInfo.name"
+                              v-model="this.farmName"
                               v-validate="'required'"
                               data-vv-name="name"
-                              data-vv-scope="farmInfoForm"
-                              :error-messages="errors.first('farmInfoForm.name')"
+                              data-vv-scope="farmVerifyForm"
+                              :error-messages="errors.first('farmVerifyForm.name')"
                               required
                       />
                       <v-text-field
                               label="URL"
-                              v-model="url"
+                              v-model="this.farmUrl"
                               v-validate="{ required: true, url: {require_protocol: true } }"
                               data-vv-name="url"
-                              data-vv-scope="farmInfoForm"
-                              :error-messages="errors.first('farmInfoForm.url')"
+                              data-vv-scope="farmVerifyForm"
+                              :error-messages="errors.first('farmVerifyForm.url')"
                               required
                               readonly
                       />
@@ -191,8 +195,8 @@
                               label="API Version"
                               v-model="farmInfo.api_version"
                               data-vv-name="api_version"
-                              data-vv-scope="farmInfoForm"
-                              :error-messages="errors.first('farmInfoForm.api_version')"
+                              data-vv-scope="farmVerifyForm"
+                              :error-messages="errors.first('farmVerifyForm.api_version')"
                               required
                               readonly
                       />
@@ -200,8 +204,8 @@
                               label="Tags (Optional)"
                               v-model="tags"
                               data-vv-name="tags"
-                              data-vv-scope="farmInfoForm"
-                              :error-messages="errors.first('farmInfoForm.tags')"
+                              data-vv-scope="farmVerifyForm"
+                              :error-messages="errors.first('farmVerifyForm.tags')"
                       />
                     </form>
                   </v-card-text>
@@ -209,7 +213,7 @@
                     <v-spacer></v-spacer>
                     <v-btn
                             color="primary"
-                            @click="submit()"
+                            @click="createFarm"
                     >
                       Save
                     </v-btn>
@@ -230,39 +234,47 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { FarmProfileCreate, FarmToken } from '@/interfaces';
+import { FarmProfileCreate, FarmToken, FarmInfo } from '@/interfaces';
 import { appName, openFarmRegistration, inviteFarmRegistration } from '@/env';
 import { commitAddNotification } from '@/store/main/mutations';
-import { dispatchCreateFarm, dispatchPublicCreateFarm } from '@/store/farm/actions';
+import {
+    dispatchCreateFarm,
+    dispatchPublicCreateFarm,
+    dispatchPublicValidateFarmUrl,
+} from '@/store/farm/actions';
 import FarmAuthorizationForm from '@/components/FarmAuthorizationForm.vue';
 
 @Component({
   components: {FarmAuthorizationForm},
 })
 export default class PublicAddFarm extends Vue {
+  public $refs!: {
+      authForm: HTMLFormElement,
+  };
+
   public appName = appName;
   // Query params.
-  public farmID: number = 0;
   public apiToken: string = '';
-
-  // Save the FarmProfile info.
-  public farm = {} as FarmProfileCreate;
 
   // Initialize variables for farm profile.
   public farmName: string = '';
-  public url: string = '';
-  public notes: string = '';
+  public farmUrl: string = '';
   public tags: string = '';
 
   // Initialize variables for the authorization step.
-  public authStatus: string = 'not started';
+  public authStarted: boolean = false;
+  public authFinished: boolean = false;
+  public authCode: string = '';
+  public authState: string = '';
+  public authError: string = '';
+  public authErrorDescription: string = '';
   public authToken: FarmToken = {
     access_token: '',
     refresh_token: '',
     expires_at: '',
     expires_in: '',
   };
-  public farmInfo: object = {};
+  public farmInfo: FarmInfo = {};
 
 
   public currentStep: number = 1;
@@ -299,23 +311,60 @@ export default class PublicAddFarm extends Vue {
   ];
 
   public async mounted() {
+    // Check for authorization errors.
+    this.authError = this.$router.currentRoute.query.error as string;
+    this.authErrorDescription = this.$router.currentRoute.query.error_description as string;
+    if (this.authError) {
+      commitAddNotification(this.$store, {
+          content: this.authError + ': ' + this.authErrorDescription,
+          color: 'error',
+      });
+    }
+
+    // Get authorization code and authorization state
+    this.authCode = this.$router.currentRoute.query.code as string;
+    this.authState = this.$router.currentRoute.query.state as string;
+    if (this.authCode && this.authState) {
+        this.currentStep = 2;
+        // Finish authorization in the FarmAuthorizationFrom component.
+        this.$refs.authForm.finishAuthorization(this.authCode, this.authState);
+        return;
+    }
+
     // Save an API Token if provided.
     this.apiToken = this.$router.currentRoute.query.api_token as string;
 
     // Check farm registration configuration.
-    if (openFarmRegistration) {
-      return;
-    } else if (inviteFarmRegistration) {
-      // Verify an APIToken was provided.
-      this.checkApiToken(this.apiToken);
-    } else {
-      commitAddNotification(this.$store, {
-        content: 'You cannot join this aggregator without an invitation from the administrator.',
-        color: 'error',
-      });
-      this.$router.push('/');
-      return;
+    if (!openFarmRegistration && inviteFarmRegistration) {
+        // Verify an APIToken was provided.
+        if (!this.apiToken) {
+            commitAddNotification(this.$store, {
+                content: 'You cannot register farms without an invitation from the administrator.',
+                color: 'error',
+            });
+            this.$router.push('/');
+        }
     }
+
+    if (!openFarmRegistration && !inviteFarmRegistration) {
+        commitAddNotification(this.$store, {
+            content: 'You cannot join this aggregator without an invitation from the administrator.',
+            color: 'error',
+        });
+        this.$router.push('/');
+        return;
+    }
+
+    // Save the farm url from query params.
+    this.farmUrl = this.$router.currentRoute.query.farmUrl as string;
+
+    // If a farmUrl is provided, assume that it is valid.
+    // This is used to help automate the authorization process,
+    // Such as when requesting authorization via email.
+    if (this.farmUrl) {
+        this.currentStep = 2;
+    }
+
 
     this.reset();
   }
@@ -328,43 +377,46 @@ export default class PublicAddFarm extends Vue {
     this.$validator.reset();
   }
 
-  public submitForm(scope) {
-    this.$validator.validateAll(scope).then( (isValid) => {
+  public async submitUrl() {
+      this.$validator.validateAll('farmUrl').then( (isValid) => {
+          if (isValid) {
+              dispatchPublicValidateFarmUrl(
+                  this.$store,
+                  {farmUrl: this.farmUrl, apiToken: this.apiToken },
+              ).then( (response) => {
+                  if (response) {
+                      this.currentStep = 2;
+                  }
+              });
+          }
+      });
+  }
+
+  public submitFarmInfo() {
+    this.$validator.validateAll('FarmInfoForm').then( (isValid) => {
       if (isValid) {
           this.currentStep ++;
       }
     });
   }
 
-  public nextStep(n) {
-    this.currentStep = n + 1;
-  }
+  public createFarm() {
+    this.$validator.validateAll('FarmVerifyForm').then( (isValid) => {
+        if (isValid) {
+            const newFarm: FarmProfileCreate = {
+                farm_name: this.farmName,
+                url: this.farmUrl,
+                tags: this.tags,
+                token: this.authToken,
+            };
+            if (this.apiToken) {
+                dispatchCreateFarm(this.$store, { data: newFarm, apiToken: this.apiToken } );
+            } else {
+                dispatchPublicCreateFarm(this.$store, { data: newFarm });
+            }
+        }
+    });
 
-  public submit() {
-    const newFarm: FarmProfileCreate = {
-      farm_name: this.farmName,
-      url: this.url,
-      tags: this.tags,
-      token: this.authToken,
-    };
-    if (this.apiToken) {
-      dispatchCreateFarm(this.$store, { data: newFarm, apiToken: this.apiToken } );
-    } else {
-      dispatchPublicCreateFarm(this.$store, { data: newFarm });
-    }
-  }
-
-  public checkApiToken(token) {
-    // Make sure a Token was included as an api_token query parameter.
-    if (!token) {
-      commitAddNotification(this.$store, {
-        content: 'No token provided in the URL, start a new password recovery',
-        color: 'error',
-      });
-      this.$router.push('/recover-password');
-    } else {
-      return token;
-    }
   }
 }
 </script>

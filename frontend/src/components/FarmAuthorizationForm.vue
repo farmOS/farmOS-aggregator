@@ -1,18 +1,14 @@
 <template>
     <form>
+        <div class="headline text--primary">
+            farmOS Server Authorization
+        </div>
         <div class="subtitle-1 text--primary">
             Authorize your farmOS server with the {{appName}}. This will give the {{appName}} access to your data
             at the level you define.
         </div>
         <br>
-        <div class="headline text--primary">
-            Farm Info
-        </div>
-        <div class="text--primary">
-            Verify that the following information is correct:
-        </div>
-        <v-text-field label="Farm Name" v-model="farmName" readonly></v-text-field>
-        <v-text-field label="URL" v-model="farmUrl" readonly></v-text-field>
+        <v-text-field label="farmOS Server URL" v-model="farmUrl" readonly></v-text-field>
 
 
         <div class="headline text--primary">
@@ -24,26 +20,45 @@
                 hint="Allow access to the entire farmOS API"
                 value="farmos_restws_access"
                 persistent-hint
-                disabled
+        ></v-checkbox>
+        <v-checkbox
+                v-model="oauthScopes"
+                label="Access farmOS Info"
+                hint="Allow access to basic farmOS info"
+                value="farm_info"
+                persistent-hint
+        ></v-checkbox>
+        <v-checkbox
+                v-model="oauthScopes"
+                label="Access farmOS Metrics"
+                hint="Allow access to all farmOS metrics"
+                value="farm_metrics"
+                persistent-hint
         ></v-checkbox>
     </form>
 </template>
 
 <script lang="ts">
+    import { apiUrl } from '@/env';
     import { Component, Vue, Prop } from 'vue-property-decorator';
-    import {FarmProfileAuthorize} from '@/interfaces';
+    import {FarmProfileAuthorize, FarmAuthorizationNonce} from '@/interfaces';
     import {dispatchAuthorizeFarm, dispatchPublicAuthorizeFarm} from '@/store/farm/actions';
+    import {commitRemoveFarmAuthorizationNonce, commitSetFarmAuthorizationNonce} from '@/store/main/mutations';
+    import {readFarmAuthorizationNonce} from '@/store/main/getters';
+    import {commitAddNotification} from '@/store/main/mutations';
 
     @Component
     export default class FarmAuthorizationForm extends Vue {
         @Prop({default: false}) public appName!: string;
+        @Prop({default: false}) public redirectUri!: string;
+        @Prop({default: null}) public apiToken!: string;
         @Prop({default: false}) public farmUrl!: string;
+        @Prop({default: false}) public authCode!: string;
         @Prop({default: null}) public farmName!: string;
         @Prop({default: null}) public farmId!: number;
-        @Prop({default: null}) public apiToken!: string;
 
         // Enable the farmos_restws_access scope by default.
-        public oauthScopes: string[] = ['farmos_restws_access'];
+        public oauthScopes: string[] = ['farmos_restws_access', 'farm_info', 'farm_metrics' ];
 
         // Generate a random string for the state param of OAuth Authorization Flow.
         public authState: string =
@@ -53,75 +68,97 @@
         public windowObjectReference: any = null;
 
         public openSignInWindow() {
-            // Emit event to update authstatus.
-            this.$emit('update:authstatus', 'started');
-
-            const windowFeatures = 'toolbar=no, menubar=no, width=600, height=700, top=100, left=100';
+            // Save the auth state
+            const nonce: FarmAuthorizationNonce = {
+                apiToken: this.apiToken,
+                state: this.authState,
+                farmId: this.farmId,
+                farmUrl: this.farmUrl,
+                scopes: this.oauthScopes,
+            };
 
             // Build the OAuth query parameters.
             const responseType = 'code';
             const clientID = 'farmos_api_client';
             const scopes = this.cleanOAuthStrings();
-            const redirectURI = `${this.farmUrl}/api/authorized`;
+            const redirectURI = `${apiUrl}${this.redirectUri}`;
             const state = this.authState;
             const queryParams = `?response_type=${responseType}&client_id=${clientID}&scope=${scopes}&redirect_uri=${redirectURI}&state=${state}`;
 
             const oauthPath = '/oauth2/authorize';
 
-            // Open a pop up window with the OAuth Authorization URL.
-            if (this.windowObjectReference === null || this.windowObjectReference.closed) {
-                this.windowObjectReference =
-                    window.open(this.farmUrl + oauthPath + queryParams, 'farmOS Login', windowFeatures);
-                this.windowObjectReference.focus();
-            } else {
-                this.windowObjectReference.focus();
-            }
+            commitSetFarmAuthorizationNonce(this.$store, nonce);
 
-            // Add listener to retrieve the OAuth Code
-            window.addEventListener('message', (event) => this.receiveMessage(event), false);
+            location.replace(this.farmUrl + oauthPath + queryParams);
         }
 
-        public async receiveMessage(event) {
-            // Make sure the message came from the farmOS server.
-            if (event.origin !== this.farmUrl) {
+        public async finishAuthorization(authCode, authState) {
+            this.$emit('update:authStarted', true);
+            const nonce: FarmAuthorizationNonce | null = readFarmAuthorizationNonce(this.$store);
+            if (!nonce) {
+                commitAddNotification(this.$store, {
+                    content: 'Authorization must be completed in the same browser session.',
+                    color: 'error',
+                });
+                this.$router.push(this.$route.path);
+                return;
+            }
+            this.oauthScopes = nonce.scopes!;
+            const savedState = nonce.state!;
+            const farmUrl = nonce.farmUrl!;
+            const farmId = nonce.farmId!;
+            const apiToken = nonce.apiToken;
+
+            if (savedState !== authState) {
+                commitAddNotification(this.$store, {
+                    content: 'Authorization error: State parameters do not match.',
+                    color: 'error',
+                });
+                this.$router.push(this.$route.path);
                 return;
             }
 
-            // Build a URLSearchParams from the message data.
-            const params = new URLSearchParams(event.data.substr(1));
-
-            // Parse out the `code` and `state` values.
-            const code = params.get('code') as string;
-            const state = params.get('state') as string;
-
-            // Make sure the state did not change.
-            if (state !== this.authState) {
-                return null;
-            }
+            // Remove the nonce once retrieved.
+            commitRemoveFarmAuthorizationNonce(this.$store);
 
             // Build the payload for the backend to request a token.
             const authValues: FarmProfileAuthorize = {
                 grant_type: 'authorization_code',
-                code,
-                state,
+                code: authCode,
+                state: authState,
                 client_id: 'farmos_api_client',
                 client_secret: 'client_secret',
+                redirect_uri: `${apiUrl}${this.redirectUri}`,
             };
 
             // Dispatch API call to backend.
-            if (this.farmId != null) {
-                await dispatchAuthorizeFarm(this.$store, { id: this.farmId, authValues, apiToken: this.apiToken });
+            if (farmId != null && apiToken != null) {
+                dispatchAuthorizeFarm(
+                  this.$store,
+                  { id: farmId, authValues, apiToken },
+                ).then( (response) => {
+                    this.$emit('update:authtoken', response.token);
+                    this.$emit('update:apiToken', apiToken);
+                    this.$emit('update:farminfo', response.info);
+                    this.$emit('update:farmName', response.info.name);
+                    this.$emit('update:farmUrl', response.info.url);
+                    this.$emit('update:authFinished', true);
+                    this.$emit('authorizationcomplete');
+                });
             } else {
-                const data = await dispatchPublicAuthorizeFarm(
-                    this.$store,
-                    { farmUrl: this.farmUrl, authValues, apiToken: this.apiToken });
-                this.$emit('update:authtoken', data.token);
-                this.$emit('update:farminfo', data.info);
+                await dispatchPublicAuthorizeFarm(
+                  this.$store,
+                  { farmUrl, authValues, apiToken },
+                ).then( (response) => {
+                    this.$emit('update:authtoken', response.token);
+                    this.$emit('update:apiToken', apiToken);
+                    this.$emit('update:farminfo', response.info);
+                    this.$emit('update:farmName', response.info.name);
+                    this.$emit('update:farmUrl', response.info.url);
+                    this.$emit('update:authFinished', true);
+                    this.$emit('authorizationcomplete');
+                });
             }
-
-            // Emit events to update authorization status.
-            this.$emit('update:authstatus', 'completed');
-            this.$emit('authorizationcomplete');
         }
 
         public cleanOAuthStrings() {

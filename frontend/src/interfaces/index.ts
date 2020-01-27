@@ -47,6 +47,12 @@ export interface FarmProfile {
     token: FarmToken;
 }
 
+export interface FarmInfo {
+    name?: string;
+    url?: string;
+    api_version?: string;
+}
+
 export interface FarmProfileUpdate {
     farm_name?: string;
     url?: string;
