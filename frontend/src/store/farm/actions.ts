@@ -78,6 +78,9 @@ export const actions = {
           ]))[0];
           commitRemoveNotification(context, loadingNotification);
           commitAddNotification(context, { content: 'Farm authorized.', color: 'success' });
+          if (response) {
+              return response.data;
+          }
       } catch (error) {
           await dispatchCheckApiError(context, error);
       }
@@ -170,6 +173,37 @@ export const actions = {
             await dispatchCheckApiError(context, error);
         }
     },
+    async actionPublicValidateFarmUrl(
+        context: MainContext,
+        payload: {farmUrl: string, apiToken?: string }) {
+        const loadingNotification = { content: 'Checking hostname', showProgress: true };
+        try {
+            commitAddNotification(context, loadingNotification);
+            const response = (await Promise.all([
+                api.publicValidateFarmUrl(
+                    context.rootState.main.token,
+                    payload.farmUrl,
+                    payload.apiToken,
+                ),
+                await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+            ]))[0];
+            commitRemoveNotification(context, loadingNotification);
+            commitAddNotification(context, { content: 'farmOS Hostname validated.', color: 'success' });
+            if (response) {
+                return response.data;
+            }
+        } catch (error) {
+            if (error.response!.status === 409) {
+                commitRemoveNotification(context, loadingNotification);
+                commitAddNotification(context, {content: 'A farm with that URL already exists.', color: 'error' });
+            } else if (error.response!.status === 406) {
+                commitRemoveNotification(context, loadingNotification);
+                commitAddNotification(context, {content: 'Could not reach the farmOS Server. Check that the hostname is correct.', color: 'error' });
+            } else {
+                await dispatchCheckApiError(context, error);
+            }
+        }
+    },
 };
 
 const { dispatch } = getStoreAccessors<FarmState, State>('');
@@ -186,3 +220,4 @@ export const dispatchGetOneFarm = dispatch(actions.actionGetOneFarm);
 // Public Actions
 export const dispatchPublicCreateFarm = dispatch(actions.actionPublicCreateFarm);
 export const dispatchPublicAuthorizeFarm = dispatch(actions.actionPublicAuthorizeFarm);
+export const dispatchPublicValidateFarmUrl = dispatch(actions.actionPublicValidateFarmUrl);
