@@ -1,0 +1,52 @@
+# Redirect port 80 traffic (except ACME challenges).
+server {
+    listen 80;
+    server_name ${DOMAIN};
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/letsencrypt;
+    }
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+# Proxy traffic to backend.
+server {
+    error_log syslog:server=unix:/dev/log;
+    access_log syslog:server=unix:/dev/log;
+    listen 443 ssl;
+    server_name ${DOMAIN};
+
+    # Configure SSL protocols.
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+
+    # Enable SSL session cache to improve performance.
+    ssl_session_cache shared:SSL:20m;
+    ssl_session_timeout 10m;
+
+    # Add Strict-Transport-Security to prevent man in the middle attacks.
+    add_header Strict-Transport-Security "max-age=31536000";
+
+    # Point to SSL certificates.
+    ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+
+    location / {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_pass http://frontend;
+    }
+
+    location ~ ^/(docs|api|redoc) {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_pass http://backend;
+    }
+}
