@@ -93,3 +93,35 @@ def authorize_farm(
     except Exception as e:
         raise HTTPException(status_code=400, detail="Could not authenticate with farmOS server.")
 
+
+@router.post(
+    "/validate-farm-url",
+)
+def validate_farm_url(
+        *,
+        db: Session = Depends(get_db),
+        farm_url: str = Body(..., embed=True),
+):
+    """
+    Validate the farm_url when registering a new farm.
+    Check to make sure the url is not already in use, and check that
+    the url points to a valid farmOS server.
+    """
+    existing_farm = crud.farm.get_by_url(db, farm_url=farm_url)
+    if existing_farm:
+        raise HTTPException(
+            status_code=409,
+            detail="A farm with this URL already exists.",
+        )
+
+    # Check that the `farm.json` endpoint returns 200
+    # TODO: Use farmOS.py helper function to validate server hostname.
+    response = {}
+    success = True
+    if not success:
+        raise HTTPException(
+            status_code=406,
+            detail="Invalid farmOS hostname. Make sure this is a valid hostname for your farmOS Server.",
+        )
+
+    return response
