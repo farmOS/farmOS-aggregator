@@ -74,4 +74,13 @@ export interface FarmProfileAuthorize {
     state: string;
     client_id: string;
     client_secret?: string;
+    redirect_uri?: string;
+}
+
+export interface FarmAuthorizationNonce {
+    apiToken?: string;
+    state?: string;
+    farmId?: number;
+    farmUrl?: string;
+    scopes?: string[];
 }
