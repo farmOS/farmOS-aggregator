@@ -1,4 +1,4 @@
-import { IUserProfile } from '@/interfaces';
+import {FarmAuthorizationNonce, IUserProfile} from '@/interfaces';
 
 export interface AppNotification {
     content: string;
@@ -14,4 +14,5 @@ export interface MainState {
     dashboardMiniDrawer: boolean;
     dashboardShowDrawer: boolean;
     notifications: AppNotification[];
+    farmAuthorization: FarmAuthorizationNonce | null;
 }

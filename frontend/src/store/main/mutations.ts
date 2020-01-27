@@ -1,4 +1,4 @@
-import { IUserProfile } from '@/interfaces';
+import {FarmAuthorizationNonce, IUserProfile} from '@/interfaces';
 import { MainState, AppNotification } from './state';
 import { getStoreAccessors } from 'typesafe-vuex';
 import { State } from '../state';
@@ -29,6 +29,12 @@ export const mutations = {
     removeNotification(state: MainState, payload: AppNotification) {
         state.notifications = state.notifications.filter((notification) => notification !== payload);
     },
+    setFarmAuthorizationNonce(state: MainState, payload: FarmAuthorizationNonce) {
+        state.farmAuthorization = payload;
+    },
+    removeFarmAuthorizationNonce(state: MainState) {
+        state.farmAuthorization = null;
+    },
 };
 
 const {commit} = getStoreAccessors<MainState | any, State>('');
@@ -41,3 +47,5 @@ export const commitSetToken = commit(mutations.setToken);
 export const commitSetUserProfile = commit(mutations.setUserProfile);
 export const commitAddNotification = commit(mutations.addNotification);
 export const commitRemoveNotification = commit(mutations.removeNotification);
+export const commitSetFarmAuthorizationNonce = commit(mutations.setFarmAuthorizationNonce);
+export const commitRemoveFarmAuthorizationNonce = commit(mutations.removeFarmAuthorizationNonce);
