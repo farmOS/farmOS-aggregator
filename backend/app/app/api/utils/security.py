@@ -41,7 +41,7 @@ reusable_oauth2 = OAuth2PasswordBearer(
     auto_error=True
 )
 
-API_KEY_NAME = "api_token"
+API_KEY_NAME = "api-token"
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 
 

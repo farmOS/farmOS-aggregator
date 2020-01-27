@@ -14,7 +14,7 @@ function accessTokenAuthHeaders(token: string) {
 function apiTokenAuthHeaders(apiToken: string) {
   return {
     headers: {
-      api_token: apiToken,
+      'api-token': apiToken,
     },
   };
 }
