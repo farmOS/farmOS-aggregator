@@ -29,7 +29,7 @@ export default new VueRouter({
           component: () => import(/* webpackChunkName: "reset-password" */ './views/ResetPassword.vue'),
         },
         {
-          path: 'authorize-farm/:id',
+          path: 'authorize-farm',
           component: () => import(/* webpackChunkName: "reset-password" */ './views/AuthorizeFarm.vue'),
         },
         {

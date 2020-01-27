@@ -10,27 +10,23 @@
             <v-card-text>
               <FarmAuthorizationForm
                       ref="authForm"
-                      v-bind:authstatus.sync="authStatus"
+                      v-bind:authStarted.sync="authStarted"
+                      v-bind:authFinished.sync="authFinished"
                       v-bind:appName="appName"
-                      v-bind:farmUrl="farm.url"
-                      v-bind:farmName="farm.farm_name"
-                      v-bind:farmId="farm.id"
+                      v-bind:redirectUri="'/authorize-farm'"
                       v-bind:apiToken="apiToken"
+                      v-bind:farmUrl.sync="farm.url"
+                      v-bind:farmId="farm.id"
               />
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn
-                      @click="$router.back()"
-              >
-                Cancel
-              </v-btn>
-
-              <v-btn
                       class="white--text"
                       color="primary"
                       @click="$refs.authForm.openSignInWindow()"
-                      :disabled="authStatus == 'completed'"
+                      :loading="authStarted === true && authFinished !== true"
+                      :disabled="authStarted === true || authFinished === true"
               >
                 Authorize Now
               </v-btn>
@@ -44,8 +40,8 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { FarmProfile } from '@/interfaces';
-import { appName } from '@/env';
+import {FarmProfile, FarmToken} from '@/interfaces';
+import {appName, inviteFarmRegistration, openFarmRegistration} from '@/env';
 import { commitAddNotification } from '@/store/main/mutations';
 import { dispatchGetOneFarm } from '@/store/farm/actions';
 import FarmAuthorizationForm from '@/components/FarmAuthorizationForm.vue';
@@ -54,6 +50,10 @@ import FarmAuthorizationForm from '@/components/FarmAuthorizationForm.vue';
   components: {FarmAuthorizationForm},
 })
 export default class UserProfileEdit extends Vue {
+  public $refs!: {
+      authForm: HTMLFormElement,
+  };
+
   public appName = appName;
   // Query params.
   public farmID: number = 0;
@@ -62,21 +62,65 @@ export default class UserProfileEdit extends Vue {
   // Save the FarmProfile info.
   public farm = {} as FarmProfile;
 
-  public authStatus: string = 'not started';
+  // Initialize variables for the authorization step.
+  public authStarted: boolean = false;
+  public authFinished: boolean = false;
+  public authCode: string = '';
+  public authState: string = '';
+  public authError: string = '';
+  public authErrorDescription: string = '';
+  public authToken: FarmToken = {
+      access_token: '',
+      refresh_token: '',
+      expires_at: '',
+      expires_in: '',
+  };
 
   public async mounted() {
-    this.farmID = +this.$router.currentRoute.params.id;
-    this.apiToken = this.$router.currentRoute.query.api_token as string;
+      // Check for authorization errors.
+      this.authError = this.$router.currentRoute.query.error as string;
+      this.authErrorDescription = this.$router.currentRoute.query.error_description as string;
+      if (this.authError) {
+          commitAddNotification(this.$store, {
+              content: this.authError + ': ' + this.authErrorDescription,
+              color: 'error',
+          });
+      }
 
-    // Verify an APIToken was provided.
-    this.checkApiToken(this.apiToken);
-    const response = await dispatchGetOneFarm(this.$store, { farmID: this.farmID, apiToken: this.apiToken } );
-    if (response) {
-      this.farm = response;
-    }
+      // Get authorization code and authorization state
+      this.authCode = this.$router.currentRoute.query.code as string;
+      this.authState = this.$router.currentRoute.query.state as string;
+      if (this.authCode && this.authState) {
+          // Finish authorization in the FarmAuthorizationFrom component.
+          this.$refs.authForm.finishAuthorization(this.authCode, this.authState);
+          return;
+      }
 
-    this.reset();
+      // Save an API Token if provided.
+      this.farmID = +this.$router.currentRoute.query.farm_id as number;
+      this.apiToken = this.$router.currentRoute.query.api_token as string;
 
+      if (!this.farmID || !this.apiToken) {
+          commitAddNotification(this.$store, {
+              content: 'You cannot re-authorize farms without an invitation from the administrator.',
+              color: 'error',
+          });
+          this.$router.push('/');
+      }
+
+      // Verify an APIToken was provided.
+      const response = await dispatchGetOneFarm(this.$store, { farmID: this.farmID, apiToken: this.apiToken } );
+      if (response) {
+          this.farm = response;
+      } else {
+          commitAddNotification(this.$store, {
+              content: 'Farm not found, cannot authorize.',
+              color: 'error',
+          });
+          this.$router.push('/');
+      }
+
+      this.reset();
   }
 
   public reset() {
@@ -85,19 +129,6 @@ export default class UserProfileEdit extends Vue {
 
   public cancel() {
     this.$router.push('/');
-  }
-
-  public checkApiToken(token) {
-    // Make sure a Token was included as an api_token query parameter.
-    if (!token) {
-      commitAddNotification(this.$store, {
-        content: 'No token provided in the URL, start a new password recovery',
-        color: 'error',
-      });
-      this.$router.push('/recover-password');
-    } else {
-      return token;
-    }
   }
 }
 </script>
