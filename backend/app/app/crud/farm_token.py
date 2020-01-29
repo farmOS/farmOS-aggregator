@@ -4,10 +4,12 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from app.models.farm_token import FarmToken
-from app.schemas.farm_token import FarmTokenCreate, FarmTokenUpdate
+from app.schemas.farm_token import FarmTokenCreate, FarmTokenBase
+
 
 def get_farm_token(db: Session, farm_id: int):
     return db.query(FarmToken).filter(FarmToken.farm_id == farm_id).first()
+
 
 def create_farm_token(db: Session, token: FarmTokenCreate):
     db_item = FarmToken(**token.dict())
@@ -16,7 +18,8 @@ def create_farm_token(db: Session, token: FarmTokenCreate):
     db.refresh(db_item)
     return db_item
 
-def update_farm_token(db: Session, token: FarmToken, token_in: FarmTokenUpdate):
+
+def update_farm_token(db: Session, token: FarmToken, token_in: FarmTokenBase):
     token_data = jsonable_encoder(token)
     update_data = token_in.dict(exclude_unset=True)
     for field in token_data:
