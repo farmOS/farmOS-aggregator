@@ -16,8 +16,6 @@ class Farm(Base):
     last_accessed = Column(DateTime(timezone=True))
     farm_name = Column(String, index=True)
     url = Column(String, index=True, unique=True)
-    username = Column(String, index=True)
-    password = Column(String, index=True)
     notes = Column(String, nullable=True)
     tags = Column(String, nullable=True)
 

@@ -10,8 +10,6 @@ def test_create_delete_default_farm_with_token():
 
     farm_name = random_lower_string()
     url = random_lower_string()
-    username = random_lower_string()
-    password = random_lower_string()
 
     # Provide a token on creation
     token = {
@@ -24,15 +22,11 @@ def test_create_delete_default_farm_with_token():
     farm_in = FarmCreate(
         farm_name=farm_name,
         url=url,
-        username=username,
-        password=password,
         token=token,
     )
     farm = crud.farm.create(db_session, farm_in=farm_in)
     assert farm.farm_name == farm_name
     assert farm.url == url
-    assert farm.username == username
-    assert farm.password == password
 
     if config.FARM_ACTIVE_AFTER_REGISTRATION:
         assert farm.active is True
@@ -57,20 +51,15 @@ def test_create_delete_active_farm():
 
     farm_name = random_lower_string()
     url = random_lower_string()
-    username = random_lower_string()
-    password = random_lower_string()
+
     farm_in = FarmCreate(
         farm_name=farm_name,
         url=url,
-        username=username,
-        password=password,
-        active=True,
     )
     farm = crud.farm.create(db_session, farm_in=farm_in)
     assert farm.farm_name == farm_name
     assert farm.url == url
-    assert farm.username == username
-    assert farm.password == password
+    assert farm.token is None
 
     assert farm.active is True
 
@@ -85,22 +74,15 @@ def test_create_delete_inactive_farm():
 
     farm_name = random_lower_string()
     url = random_lower_string()
-    username = random_lower_string()
-    password = random_lower_string()
     farm_in = FarmCreate(
         farm_name=farm_name,
         url=url,
-        username=username,
-        password=password,
-        active=False,
+        active=True,
     )
     farm = crud.farm.create(db_session, farm_in=farm_in)
     assert farm.farm_name == farm_name
     assert farm.url == url
-    assert farm.username == username
-    assert farm.password == password
-
-    assert farm.active is False
+    assert farm.active is True
 
     # Remove farm from DB
     crud.farm.delete(db_session, farm_id=farm.id)
@@ -108,15 +90,20 @@ def test_create_delete_inactive_farm():
     assert farm is None
 
 
-def test_optional_username_password():
+def test_create_delete_inactive_farm():
+    """Configure the active flag to False."""
+
     farm_name = random_lower_string()
     url = random_lower_string()
-    farm_in = FarmCreate(farm_name=farm_name, url=url)
+    farm_in = FarmCreate(
+        farm_name=farm_name,
+        url=url,
+        active=False,
+    )
     farm = crud.farm.create(db_session, farm_in=farm_in)
     assert farm.farm_name == farm_name
     assert farm.url == url
-    assert farm.username is None
-    assert farm.password is None
+    assert farm.active is False
 
     # Remove farm from DB
     crud.farm.delete(db_session, farm_id=farm.id)
