@@ -5,10 +5,12 @@ import datetime
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
+from app import crud
 from app.core import config
 from app.models.farm import Farm
 from app.schemas.farm import FarmCreate, FarmUpdate
 from app.models.farm_token import FarmToken
+from app.schemas.farm_token import FarmTokenCreate
 from app.schemas.farm_info import FarmInfo
 
 
@@ -81,8 +83,24 @@ def create(db_session: Session, *, farm_in: FarmCreate) -> Farm:
 
 
 def update(db_session: Session, *, farm: Farm, farm_in: FarmUpdate):
+    # If provided, handle the token update first.
+    if farm_in.token is not None:
+        # Check for existing token.
+        old_token = crud.farm_token.get_farm_token(db_session, farm.id)
+
+        # Create new token if none existing.
+        if old_token is None:
+            new_token = FarmTokenCreate(farm_id=farm.id, **farm_in.token.dict())
+            token = crud.farm_token.create_farm_token(db_session, token=new_token)
+        # Update existing token.
+        else:
+            token = crud.farm_token.update_farm_token(db_session, token=old_token, token_in=farm_in.token)
+
+    # Prevent deleting token
+    del farm_in.token
+
     farm_data = jsonable_encoder(farm)
-    update_data = farm_in.dict(skip_defaults=True)
+    update_data = farm_in.dict(exclude_unset=True)
     for field in farm_data:
         if field in update_data:
             setattr(farm, field, update_data[field])

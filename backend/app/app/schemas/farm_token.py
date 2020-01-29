@@ -2,6 +2,7 @@ from typing import Optional
 
 from app.schemas.api_model import APIModel
 
+
 # Farm Token Models
 class FarmTokenBase(APIModel):
     access_token: Optional[str] = None
@@ -21,6 +22,7 @@ class FarmToken(FarmTokenBase):
 
 class FarmTokenUpdate(FarmToken):
     pass
+
 
 class FarmAuthorizationParams(APIModel):
     grant_type: str
