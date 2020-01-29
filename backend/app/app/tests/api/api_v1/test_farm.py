@@ -4,7 +4,7 @@ import pytest
 from app import crud
 from app.core import config
 from app.db.session import db_session
-from app.models.farm import FarmCreate
+from app.schemas.farm import FarmCreate
 from app.tests.utils.utils import get_server_api, random_lower_string, get_scope_token_headers
 
 

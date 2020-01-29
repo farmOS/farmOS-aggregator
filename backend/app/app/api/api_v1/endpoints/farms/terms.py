@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.api.utils.db import get_db
 from app.api.utils.farms import get_active_farms_url_or_list, get_farm_client, ClientError
-from app.models.farm import Farm
+from app.schemas.farm import Farm
 
 router = APIRouter()
 

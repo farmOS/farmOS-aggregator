@@ -1,44 +1,33 @@
-from typing import Optional
-from datetime import datetime
+from sqlalchemy import Boolean, Column, Integer, String, DateTime
+from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import JSONB
 
-from app.models.api_model import APIModel
-from app.models.farm_token import FarmTokenBase, FarmToken
-from app.models.farm_info import FarmInfo
+from app.db.base_class import Base
+from app.models.farm_token import FarmToken
 
-# Shared properties
-class FarmBase(APIModel):
-    farm_name: Optional[str] = None
-    url: Optional[str] = None
-    username: Optional[str] = None
-    notes: Optional[str] = None
-    tags: Optional[str] = None
-    info: Optional[FarmInfo] = None
-    active: Optional[bool] = None
 
-class FarmBaseInDB(FarmBase):
-    id: int = None
+class Farm(Base):
+    __tablename__ = 'farm'
 
-# Properties to receive via API on creation
-class FarmCreate(FarmBase):
-    farm_name: str
-    url: str
-    username: Optional[str]
-    password: Optional[str]
-    token: Optional[FarmTokenBase]
+    id = Column(Integer, primary_key=True, index=True)
+    time_created = Column(DateTime(timezone=True), server_default=func.now())
+    time_updated = Column(DateTime(timezone=True), onupdate=func.now())
+    last_accessed = Column(DateTime(timezone=True))
+    farm_name = Column(String, index=True)
+    url = Column(String, index=True, unique=True)
+    username = Column(String, index=True)
+    password = Column(String, index=True)
+    notes = Column(String, nullable=True)
+    tags = Column(String, nullable=True)
 
-# Properties to receive via API on update
-class FarmUpdate(FarmBase):
-    password: Optional[str] = None
+    # active attribute allows admins to disable farmOS profiles
+    active = Column(Boolean, default=False)
 
-# Additional properties to return via API
-class Farm(FarmBaseInDB):
-    time_created: Optional[datetime] = None
-    time_updated: Optional[datetime] = None
-    last_accessed: Optional[datetime] = None
-    token: Optional[FarmToken] = None
-    is_authorized: Optional[bool] = None
-    auth_error: Optional[str] = None
+    # Store farm info in a JSONB column
+    info = Column(JSONB, nullable=True)
 
-# Additional properites stored in DB
-class FarmInDB(FarmBaseInDB):
-    pass
+    is_authorized = Column(Boolean, default=False)
+    token = relationship("FarmToken", uselist=False, back_populates="farm")
+    auth_error = Column(String, nullable=True)
+

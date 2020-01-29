@@ -1,6 +1,6 @@
 from typing import List
 
-from app.models.api_model import APIModel
+from app.schemas.api_model import APIModel
 
 
 class Token(APIModel):

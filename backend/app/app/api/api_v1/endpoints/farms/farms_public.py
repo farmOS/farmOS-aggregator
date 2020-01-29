@@ -14,8 +14,8 @@ from app.core import config
 from app import crud
 from app.api.utils.db import get_db
 from app.api.utils.farms import get_oauth_token
-from app.models.farm import Farm, FarmCreate
-from app.models.farm_token import FarmAuthorizationParams
+from app.schemas.farm import Farm, FarmCreate
+from app.schemas.farm_token import FarmAuthorizationParams
 
 logger = logging.getLogger(__name__)
 

@@ -6,10 +6,10 @@ from app import crud
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser
 from app.core.celery_app import celery_app
-from app.models.msg import Msg
-from app.models.user import UserInDB
-from app.models.farm import Farm
-from app.models.farm_token import FarmTokenCreate, FarmAuthorizationParams
+from app.schemas.msg import Msg
+from app.schemas.user import UserInDB
+from app.schemas.farm import Farm
+from app.schemas.farm_token import FarmTokenCreate, FarmAuthorizationParams
 from app.api.utils.farms import get_farm_by_id, get_oauth_token
 from app.api.utils.security import get_farm_access
 from app.utils import send_test_email, generate_farm_authorization_link, generate_farm_registration_link

@@ -12,10 +12,10 @@ from farmOS.config import ClientConfig
 
 from app import crud
 from app.api.utils.db import get_db
-from app.models.farm_token import FarmTokenBase, FarmTokenCreate
+from app.schemas.farm_token import FarmTokenBase, FarmTokenCreate
 from app.crud.farm_token import create_farm_token, update_farm_token
-from app.models.farm import Farm, FarmUpdate
-from app.models.token import FarmAccess
+from app.schemas.farm import Farm, FarmUpdate
+from app.schemas.token import FarmAccess
 from app.api.utils.security import get_farm_access
 
 

@@ -6,10 +6,10 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from app.core import config
-from app.db_models.farm import Farm
-from app.models.farm import FarmCreate, FarmUpdate
-from app.db_models.farm_token import FarmToken
-from app.models.farm_info import FarmInfo
+from app.models.farm import Farm
+from app.schemas.farm import FarmCreate, FarmUpdate
+from app.models.farm_token import FarmToken
+from app.schemas.farm_info import FarmInfo
 
 
 logger = logging.getLogger(__name__)

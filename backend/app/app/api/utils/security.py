@@ -11,8 +11,8 @@ from app import crud
 from app.api.utils.db import get_db
 from app.core import config
 from app.core.jwt import ALGORITHM
-from app.db_models.user import User
-from app.models.token import TokenData, FarmAccess
+from app.models.user import User
+from app.schemas.token import TokenData, FarmAccess
 
 
 logger = logging.getLogger(__name__)

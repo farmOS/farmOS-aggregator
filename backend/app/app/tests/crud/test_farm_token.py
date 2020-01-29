@@ -1,6 +1,6 @@
 from app.crud import farm_token
 from app.db.session import db_session
-from app.models.farm_token import FarmTokenCreate, FarmTokenUpdate
+from app.schemas.farm_token import FarmTokenCreate, FarmTokenUpdate
 from app.tests.utils.utils import random_lower_string
 
 def test_create_farm_token(test_farm):
