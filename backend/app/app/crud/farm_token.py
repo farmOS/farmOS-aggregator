@@ -18,7 +18,7 @@ def create_farm_token(db: Session, token: FarmTokenCreate):
 
 def update_farm_token(db: Session, token: FarmToken, token_in: FarmTokenUpdate):
     token_data = jsonable_encoder(token)
-    update_data = token_in.dict(skip_defaults=True)
+    update_data = token_in.dict(exclude_unset=True)
     for field in token_data:
         if field in update_data:
             setattr(token, field, update_data[field])

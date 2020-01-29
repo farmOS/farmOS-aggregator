@@ -1,6 +1,6 @@
 FROM python:3.7
 
-RUN pip install requests pytest tenacity passlib[bcrypt] celery~=4.3 "fastapi==0.30.0" pyjwt psycopg2-binary SQLAlchemy "farmOS==0.1.5"
+RUN pip install requests pytest tenacity passlib[bcrypt] celery~=4.3 "fastapi==0.47.1" "pydantic==1.4" pyjwt psycopg2-binary SQLAlchemy "farmOS==0.1.5"
 
 # For development, Jupyter remote kernel, Hydrogen
 # Using inside the container:
