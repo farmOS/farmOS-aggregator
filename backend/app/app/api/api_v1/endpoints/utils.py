@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Security, HTTPException
-from pydantic.types import EmailStr
+from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
 
 from app import crud
