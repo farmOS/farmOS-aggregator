@@ -9,7 +9,6 @@ from app.schemas.farm_info import FarmInfo
 class FarmBase(APIModel):
     farm_name: Optional[str] = None
     url: Optional[str] = None
-    username: Optional[str] = None
     notes: Optional[str] = None
     tags: Optional[str] = None
     info: Optional[FarmInfo] = None
@@ -22,13 +21,13 @@ class FarmBaseInDB(FarmBase):
 class FarmCreate(FarmBase):
     farm_name: str
     url: str
-    username: Optional[str]
-    password: Optional[str]
-    token: Optional[FarmTokenBase]
+    token: Optional[FarmTokenBase] = None
+
 
 # Properties to receive via API on update
 class FarmUpdate(FarmBase):
-    password: Optional[str] = None
+    pass
+
 
 # Additional properties to return via API
 class Farm(FarmBaseInDB):
@@ -39,6 +38,7 @@ class Farm(FarmBaseInDB):
     is_authorized: Optional[bool] = None
     auth_error: Optional[str] = None
 
-# Additional properites stored in DB
+
+# Additional properties stored in DB
 class FarmInDB(FarmBaseInDB):
     pass

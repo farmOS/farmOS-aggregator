@@ -1,5 +1,3 @@
-import farmOS
-
 from app.core import config
 from app import crud
 from app.db.session import db_session
@@ -23,16 +21,12 @@ def get_test_farm_instance():
         farm_in = FarmCreate(
             farm_name=config.TEST_FARM_NAME,
             url=config.TEST_FARM_URL,
-            username=config.TEST_FARM_USERNAME,
-            password=config.TEST_FARM_PASSWORD,
             active=True
         )
     else:
         farm_in = FarmCreate(
             farm_name=config.TEST_FARM_NAME,
             url="http://localhost",
-            username="username",
-            password="password",
             active=True
         )
 

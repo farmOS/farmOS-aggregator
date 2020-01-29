@@ -33,15 +33,11 @@ def test_create_delete_farm(farm_create_headers, farm_delete_headers):
 
     farm_name = random_lower_string()
     url = 'test.farmos.net'
-    username = random_lower_string()
-    password = random_lower_string()
 
     # Create a farm
     data = {
         "farm_name": farm_name,
         "url": url,
-        "username": username,
-        "password": password
     }
     r = requests.post(
         f"{server_api}{config.API_V1_STR}/farms/",
@@ -55,11 +51,6 @@ def test_create_delete_farm(farm_create_headers, farm_delete_headers):
     # Check that submitted values match those returned, and in db
     assert farm.farm_name == created_farm["farm_name"] == data['farm_name']
     assert farm.url == created_farm["url"] == data['url']
-    assert farm.username == created_farm["username"] == data['username']
-    assert farm.password == data['password']
-
-    # Check that raw password is not returned via API
-    assert 'password' not in created_farm
 
     # Delete the farm
     r = requests.delete(
@@ -82,7 +73,6 @@ def test_get_all_farms(test_farm, farm_read_headers):
     first_id = response[0]['id']
     farm = crud.farm.get_by_id(db_session, farm_id=first_id)
     assert farm.farm_name == response[0]["farm_name"]
-    assert not hasattr(response[0], 'password')
 
 
 def test_get_farm_by_id(test_farm, farm_read_headers):
@@ -97,7 +87,6 @@ def test_get_farm_by_id(test_farm, farm_read_headers):
     response = r.json()
     farm = crud.farm.get_by_id(db_session, farm_id=response['id'])
     assert farm.farm_name == response["farm_name"]
-    assert not hasattr(response, 'password')
 
 
 def test_farm_create_oauth_scope():

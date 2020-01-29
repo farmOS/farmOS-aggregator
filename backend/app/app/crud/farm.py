@@ -60,8 +60,6 @@ def create(db_session: Session, *, farm_in: FarmCreate) -> Farm:
     farm = Farm(
         farm_name=farm_in.farm_name,
         url=farm_in.url,
-        username=farm_in.username,
-        password=farm_in.password,
         notes=farm_in.notes,
         tags=farm_in.tags,
         info=farm_in.info,
