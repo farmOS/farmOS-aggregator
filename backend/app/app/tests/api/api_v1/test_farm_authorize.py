@@ -4,7 +4,7 @@ import requests
 import pytest
 
 from app.core import config
-from app.models.farm_token import FarmAuthorizationParams
+from app.schemas.farm_token import FarmAuthorizationParams
 from app.tests.utils.utils import farmOS_testing_server, get_server_api, random_lower_string, get_scope_token_headers
 from app.api.utils.security import _validate_token
 

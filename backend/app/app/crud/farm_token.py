@@ -3,8 +3,8 @@ from typing import List, Optional
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
-from app.db_models.farm_token import FarmToken
-from app.models.farm_token import FarmTokenCreate, FarmTokenUpdate
+from app.models.farm_token import FarmToken
+from app.schemas.farm_token import FarmTokenCreate, FarmTokenUpdate
 
 def get_farm_token(db: Session, farm_id: int):
     return db.query(FarmToken).filter(FarmToken.farm_id == farm_id).first()

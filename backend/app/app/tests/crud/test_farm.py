@@ -1,7 +1,7 @@
 from app.core import config
 from app import crud
 from app.db.session import db_session
-from app.models.farm import FarmCreate
+from app.schemas.farm import FarmCreate
 from app.tests.utils.utils import random_lower_string
 
 

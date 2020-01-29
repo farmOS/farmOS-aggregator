@@ -1,31 +1,17 @@
-from typing import Optional
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 
-from app.models.api_model import APIModel
-
-# Farm Token Models
-class FarmTokenBase(APIModel):
-    access_token: Optional[str] = None
-    expires_in: Optional[str] = None
-    refresh_token: Optional[str] = None
-    expires_at: Optional[str] = None
+from app.db.base_class import Base
 
 
-class FarmTokenCreate(FarmTokenBase):
-    farm_id: int
-    pass
+class FarmToken(Base):
+    __tablename__ = 'farmtoken'
 
+    id = Column(Integer, primary_key=True)
+    access_token = Column(String)
+    expires_in = Column(String)
+    refresh_token = Column(String)
+    expires_at = Column(String)
 
-class FarmToken(FarmTokenBase):
-    id: int
-
-
-class FarmTokenUpdate(FarmToken):
-    pass
-
-class FarmAuthorizationParams(APIModel):
-    grant_type: str
-    code: str
-    state: str
-    client_id: str
-    client_secret: Optional[str]
-    redirect_uri: Optional[str]
+    farm_id = Column(Integer, ForeignKey("farm.id"), unique=True)
+    farm = relationship("Farm", uselist=False, back_populates="token")

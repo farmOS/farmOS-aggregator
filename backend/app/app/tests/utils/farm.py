@@ -3,7 +3,7 @@ import farmOS
 from app.core import config
 from app import crud
 from app.db.session import db_session
-from app.models.farm import FarmCreate
+from app.schemas.farm import FarmCreate
 
 
 def get_test_farm_instance():
