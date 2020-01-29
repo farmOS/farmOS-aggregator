@@ -93,7 +93,7 @@ def test_get_farm_auth_link(test_farm, superuser_token_headers):
     # Test that the api_token has access to read /api/v1/farms/{id}
     r = requests.get(
         f"{server_api}{config.API_V1_STR}/farms/{test_farm.id}",
-        headers={'api_token': token},
+        headers={'api-token': token},
     )
     assert 200 <= r.status_code < 300
     farm_info = r.json()
@@ -110,7 +110,7 @@ def test_get_farm_auth_link(test_farm, superuser_token_headers):
 
     r = requests.post(
         f"{server_api}{config.API_V1_STR}/utils/authorize-farm/{test_farm.id}",
-        headers={'api_token': token},
+        headers={'api-token': token},
         json=data.dict(),
     )
     # This request should return 400, but no token will be created.
