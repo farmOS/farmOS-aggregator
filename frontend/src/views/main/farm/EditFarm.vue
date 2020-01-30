@@ -18,13 +18,6 @@
             ></v-checkbox>
           </div>
 
-          <div class="d-flex">
-            <v-checkbox
-                    v-model="includeCredentials"
-                    label="Include farmOS user credentials"
-            ></v-checkbox>
-          </div>
-
           <v-expansion-panels
                   multiple
                   accordion
@@ -51,53 +44,6 @@
                 ></v-treeview>
               </v-expansion-panel-content>
             </v-expansion-panel>
-            <v-expansion-panel
-                    :disabled="!includeCredentials"
-            >
-              <v-expansion-panel-header>
-                farmOS Credentials
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-
-                <v-text-field label="Username" v-model="username" ></v-text-field>
-
-                <div class="d-flex">
-                  <v-checkbox
-                          v-model="setPassword"
-                          label="Set Password"
-                  ></v-checkbox>
-                </div>
-
-                <v-text-field
-                        v-show="setPassword"
-                        type="password"
-                        ref="password"
-                        label="Set Password"
-                        data-vv-name="password"
-                        data-vv-delay="100"
-                        v-validate="{required: setPassword}"
-                        v-model="password1"
-                        :error-messages="errors.first('password')"
-                        outlined
-                >
-                </v-text-field>
-                <v-text-field
-                        v-show="setPassword"
-                        type="password"
-                        label="Confirm Password"
-                        data-vv-name="password_confirmation"
-                        data-vv-delay="100"
-                        data-vv-as="password"
-                        v-validate="{required: setPassword, confirmed: 'password'}"
-                        v-model="password2"
-                        :error-messages="errors.first('password_confirmation')"
-                        outlined
-                >
-                </v-text-field>
-
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-
             <v-expansion-panel
                     :disabled = "!hasToken"
             >
@@ -146,15 +92,9 @@ export default class EditFarm extends Vue {
   public farmName: string = '';
   public url: string = '';
   public oldUrl: string = '';
-  public username: string = '';
   public notes: string = '';
   public tags: string = '';
   public active: boolean = false;
-
-  public setPassword = false;
-  public password1: string = '';
-  public password2: string = '';
-  public includeCredentials = false;
 
   public hasToken = false;
   public accessToken: string = '';
@@ -171,24 +111,16 @@ export default class EditFarm extends Vue {
   }
 
   public reset() {
-    this.setPassword = false;
-    this.password1 = '';
-    this.password2 = '';
-    this.includeCredentials = false;
     this.hasToken = false;
     this.$validator.reset();
     if (this.farm) {
       this.farmName = this.farm.farm_name;
       this.oldUrl = this.farm.url;
       this.url = this.farm.url;
-      this.username = this.farm.username;
       this.notes = this.farm.notes!;
       this.tags = this.farm.tags!;
       this.active = this.farm.active!;
 
-      if (this.farm.username) {
-        this.includeCredentials = true;
-      }
       if (this.farm.token) {
         this.hasToken = true;
         this.accessToken = this.farm.token.access_token;
@@ -226,14 +158,6 @@ export default class EditFarm extends Vue {
 
       updatedFarm.active = this.active;
 
-      if (this.includeCredentials) {
-          if (this.username) {
-            updatedFarm.username = this.username;
-          }
-          if (this.setPassword) {
-            updatedFarm.password = this.password1;
-          }
-      }
       await dispatchUpdateFarm(this.$store, { id: this.farm!.id, farm: updatedFarm }).then( (result) => {
           if (result) {
               this.$router.push('/main/farm/farms');

@@ -19,61 +19,6 @@
                     label="Active"
             ></v-checkbox>
           </div>
-
-          <div class="d-flex">
-            <v-checkbox
-                    v-model="includeCredentials"
-                    label="Include farmOS user credentials"
-            ></v-checkbox>
-          </div>
-
-          <v-expansion-panels
-                  multiple
-                  accordion
-          >
-            <v-expansion-panel
-                    :disabled="!includeCredentials"
-            >
-              <v-expansion-panel-header>
-                farmOS Credentials
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-
-                <v-text-field
-                        label="Username"
-                        v-model="username"
-                        :disabled="!includeCredentials"
-                >
-                </v-text-field>
-
-                <v-text-field
-                        type="password"
-                        ref="password"
-                        label="Set Password"
-                        data-vv-name="password"
-                        data-vv-delay="100"
-                        v-model="password1"
-                        :disabled="!includeCredentials"
-                        :error-messages="errors.first('password')"
-                >
-                </v-text-field>
-                <v-text-field
-                        type="password"
-                        label="Confirm Password"
-                        data-vv-name="password_confirmation"
-                        data-vv-delay="100"
-                        data-vv-as="password"
-                        v-validate="{confirmed: 'password'}"
-                        v-model="password2"
-                        :disabled="!includeCredentials"
-                        :error-messages="errors.first('password_confirmation')"
-                >
-                </v-text-field>
-
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-
-          </v-expansion-panels>
         </v-card-text>
 
         <FarmRequestRegistrationDialog
@@ -115,14 +60,9 @@ export default class AddFarm extends Vue {
   public valid = false;
   public farmName: string = '';
   public url: string = '';
-  public username: string = '';
-  public password1: string = '';
-  public password2: string = '';
   public notes: string = '';
   public tags: string = '';
   public active: boolean = false;
-  public includeCredentials = false;
-
 
   public async mounted() {
     await dispatchGetFarms(this.$store);
@@ -130,11 +70,7 @@ export default class AddFarm extends Vue {
   }
 
   public reset() {
-    this.includeCredentials = false;
-    this.password1 = '';
-    this.password2 = '';
     this.farmName = '';
-    this.username = '';
     this.notes = '';
     this.tags = '';
     this.$validator.reset();
@@ -149,8 +85,6 @@ export default class AddFarm extends Vue {
       const updatedFarm: FarmProfileCreate = {
         farm_name: this.farmName,
         url: this.url,
-        username: this.username,
-        password: this.password1,
         notes: this.notes,
         tags: this.tags,
         active: this.active,
