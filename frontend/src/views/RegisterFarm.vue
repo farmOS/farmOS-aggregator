@@ -81,7 +81,7 @@
                             v-bind:authStarted.sync="authStarted"
                             v-bind:authFinished.sync="authFinished"
                             v-bind:appName="appName"
-                            v-bind:redirectUri="'/add-farm'"
+                            v-bind:redirectUri="'/register-farm'"
                             v-bind:apiToken.sync="apiToken"
                             v-bind:farmUrl.sync="farmUrl"
                             v-bind:farmName.sync="farmName"
@@ -246,7 +246,7 @@ import FarmAuthorizationForm from '@/components/FarmAuthorizationForm.vue';
 @Component({
   components: {FarmAuthorizationForm},
 })
-export default class PublicAddFarm extends Vue {
+export default class RegisterFarm extends Vue {
   public $refs!: {
       authForm: HTMLFormElement,
   };

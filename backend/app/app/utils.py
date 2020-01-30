@@ -127,6 +127,6 @@ def generate_farm_registration_link():
 
     server_host = config.SERVER_HOST
     api_path = config.API_V1_STR
-    link = f"{server_host}/add-farm?api_token={token.decode()}"
+    link = f"{server_host}/register-farm?api_token={token.decode()}"
 
     return link
