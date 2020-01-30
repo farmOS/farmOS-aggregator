@@ -168,7 +168,6 @@ export default class AuthorizeFarm extends Vue {
   public farmName: string = '';
   public farmId: number = 0;
   public url: string = '';
-  public username: string = '';
   public notes: string = '';
   public tags: string = '';
   public isAuthorized = false;
@@ -202,7 +201,6 @@ export default class AuthorizeFarm extends Vue {
       this.farmName = this.farm.farm_name;
       this.farmId = this.farm.id;
       this.url = this.farm.url;
-      this.username = this.farm.username;
       this.notes = this.farm.notes!;
       this.tags = this.farm.tags!;
       this.isAuthorized = this.farm.is_authorized;

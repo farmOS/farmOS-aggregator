@@ -36,7 +36,6 @@ export interface FarmProfile {
     last_accessed?: string;
     farm_name: string;
     url: string;
-    username: string;
     notes?: string;
     tags?: string;
     info?: object[];
@@ -56,8 +55,6 @@ export interface FarmInfo {
 export interface FarmProfileUpdate {
     farm_name?: string;
     url?: string;
-    username?: string;
-    password?: string;
     notes?: string;
     tags?: string;
     active?: boolean;
@@ -66,8 +63,6 @@ export interface FarmProfileUpdate {
 export interface FarmProfileCreate {
     farm_name: string;
     url: string;
-    username?: string;
-    password?: string;
     notes?: string;
     tags?: string;
     token?: FarmToken;
