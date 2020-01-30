@@ -6,14 +6,15 @@ from sqlalchemy.orm import Session
 
 from app import crud
 from app.api.utils.db import get_db
-from app.api.utils.farms import get_farm_client, ClientError, get_farms_url_or_list, get_farm_by_id
-from app.api.utils.security import get_farm_access
+from app.api.utils.farms import get_farms_url_or_list, get_farm_by_id
+from app.api.utils.security import get_farm_access, get_farm_access_allow_public
 from app.schemas.farm import Farm, FarmCreate, FarmUpdate
 from app.core.celery_app import celery_app
 
 router = APIRouter()
 
 # /farms/ endpoints for farmOS instances
+
 
 @router.get(
     "/",
@@ -46,7 +47,7 @@ def read_farm_by_id(
 @router.post(
     "/",
     response_model=Farm,
-    dependencies=[Security(get_farm_access, scopes=['farm:create'])]
+    dependencies=[Security(get_farm_access_allow_public, scopes=['farm:create'])]
 )
 async def create_farm(
     *,

@@ -77,6 +77,13 @@ export const api = {
     const headers = authHeaders(token, apiToken);
     return axios.post(`${apiUrl}/api/v1/utils/authorize-farm/${farmID}`, data, headers);
   },
+  async authorizeNewFarm(token: string, farmUrl: string, data: FarmProfileAuthorize, apiToken?: string) {
+    const headers = authHeaders(token, apiToken);
+    return axios.post(
+        `${apiUrl}/api/v1/utils/authorize-farm/`,
+        {farm_url: farmUrl, auth_params: data},
+        headers);
+  },
   async createFarmAuthLink(token: string, farmID: number) {
     return axios.post(`${apiUrl}/api/v1/utils/farm-auth-link/${farmID}`, null, authHeaders(token));
   },
@@ -94,22 +101,10 @@ export const api = {
         {params, headers: authHeaders(token).headers},
     );
   },
-
-  // Public APIs
-  async publicCreateFarm(token: string, data: FarmProfileCreate, apiToken?: string) {
-    return axios.post(`${apiUrl}/api/v1/public/farms/`, data, authHeaders(token, apiToken));
-  },
-  async publicAuthorizeFarm(token: string, farmUrl: string, data: FarmProfileAuthorize, apiToken?: string) {
+  async validateFarmUrl(token: string, farmUrl: string, apiToken?: string) {
     const headers = authHeaders(token, apiToken);
     return axios.post(
-        `${apiUrl}/api/v1/public/farms/authorize-farm/`,
-        {farm_url: farmUrl, auth_params: data},
-        headers);
-  },
-  async publicValidateFarmUrl(token: string, farmUrl: string, apiToken?: string) {
-    const headers = authHeaders(token, apiToken);
-    return axios.post(
-        `${apiUrl}/api/v1/public/farms/validate-farm-url`,
+        `${apiUrl}/api/v1/utils/validate-farm-url`,
         {farm_url: farmUrl},
         headers,
     );

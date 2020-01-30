@@ -239,8 +239,7 @@ import { appName, openFarmRegistration, inviteFarmRegistration } from '@/env';
 import { commitAddNotification } from '@/store/main/mutations';
 import {
     dispatchCreateFarm,
-    dispatchPublicCreateFarm,
-    dispatchPublicValidateFarmUrl,
+    dispatchValidateFarmUrl,
 } from '@/store/farm/actions';
 import FarmAuthorizationForm from '@/components/FarmAuthorizationForm.vue';
 
@@ -380,7 +379,7 @@ export default class PublicAddFarm extends Vue {
   public async submitUrl() {
       this.$validator.validateAll('farmUrl').then( (isValid) => {
           if (isValid) {
-              dispatchPublicValidateFarmUrl(
+              dispatchValidateFarmUrl(
                   this.$store,
                   {farmUrl: this.farmUrl, apiToken: this.apiToken },
               ).then( (response) => {
@@ -409,11 +408,7 @@ export default class PublicAddFarm extends Vue {
                 tags: this.tags,
                 token: this.authToken,
             };
-            if (this.apiToken) {
-                dispatchCreateFarm(this.$store, { data: newFarm, apiToken: this.apiToken } );
-            } else {
-                dispatchPublicCreateFarm(this.$store, { data: newFarm });
-            }
+            dispatchCreateFarm(this.$store, { data: newFarm, apiToken: this.apiToken } );
         }
     });
 

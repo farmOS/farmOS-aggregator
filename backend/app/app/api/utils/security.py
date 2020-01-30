@@ -185,6 +185,37 @@ def get_farm_access(
 
     return farm_access
 
+
+def get_farm_access_allow_public(
+    user_access: dict = Depends(get_current_user_farm_access),
+    api_token_access: dict = Depends(get_api_token_farm_access),
+):
+    farm_access = None
+
+    # If open registration is enabled, allow minimal access.
+    if config.AGGREGATOR_OPEN_FARM_REGISTRATION is True:
+        farm_access = FarmAccess(scopes=[], farm_id_list=[], all_farms=False)
+
+    # Still check for a request with higher permissions.
+    # This is the same as the get_farm_access dependency above.
+    if user_access is not None:
+        logger.debug(f"Request has user_access: {user_access}")
+        farm_access = user_access
+
+    if api_token_access is not None:
+        logger.debug(f"Request has api_token access: {api_token_access}")
+        farm_access = api_token_access
+
+    if farm_access is None:
+        logger.debug(f"Request has no farm access.")
+        raise HTTPException(
+            status_code=HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials"
+        )
+
+    return farm_access
+
+
 def _validate_token(token):
     payload = jwt.decode(token, config.SECRET_KEY, algorithms=[ALGORITHM])
     user_id: int = payload.get("sub", None)

@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Depends, Security, HTTPException
+from fastapi import APIRouter, Depends, Security, HTTPException, Body
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
+from farmOS import farmOS
+from farmOS.config import ClientConfig
 
 from app import crud
 from app.api.utils.db import get_db
@@ -11,7 +13,7 @@ from app.schemas.user import UserInDB
 from app.schemas.farm import Farm
 from app.schemas.farm_token import FarmTokenCreate, FarmAuthorizationParams
 from app.api.utils.farms import get_farm_by_id, get_oauth_token
-from app.api.utils.security import get_farm_access
+from app.api.utils.security import get_farm_access, get_farm_access_allow_public
 from app.utils import send_test_email, generate_farm_authorization_link, generate_farm_registration_link
 
 router = APIRouter()
@@ -55,8 +57,58 @@ def farm_auth_link(
 
 
 @router.post(
+    "/authorize-farm/",
+    dependencies=[Security(get_farm_access_allow_public, scopes=['farm:create'])]
+)
+def authorize_farm(
+        *,
+        db: Session = Depends(get_db),
+        farm_url: str = Body(...),
+        auth_params: FarmAuthorizationParams,
+):
+    """
+    Authorize a new farm. Complete the OAuth Authorization Flow.
+
+    This endpoint is only used when authorizing a new farm, before creation.
+    See /authorize-farm/{farm_id} for authorizing existing farms.
+    """
+    token = get_oauth_token(farm_url, auth_params)
+
+    client_id = 'farmos_api_client'
+    client_secret = 'client_secret'
+
+    config = ClientConfig()
+
+    config_values = {
+        'Profile': {
+            'development': 'True',
+            'hostname': farm_url,
+            'client_id': client_id,
+            'client_secret': client_secret,
+        }
+    }
+
+    if token is not None:
+        config_values['Profile']['access_token'] = token.access_token
+        config_values['Profile']['refresh_token'] = token.refresh_token
+        config_values['Profile']['expires_at'] = token.expires_at
+    config.read_dict(config_values)
+
+    try:
+        client = farmOS(config=config, profile_name="Profile")
+        info = client.info()
+
+        return {
+            'token': token,
+            'info': info
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Could not authenticate with farmOS server.")
+
+
+@router.post(
     "/authorize-farm/{farm_id}",
-    dependencies=[Security(get_farm_access, scopes=['farm:authorize'])]
+    dependencies=[Security(get_farm_access_allow_public, scopes=['farm:authorize'])]
 )
 def authorize_farm(
         farm: Farm = Depends(get_farm_by_id),
@@ -65,7 +117,7 @@ def authorize_farm(
         auth_params: FarmAuthorizationParams,
 ):
     """
-    Authorize a farm. Complete the OAuth Authorization Flow.
+    Authorize an existing farm. Complete the OAuth Authorization Flow.
     """
     token = get_oauth_token(farm.url, auth_params)
 
@@ -78,3 +130,38 @@ def authorize_farm(
         token = crud.farm_token.update_farm_token(db, token=old_token, token_in=new_token)
 
     return token
+
+
+@router.post(
+    "/validate-farm-url",
+    dependencies=[Security(get_farm_access_allow_public)]
+)
+def validate_farm_url(
+        *,
+        db: Session = Depends(get_db),
+        farm_url: str = Body(..., embed=True),
+):
+    """
+    Validate the farm_url when registering a new farm.
+    Check to make sure the url is not already in use, and check that
+    the url points to a valid farmOS server.
+    """
+    existing_farm = crud.farm.get_by_url(db, farm_url=farm_url)
+    if existing_farm:
+        raise HTTPException(
+            status_code=409,
+            detail="A farm with this URL already exists.",
+        )
+
+    # Check that the `farm.json` endpoint returns 200
+    # TODO: Use farmOS.py helper function to validate server hostname.
+    response = {}
+    success = True
+    if not success:
+        raise HTTPException(
+            status_code=406,
+            detail="Invalid farmOS hostname. Make sure this is a valid hostname for your farmOS Server.",
+        )
+
+    return response
+
