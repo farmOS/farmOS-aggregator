@@ -42,7 +42,7 @@
     import { apiUrl } from '@/env';
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import {FarmProfileAuthorize, FarmAuthorizationNonce} from '@/interfaces';
-    import {dispatchAuthorizeFarm, dispatchPublicAuthorizeFarm} from '@/store/farm/actions';
+    import {dispatchAuthorizeFarm, dispatchAuthorizeNewFarm} from '@/store/farm/actions';
     import {commitRemoveFarmAuthorizationNonce, commitSetFarmAuthorizationNonce} from '@/store/main/mutations';
     import {readFarmAuthorizationNonce} from '@/store/main/getters';
     import {commitAddNotification} from '@/store/main/mutations';
@@ -132,33 +132,18 @@
             };
 
             // Dispatch API call to backend.
-            if (farmId != null && apiToken != null) {
-                dispatchAuthorizeFarm(
-                  this.$store,
-                  { id: farmId, authValues, apiToken },
-                ).then( (response) => {
-                    this.$emit('update:authtoken', response.token);
-                    this.$emit('update:apiToken', apiToken);
-                    this.$emit('update:farminfo', response.info);
-                    this.$emit('update:farmName', response.info.name);
-                    this.$emit('update:farmUrl', response.info.url);
-                    this.$emit('update:authFinished', true);
-                    this.$emit('authorizationcomplete');
-                });
-            } else {
-                await dispatchPublicAuthorizeFarm(
-                  this.$store,
-                  { farmUrl, authValues, apiToken },
-                ).then( (response) => {
-                    this.$emit('update:authtoken', response.token);
-                    this.$emit('update:apiToken', apiToken);
-                    this.$emit('update:farminfo', response.info);
-                    this.$emit('update:farmName', response.info.name);
-                    this.$emit('update:farmUrl', response.info.url);
-                    this.$emit('update:authFinished', true);
-                    this.$emit('authorizationcomplete');
-                });
-            }
+            await dispatchAuthorizeNewFarm(
+              this.$store,
+              { farmUrl, authValues, apiToken },
+            ).then( (response) => {
+                this.$emit('update:authtoken', response.token);
+                this.$emit('update:apiToken', apiToken);
+                this.$emit('update:farminfo', response.info);
+                this.$emit('update:farmName', response.info.name);
+                this.$emit('update:farmUrl', response.info.url);
+                this.$emit('update:authFinished', true);
+                this.$emit('authorizationcomplete');
+            });
         }
 
         public cleanOAuthStrings() {
