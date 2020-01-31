@@ -15,24 +15,13 @@
             Permissions
         </div>
         <v-checkbox
+                v-for="scope in scopes"
                 v-model="oauthScopes"
-                label="farmOS API Access"
-                hint="Allow access to the entire farmOS API"
-                value="farmos_restws_access"
-                persistent-hint
-        ></v-checkbox>
-        <v-checkbox
-                v-model="oauthScopes"
-                label="Access farmOS Info"
-                hint="Allow access to basic farmOS info"
-                value="farm_info"
-                persistent-hint
-        ></v-checkbox>
-        <v-checkbox
-                v-model="oauthScopes"
-                label="Access farmOS Metrics"
-                hint="Allow access to all farmOS metrics"
-                value="farm_metrics"
+                v-bind:key="scope.name"
+                v-bind:value="scope.name"
+                v-bind:label="scope.label"
+                v-bind:hint="scope.description"
+                :disabled = "requiredScopes.includes(scope.name)"
                 persistent-hint
         ></v-checkbox>
     </form>
@@ -40,6 +29,7 @@
 
 <script lang="ts">
     import { apiUrl } from '@/env';
+    import oauthConfig from '../oauthConfig.json';
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import {FarmProfileAuthorize, FarmAuthorizationNonce} from '@/interfaces';
     import {dispatchAuthorizeFarm, dispatchAuthorizeNewFarm} from '@/store/farm/actions';
@@ -57,8 +47,10 @@
         @Prop({default: null}) public farmName!: string;
         @Prop({default: null}) public farmId!: number;
 
-        // Enable the farmos_restws_access scope by default.
-        public oauthScopes: string[] = ['farmos_restws_access', 'farm_info', 'farm_metrics' ];
+        // Load the the configured oauth settings for this aggregator.
+        public scopes = oauthConfig.scopes!;
+        public requiredScopes: string[] = oauthConfig.requiredScopes!;
+        public oauthScopes: string[] = oauthConfig.defaultScopes!;
 
         // Generate a random string for the state param of OAuth Authorization Flow.
         public authState: string =
@@ -79,11 +71,18 @@
 
             // Build the OAuth query parameters.
             const responseType = 'code';
-            const clientID = 'farmos_api_client';
+            const clientID = oauthConfig.clientId;
+            const clientSecret = oauthConfig.clientSecret;
             const scopes = this.cleanOAuthStrings();
             const redirectURI = `${apiUrl}${this.redirectUri}`;
             const state = this.authState;
-            const queryParams = `?response_type=${responseType}&client_id=${clientID}&scope=${scopes}&redirect_uri=${redirectURI}&state=${state}`;
+
+            let queryParams = '';
+            if (clientSecret != null) {
+                queryParams = `?response_type=${responseType}&client_id=${clientID}&client_secret=${clientSecret}&scope=${scopes}&redirect_uri=${redirectURI}&state=${state}`;
+            } else {
+                queryParams = `?response_type=${responseType}&client_id=${clientID}&scope=${scopes}&redirect_uri=${redirectURI}&state=${state}`;
+            }
 
             const oauthPath = '/oauth2/authorize';
 
@@ -126,8 +125,8 @@
                 grant_type: 'authorization_code',
                 code: authCode,
                 state: authState,
-                client_id: 'farmos_api_client',
-                client_secret: 'client_secret',
+                client_id: oauthConfig.clientId!,
+                client_secret: oauthConfig.clientSecret!,
                 redirect_uri: `${apiUrl}${this.redirectUri}`,
             };
 
