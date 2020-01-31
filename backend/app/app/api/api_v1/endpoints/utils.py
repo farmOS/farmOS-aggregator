@@ -41,7 +41,10 @@ def test_email(
     return {"msg": "Test email sent"}
 
 
-@router.post("/farm-registration-link")
+@router.post(
+    "/farm-registration-link",
+    dependencies=[Security(get_farm_access, scopes=['farm:create'])]
+)
 def farm_registration_link(
 ):
     link = generate_farm_registration_link()
