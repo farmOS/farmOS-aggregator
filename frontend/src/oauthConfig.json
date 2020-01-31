@@ -1,0 +1,25 @@
+{
+  "clientId": "farmos_api_client",
+  "clientSecret": null,
+  "defaultScopes" : [
+    "farm_info"
+  ],
+  "requiredScopes": [
+  ],
+  "scopes": [
+    {
+      "name": "farmos_restws_access",
+      "label": "farmOS User Access",
+      "description": "Allow complete access to farmOS data."
+    },
+    {
+      "name": "farm_info",
+      "label": "farmOS Info",
+      "description": "Allow access to basic farm info."
+    },
+    { "name": "farm_metrics",
+      "label": "farmOS Metrics",
+      "description": "Allow access to basic farm metrics."
+    }
+  ]
+}
