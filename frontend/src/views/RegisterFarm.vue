@@ -4,6 +4,36 @@
       <v-layout align-center justify-center>
         <v-flex xs12 sm12 md8>
 
+          <v-dialog
+            v-model="authErrorDialog"
+            max-width="500"
+          >
+            <v-card color="#EF9A9A">
+              <v-card-title class="headline ">Authorization Error</v-card-title>
+
+              <v-card-text>
+                <div class="title">
+                  {{ authErrorDialogText }}
+                </div>
+                <div class="body-1">
+                  {{ authErrorDialogDescriptionText }}
+                </div>
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+
+                <v-btn
+                  color="white"
+                  text
+                  @click="authErrorDialog = false"
+                >
+                  Try Again
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
 
           <v-stepper
                   v-model="currentStep"
@@ -266,6 +296,9 @@ export default class RegisterFarm extends Vue {
   public authCode: string = '';
   public authState: string = '';
   public authError: string = '';
+  public authErrorDialog: boolean = false;
+  public authErrorDialogText: string = '';
+  public authErrorDialogDescriptionText: string = '';
   public authErrorDescription: string = '';
   public authToken: FarmToken = {
     access_token: '',
@@ -314,10 +347,21 @@ export default class RegisterFarm extends Vue {
     this.authError = this.$router.currentRoute.query.error as string;
     this.authErrorDescription = this.$router.currentRoute.query.error_description as string;
     if (this.authError) {
-      commitAddNotification(this.$store, {
-          content: this.authError + ': ' + this.authErrorDescription,
-          color: 'error',
-      });
+        if (this.authError === 'invalid_scope') {
+            this.authErrorDialogText = 'OAuth Scope Error';
+            this.authErrorDialogDescriptionText = 'Your farmOS server does not have an Authorization Scope enabled. Ensure this is enabled in /admin/config/farm/oauth ';
+            this.authErrorDialog = true;
+
+        } else if (this.authError === 'access_denied') {
+            this.authErrorDialogText = 'Authorization Denied';
+            this.authErrorDialogDescriptionText = 'You denied the Authorization request. In order to add your farm to the ' + appName + ', you must authorize access to your farmOS Server.';
+            this.authErrorDialog = true;
+        } else {
+            commitAddNotification(this.$store, {
+                content: this.authError + ': ' + this.authErrorDescription,
+                color: 'error',
+            });
+        }
     }
 
     // Get authorization code and authorization state
