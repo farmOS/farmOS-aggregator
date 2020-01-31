@@ -1,11 +1,20 @@
 version: '3.3'
 services:
+  frontend:
+    build:
+      args:
+        OPEN_FARM_REGISTRATION: ${AGGREGATOR_OPEN_FARM_REGISTRATION}
+        INVITE_FARM_REGISTRATION: ${AGGREGATOR_INVITE_FARM_REGISTRATION}
   backend:
     depends_on:
       - db
     env_file:
       - env-postgres.env
       - env-backend.env
+    build:
+      args:
+        OPEN_FARM_REGISTRATION: ${AGGREGATOR_OPEN_FARM_REGISTRATION}
+        INVITE_FARM_REGISTRATION: ${AGGREGATOR_INVITE_FARM_REGISTRATION}
   celeryworker:
     depends_on:
       - db
