@@ -117,7 +117,7 @@ def generate_farm_authorization_link(farm_id):
 
     server_host = config.SERVER_HOST
     api_path = config.API_V1_STR
-    link = f"{server_host}/authorize-farm/{farm_id}?api_token={token.decode()}"
+    link = f"{server_host}/authorize-farm/?farm_id={farm_id}&api_token={token.decode()}"
 
     return link
 
