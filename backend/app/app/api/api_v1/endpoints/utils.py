@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, Security, HTTPException, Body
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
@@ -15,6 +17,8 @@ from app.schemas.farm_token import FarmTokenCreate, FarmAuthorizationParams
 from app.api.utils.farms import get_farm_by_id, get_oauth_token
 from app.api.utils.security import get_farm_access, get_farm_access_allow_public
 from app.utils import send_test_email, generate_farm_authorization_link, generate_farm_registration_link
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -75,6 +79,8 @@ def authorize_farm(
     This endpoint is only used when authorizing a new farm, before creation.
     See /authorize-farm/{farm_id} for authorizing existing farms.
     """
+    logging.debug("Authorizing new farm: " + farm_url)
+
     token = get_oauth_token(farm_url, auth_params)
 
     client_id = 'farmos_api_client'
@@ -86,8 +92,8 @@ def authorize_farm(
         'Profile': {
             'development': 'True',
             'hostname': farm_url,
-            'client_id': client_id,
-            'client_secret': client_secret,
+            'oauth_client_id': client_id,
+            'oauth_scope': auth_params.scope
         }
     }
 
@@ -98,6 +104,7 @@ def authorize_farm(
     config.read_dict(config_values)
 
     try:
+        logging.debug("Testing OAuth token with farmOS client.")
         client = farmOS(config=config, profile_name="Profile")
         info = client.info()
 
@@ -106,12 +113,14 @@ def authorize_farm(
             'info': info
         }
     except Exception as e:
+        logging.debug("Error testing OAuth token with farmOS client: ")
+        logging.debug(e)
         raise HTTPException(status_code=400, detail="Could not authenticate with farmOS server.")
 
 
 @router.post(
     "/authorize-farm/{farm_id}",
-    dependencies=[Security(get_farm_access_allow_public, scopes=['farm:authorize'])]
+    dependencies=[Security(get_farm_access, scopes=['farm:authorize'])]
 )
 def authorize_farm(
         farm: Farm = Depends(get_farm_by_id),

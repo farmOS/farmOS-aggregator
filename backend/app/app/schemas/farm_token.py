@@ -31,3 +31,4 @@ class FarmAuthorizationParams(APIModel):
     client_id: str
     client_secret: Optional[str]
     redirect_uri: Optional[str]
+    scope: str

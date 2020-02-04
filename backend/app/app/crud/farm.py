@@ -65,6 +65,7 @@ def create(db_session: Session, *, farm_in: FarmCreate) -> Farm:
         notes=farm_in.notes,
         tags=farm_in.tags,
         info=farm_in.info,
+        scope=farm_in.scope,
         active=active,
     )
     db_session.add(farm)

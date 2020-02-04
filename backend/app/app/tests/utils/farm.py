@@ -21,12 +21,14 @@ def get_test_farm_instance():
         farm_in = FarmCreate(
             farm_name=config.TEST_FARM_NAME,
             url=config.TEST_FARM_URL,
+            scope="user_access",
             active=True
         )
     else:
         farm_in = FarmCreate(
             farm_name=config.TEST_FARM_NAME,
             url="http://localhost",
+            scope="user_access",
             active=True
         )
 

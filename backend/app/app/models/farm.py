@@ -19,6 +19,9 @@ class Farm(Base):
     notes = Column(String, nullable=True)
     tags = Column(String, nullable=True)
 
+    # Save a space separated list of OAuth Scopes
+    scope = Column(String, nullable=True)
+
     # active attribute allows admins to disable farmOS profiles
     active = Column(Boolean, default=False)
 
