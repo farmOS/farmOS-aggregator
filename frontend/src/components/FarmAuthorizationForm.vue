@@ -1,30 +1,30 @@
 <template>
-    <form>
-        <div class="headline text--primary">
-            farmOS Server Authorization
-        </div>
-        <div class="subtitle-1 text--primary">
-            Authorize your farmOS server with the {{appName}}. This will give the {{appName}} access to your data
-            at the level you define.
-        </div>
-        <br>
-        <v-text-field label="farmOS Server URL" v-model="farmUrl" readonly></v-text-field>
+  <form>
+    <div class="headline text--primary">
+      farmOS Server Authorization
+    </div>
+    <div class="subtitle-1 text--primary">
+      Authorize your farmOS server with the {{appName}}. This will give the {{appName}} access to your data
+      at the level you define.
+    </div>
+    <br>
+    <v-text-field label="farmOS Server URL" v-model="farmUrl" readonly></v-text-field>
 
 
-        <div class="headline text--primary">
-            Permissions
-        </div>
-        <v-checkbox
-                v-for="scope in scopes"
-                v-model="oauthScopes"
-                v-bind:key="scope.name"
-                v-bind:value="scope.name"
-                v-bind:label="scope.label"
-                v-bind:hint="scope.description"
-                :disabled = "requiredScopes.includes(scope.name)"
-                persistent-hint
-        ></v-checkbox>
-    </form>
+    <div class="headline text--primary">
+      Permissions
+    </div>
+    <v-checkbox
+      v-for="scope in scopes"
+      v-model="oauthScopes"
+      v-bind:key="scope.name"
+      v-bind:value="scope.name"
+      v-bind:label="scope.label"
+      v-bind:hint="scope.description"
+      :disabled = "requiredScopes.includes(scope.name)"
+      persistent-hint
+    ></v-checkbox>
+  </form>
 </template>
 
 <script lang="ts">
@@ -105,7 +105,7 @@
             this.oauthScopes = nonce.scopes!;
             const savedState = nonce.state!;
             const farmUrl = nonce.farmUrl!;
-            const farmId = nonce.farmId!;
+            const farmId = +nonce.farmId!;
             const apiToken = nonce.apiToken;
 
             if (savedState !== authState) {
@@ -131,31 +131,47 @@
             };
 
             // Dispatch API call to backend.
-            await dispatchAuthorizeNewFarm(
-              this.$store,
-              { farmUrl, authValues, apiToken },
-            ).then( (response) => {
-                this.$emit('update:authtoken', response.token);
-                this.$emit('update:apiToken', apiToken);
-                this.$emit('update:farminfo', response.info);
-                this.$emit('update:farmName', response.info.name);
-                this.$emit('update:farmUrl', response.info.url);
-                this.$emit('update:authFinished', true);
-                this.$emit('authorizationcomplete');
-            });
+            if (farmId !== 0 && apiToken != null) {
+                await dispatchAuthorizeFarm(
+                    this.$store,
+                    {id: farmId, authValues, apiToken},
+                ).then( (response) => {
+                    this.$emit('update:authtoken', response.token);
+                    this.$emit('update:apiToken', apiToken);
+                    this.$emit('update:farminfo', response.info);
+                    this.$emit('update:farmName', response.info.name);
+                    this.$emit('update:farmUrl', response.info.url);
+                    this.$emit('update:authFinished', true);
+                    this.$emit('authorizationcomplete');
+                });
+            } else {
+                await dispatchAuthorizeNewFarm(
+                    this.$store,
+                    {farmUrl, authValues, apiToken},
+                ).then((response) => {
+                    this.$emit('update:authtoken', response.token);
+                    this.$emit('update:apiToken', apiToken);
+                    this.$emit('update:farminfo', response.info);
+                    this.$emit('update:farmName', response.info.name);
+                    this.$emit('update:farmUrl', response.info.url);
+                    this.$emit('update:authFinished', true);
+                    this.$emit('authorizationcomplete');
+                });
+            }
+
         }
 
         public cleanOAuthStrings() {
-            // Change the OAuth Scopes from a list of strings to one space separated string of scopes.
-            // These are embedded in the query parameters.
-            let allScopes: string = '';
-            for (const scope of this.oauthScopes) {
-                allScopes += scope + ' ';
+                // Change the OAuth Scopes from a list of strings to one space separated string of scopes.
+                // These are embedded in the query parameters.
+                let allScopes: string = '';
+                for (const scope of this.oauthScopes) {
+                    allScopes += scope + ' ';
+                }
+                return allScopes;
             }
-            return allScopes;
-        }
 
-    }
+        }
 
 
 </script>
