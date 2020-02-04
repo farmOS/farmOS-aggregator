@@ -75,11 +75,13 @@ def test_get_farm_auth_link(test_farm, superuser_token_headers):
     assert link.netloc is not ''
 
     # Check that the path includes the correct farm ID
-    assert link.path == f"/authorize-farm/{test_farm.id}"
+    assert link.path == f"/authorize-farm/"
 
     # Check that an api_token query param is included
     assert link.query is not None
     params = parse_qs(link.query)
+    assert 'farm_id' in params
+    assert int(params['farm_id'][0]) == test_farm.id
     assert 'api_token' in params
     token = params['api_token'][0]
 
