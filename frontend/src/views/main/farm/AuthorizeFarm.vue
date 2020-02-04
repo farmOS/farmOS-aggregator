@@ -34,9 +34,9 @@
          <v-btn @click="cancel">Cancel</v-btn>
          <v-btn
                  color="secondary"
-                 @click.stop="authorizationFormDialog = true"
-                 :loading="authStatus == 'started'"
-                 :disabled="authStatus == 'completed'"
+                 @click="authorizeNow(farm.id)"
+                 :loading="authLinkLoading"
+                 :disabled="authLinkLoading"
          >
              Authorize Now
          </v-btn>
@@ -47,48 +47,6 @@
          >
              Request Authorization
          </v-btn>
-
-
-        <v-dialog
-            v-model="authorizationFormDialog"
-            max-width="450"
-        >
-            <v-card class="">
-                <v-toolbar dark color="primary">
-                    <v-toolbar-title class="headline">Authorize farmOS</v-toolbar-title>
-                </v-toolbar>
-
-                <v-card-text>
-                    <FarmAuthorizationForm
-                            ref="authForm"
-                            v-bind:authstatus.sync="authStatus"
-                            v-bind:appName="appName"
-                            v-bind:farmUrl="url"
-                            v-bind:farmName="farmName"
-                            v-bind:farmId="farmId"
-                            v-on:authorizationcomplete="authorizationFormDialog = false"
-                    />
-                </v-card-text>
-
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                            @click="authorizationFormDialog = false"
-                    >
-                        Cancel
-                    </v-btn>
-
-                    <v-btn
-                            class="white--text"
-                            color="primary"
-                            @click="$refs.authForm.openSignInWindow()"
-                            :disabled="authStatus == 'completed'"
-                    >
-                        Authorize Now
-                    </v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
 
         <v-dialog
                 v-model="authorizationRequestDialog"
@@ -222,6 +180,13 @@ export default class AuthorizeFarm extends Vue {
 
   public cancel() {
     this.$router.back();
+  }
+
+  public async authorizeNow(farmID) {
+      await this.generateAuthLink(farmID).then( (res) => {
+          // Redirect to the authorization page.
+          location.replace(this.authLink);
+      });
   }
 
   public async generateAuthLink(farmID) {
