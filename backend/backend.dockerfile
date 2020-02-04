@@ -1,6 +1,6 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7
 
-RUN pip install celery~=4.3 passlib[bcrypt] tenacity requests emails "fastapi==0.47.1" "pydantic==1.4" uvicorn gunicorn pyjwt python-multipart email_validator jinja2 psycopg2-binary alembic SQLAlchemy "farmOS==0.1.6b1"
+RUN pip install celery~=4.3 passlib[bcrypt] tenacity requests emails "fastapi==0.47.1" "pydantic==1.4" uvicorn gunicorn pyjwt python-multipart email_validator jinja2 psycopg2-binary alembic SQLAlchemy "farmOS==0.1.6b2"
 
 # Load farm registration configuration.
 ARG OPEN_FARM_REGISTRATION
