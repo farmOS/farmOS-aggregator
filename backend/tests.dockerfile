@@ -1,6 +1,6 @@
 FROM python:3.7
 
-RUN pip install requests pytest tenacity passlib[bcrypt] celery~=4.3 "fastapi==0.47.1" "pydantic==1.4" pyjwt psycopg2-binary SQLAlchemy "farmOS==0.1.6b1"
+RUN pip install requests pytest tenacity passlib[bcrypt] celery~=4.3 "fastapi==0.47.1" "pydantic==1.4" pyjwt psycopg2-binary SQLAlchemy "farmOS==0.1.6b2"
 
 # Load farm registration configuration.
 ARG OPEN_FARM_REGISTRATION
