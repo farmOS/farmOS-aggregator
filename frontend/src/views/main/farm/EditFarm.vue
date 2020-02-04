@@ -9,6 +9,7 @@
         <v-card-text>
           <v-text-field label="Farm Name" v-model="farmName" required></v-text-field>
           <v-text-field label="URL" v-model="url" required></v-text-field>
+          <v-text-field label="OAuth Scope" v-model="scope" required></v-text-field>
           <FarmAuthorizationStatus v-bind:farm=farm></FarmAuthorizationStatus>
 
           <div class="d-flex">
@@ -92,6 +93,7 @@ export default class EditFarm extends Vue {
   public farmName: string = '';
   public url: string = '';
   public oldUrl: string = '';
+  public scope: string = '';
   public notes: string = '';
   public tags: string = '';
   public active: boolean = false;
@@ -117,6 +119,7 @@ export default class EditFarm extends Vue {
       this.farmName = this.farm.farm_name;
       this.oldUrl = this.farm.url;
       this.url = this.farm.url;
+      this.scope = this.farm.scope!;
       this.notes = this.farm.notes!;
       this.tags = this.farm.tags!;
       this.active = this.farm.active!;
@@ -148,6 +151,9 @@ export default class EditFarm extends Vue {
       // Only update the farm URL if it is different, avoid 409 error.
       if (this.url !== this.oldUrl) {
         updatedFarm.url = this.url;
+      }
+      if (this.scope) {
+          updatedFarm.scope = this.scope;
       }
       if (this.notes) {
         updatedFarm.notes = this.notes;

@@ -115,6 +115,7 @@
                             v-bind:apiToken.sync="apiToken"
                             v-bind:farmUrl.sync="farmUrl"
                             v-bind:farmName.sync="farmName"
+                            v-bind:scope.sync="scope"
                             v-bind:authtoken.sync="authToken"
                             v-bind:farminfo.sync="farmInfo"
                             v-on:authorizationcomplete="currentStep = 3"
@@ -289,6 +290,7 @@ export default class RegisterFarm extends Vue {
   public farmName: string = '';
   public farmUrl: string = '';
   public tags: string = '';
+  public scope: string = '';
 
   // Initialize variables for the authorization step.
   public authStarted: boolean = false;
@@ -451,6 +453,7 @@ export default class RegisterFarm extends Vue {
                 url: this.farmUrl,
                 tags: this.tags,
                 token: this.authToken,
+                scope: this.scope,
             };
             dispatchCreateFarm(this.$store, { data: newFarm, apiToken: this.apiToken } );
         }

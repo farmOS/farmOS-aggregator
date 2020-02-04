@@ -103,6 +103,7 @@
                 return;
             }
             this.oauthScopes = nonce.scopes!;
+            const scope = this.cleanOAuthStrings();
             const savedState = nonce.state!;
             const farmUrl = nonce.farmUrl!;
             const farmId = +nonce.farmId!;
@@ -128,6 +129,7 @@
                 client_id: oauthConfig.clientId!,
                 client_secret: oauthConfig.clientSecret!,
                 redirect_uri: `${apiUrl}${this.redirectUri}`,
+                scope,
             };
 
             // Dispatch API call to backend.
@@ -141,6 +143,7 @@
                     this.$emit('update:farminfo', response.info);
                     this.$emit('update:farmName', response.info.name);
                     this.$emit('update:farmUrl', response.info.url);
+                    this.$emit('update:scope', scope);
                     this.$emit('update:authFinished', true);
                     this.$emit('authorizationcomplete');
                 });
@@ -154,6 +157,7 @@
                     this.$emit('update:farminfo', response.info);
                     this.$emit('update:farmName', response.info.name);
                     this.$emit('update:farmUrl', response.info.url);
+                    this.$emit('update:scope', scope);
                     this.$emit('update:authFinished', true);
                     this.$emit('authorizationcomplete');
                 });

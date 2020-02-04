@@ -39,6 +39,7 @@ export interface FarmProfile {
     notes?: string;
     tags?: string;
     info?: object[];
+    scope?: string;
     active?: boolean;
 
     is_authorized: boolean;
@@ -58,6 +59,7 @@ export interface FarmProfileUpdate {
     notes?: string;
     tags?: string;
     active?: boolean;
+    scope?: string;
 }
 
 export interface FarmProfileCreate {
@@ -67,6 +69,7 @@ export interface FarmProfileCreate {
     tags?: string;
     token?: FarmToken;
     active?: boolean;
+    scope?: string;
 }
 
 export interface FarmProfileAuthorize {
@@ -76,6 +79,7 @@ export interface FarmProfileAuthorize {
     client_id: string;
     client_secret?: string;
     redirect_uri?: string;
+    scope?: string;
 }
 
 export interface FarmAuthorizationNonce {
