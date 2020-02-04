@@ -12,6 +12,7 @@
       <v-card-text>
         <v-text-field label="Farm Name" v-model="farmName" readonly></v-text-field>
         <v-text-field label="URL" v-model="url" readonly></v-text-field>
+        <v-text-field label="OAuth Scope" v-model="scope" readonly></v-text-field>
         <v-text-field v-if="hasError" label="Authentication Error" v-model="authError" readonly/>
 
         <FarmAuthorizationStatus v-bind:farm=farm></FarmAuthorizationStatus>
@@ -126,6 +127,7 @@ export default class AuthorizeFarm extends Vue {
   public farmName: string = '';
   public farmId: number = 0;
   public url: string = '';
+  public scope: string = '';
   public notes: string = '';
   public tags: string = '';
   public isAuthorized = false;
@@ -159,6 +161,7 @@ export default class AuthorizeFarm extends Vue {
       this.farmName = this.farm.farm_name;
       this.farmId = this.farm.id;
       this.url = this.farm.url;
+      this.scope = this.farm.scope!;
       this.notes = this.farm.notes!;
       this.tags = this.farm.tags!;
       this.isAuthorized = this.farm.is_authorized;
