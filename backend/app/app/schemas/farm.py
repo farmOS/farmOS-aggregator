@@ -13,6 +13,7 @@ class FarmBase(APIModel):
     tags: Optional[str] = None
     info: Optional[FarmInfo] = None
     active: Optional[bool] = None
+    scope: Optional[str] = None
     token: Optional[FarmToken] = None
 
 
@@ -26,6 +27,7 @@ class FarmBaseInDB(FarmBase):
 class FarmCreate(FarmBase):
     farm_name: str
     url: str
+    scope: str
     token: Optional[FarmTokenBase] = None
 
 

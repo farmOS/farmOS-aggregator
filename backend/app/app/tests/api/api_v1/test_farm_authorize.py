@@ -22,6 +22,7 @@ def test_authorize_farm(test_farm, farm_authorize_headers):
         code=random_lower_string(),
         state=random_lower_string(),
         client_id="farmos_api_client",
+        scope="user_access",
     )
 
     r = requests.post(
@@ -108,6 +109,7 @@ def test_get_farm_auth_link(test_farm, superuser_token_headers):
         code=random_lower_string(),
         state=random_lower_string(),
         client_id="farmos_api_client",
+        scope="user_access",
     )
 
     r = requests.post(

@@ -190,7 +190,6 @@ def _save_token(token, db_session=None, farm=None):
 # Create a farmOS.py client.
 def get_farm_client(db_session, farm):
     client_id = 'farmos_api_client'
-    client_secret = 'client_secret'
 
     config = ClientConfig()
 
@@ -198,10 +197,8 @@ def get_farm_client(db_session, farm):
         'Profile': {
             'development': 'True',
             'hostname': farm.url,
-            'username': (farm.username or ''),
-            'password': (farm.password or ''),
-            'client_id': client_id,
-            'client_secret': client_secret,
+            'oauth_client_id': client_id,
+            'oauth_scope': farm.scope
         }
     }
 
@@ -226,6 +223,7 @@ def get_farm_client(db_session, farm):
     return client
 
 def get_oauth_token(farm_url, auth_params):
+    logging.debug("Completing Authorization Code flow for: " + farm_url)
     data = {}
     data['code'] = auth_params.code
     data['state'] = auth_params.state
@@ -245,12 +243,15 @@ def get_oauth_token(farm_url, auth_params):
 
     if response.status_code == 200:
         response_token = response.json()
+        logging.debug("Successfully retrieved access token")
+
         if "expires_at" not in response_token:
             response_token['expires_at'] = str(time.time() + int(response_token['expires_in']))
 
         new_token = FarmTokenBase(**response_token)
         return new_token
     else:
+        logging.error("Could not complete OAuth Authorization Flow: " )
         raise HTTPException(status_code=400, detail="Could not retrieve an access token.")
 
 
