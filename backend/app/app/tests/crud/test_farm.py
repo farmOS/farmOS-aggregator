@@ -16,7 +16,7 @@ def test_create_delete_default_farm_with_token():
         'access_token': random_lower_string(),
         'expires_in': random_lower_string(),
         'refresh_token': random_lower_string(),
-        'expires_at': random_lower_string(),
+        'expires_at': 1581363344.0651991,
     }
 
     farm_in = FarmCreate(
@@ -37,7 +37,7 @@ def test_create_delete_default_farm_with_token():
     # Test that token was created
     assert farm.token is not None
     assert farm.token.access_token == token['access_token']
-    assert farm.token.expires_at == token['expires_at']
+    assert farm.token.expires_at ==str(token['expires_at'])
     assert farm.token.refresh_token == token['refresh_token']
     assert farm.token.expires_in == token['expires_in']
 
@@ -73,7 +73,7 @@ def test_create_farm_update_token():
         'access_token': random_lower_string(),
         'expires_in': random_lower_string(),
         'refresh_token': random_lower_string(),
-        'expires_at': random_lower_string(),
+        'expires_at': 1581363344.0651991,
     }
 
     farm_update = FarmUpdate(
@@ -86,7 +86,7 @@ def test_create_farm_update_token():
     # Test that token was created
     assert farm.token is not None
     assert farm.token.access_token == new_token['access_token']
-    assert farm.token.expires_at == new_token['expires_at']
+    assert float(farm.token.expires_at) == new_token['expires_at']
     assert farm.token.refresh_token == new_token['refresh_token']
     assert farm.token.expires_in == new_token['expires_in']
 
@@ -95,7 +95,7 @@ def test_create_farm_update_token():
         'access_token': '',
         'expires_in': '',
         'refresh_token': '',
-        'expires_at': '',
+        'expires_at': None,
     }
 
     farm_update = FarmUpdate(
@@ -129,7 +129,7 @@ def test_create_farm_cant_delete_token():
         'access_token': random_lower_string(),
         'expires_in': random_lower_string(),
         'refresh_token': random_lower_string(),
-        'expires_at': random_lower_string(),
+        'expires_at': 1581363344.0651991,
     }
 
     farm_in = FarmCreate(
@@ -150,7 +150,7 @@ def test_create_farm_cant_delete_token():
     # Test that token was created
     assert farm.token is not None
     assert farm.token.access_token == token['access_token']
-    assert farm.token.expires_at == token['expires_at']
+    assert float(farm.token.expires_at) == token['expires_at']
     assert farm.token.refresh_token == token['refresh_token']
     assert farm.token.expires_in == token['expires_in']
 
@@ -164,7 +164,7 @@ def test_create_farm_cant_delete_token():
     # Check that the token is unchanged.
     assert farm.token is not None
     assert farm.token.access_token == token['access_token']
-    assert farm.token.expires_at == token['expires_at']
+    assert float(farm.token.expires_at) == token['expires_at']
     assert farm.token.refresh_token == token['refresh_token']
     assert farm.token.expires_in == token['expires_in']
 

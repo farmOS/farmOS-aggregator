@@ -39,7 +39,7 @@ def test_create_delete_farm(farm_create_headers, farm_delete_headers):
         'access_token': random_lower_string(),
         'expires_in': random_lower_string(),
         'refresh_token': random_lower_string(),
-        'expires_at': random_lower_string(),
+        'expires_at': 1581363344.0651991,
     }
 
     # Create a farm
@@ -68,7 +68,7 @@ def test_create_delete_farm(farm_create_headers, farm_delete_headers):
     assert farm.token.access_token == created_farm['token']['access_token'] == token['access_token']
     assert farm.token.expires_in == created_farm['token']['expires_in'] == token['expires_in']
     assert farm.token.refresh_token == created_farm['token']['refresh_token'] == token['refresh_token']
-    assert farm.token.expires_at == created_farm['token']['expires_at'] == token['expires_at']
+    assert float(farm.token.expires_at) == created_farm['token']['expires_at'] == token['expires_at']
 
     # Delete the farm
     r = requests.delete(
@@ -109,7 +109,7 @@ def test_create_farm_update_token(farm_create_headers, farm_update_headers, farm
         'access_token': random_lower_string(),
         'expires_in': random_lower_string(),
         'refresh_token': random_lower_string(),
-        'expires_at': random_lower_string(),
+        'expires_at': 1581363344.0651991,
     }
 
     data = {
@@ -135,7 +135,7 @@ def test_create_farm_update_token(farm_create_headers, farm_update_headers, farm
     assert farm.token.access_token == updated_farm['token']['access_token'] == token['access_token']
     assert farm.token.expires_in == updated_farm['token']['expires_in'] == token['expires_in']
     assert farm.token.refresh_token == updated_farm['token']['refresh_token'] == token['refresh_token']
-    assert farm.token.expires_at == updated_farm['token']['expires_at'] == token['expires_at']
+    assert float(farm.token.expires_at) == updated_farm['token']['expires_at'] == token['expires_at']
 
     # Delete the farm
     r = requests.delete(
@@ -156,7 +156,7 @@ def test_create_farm_delete_token(farm_create_headers, farm_update_headers, farm
         'access_token': random_lower_string(),
         'expires_in': random_lower_string(),
         'refresh_token': random_lower_string(),
-        'expires_at': random_lower_string(),
+        'expires_at': 1581363344.0651991,
     }
 
     # Create a farm
@@ -185,7 +185,7 @@ def test_create_farm_delete_token(farm_create_headers, farm_update_headers, farm
     assert farm.token.access_token == created_farm['token']['access_token'] == token['access_token']
     assert farm.token.expires_in == created_farm['token']['expires_in'] == token['expires_in']
     assert farm.token.refresh_token == created_farm['token']['refresh_token'] == token['refresh_token']
-    assert farm.token.expires_at == created_farm['token']['expires_at'] == token['expires_at']
+    assert float(farm.token.expires_at) == created_farm['token']['expires_at'] == token['expires_at']
 
     # Provide a token on creation
     new_token = {}
@@ -213,7 +213,7 @@ def test_create_farm_delete_token(farm_create_headers, farm_update_headers, farm
     assert farm.token.access_token == updated_farm['token']['access_token'] == token['access_token']
     assert farm.token.expires_in == updated_farm['token']['expires_in'] == token['expires_in']
     assert farm.token.refresh_token == updated_farm['token']['refresh_token'] == token['refresh_token']
-    assert farm.token.expires_at == updated_farm['token']['expires_at'] == token['expires_at']
+    assert float(farm.token.expires_at) == updated_farm['token']['expires_at'] == token['expires_at']
 
     # Delete the farm
     r = requests.delete(

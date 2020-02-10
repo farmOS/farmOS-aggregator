@@ -1,3 +1,4 @@
+import os
 import logging
 from typing import List
 import time
@@ -12,6 +13,7 @@ from farmOS.config import ClientConfig
 
 from app import crud
 from app.api.utils.db import get_db
+from app.core.config import settings
 from app.schemas.farm_token import FarmTokenBase, FarmTokenCreate
 from app.crud.farm_token import create_farm_token, update_farm_token
 from app.schemas.farm import Farm, FarmUpdate
@@ -176,6 +178,7 @@ def get_active_farms_url_or_list(
 
 # A helper function to save OAuth Tokens to DB.
 def _save_token(token, db_session=None, farm=None):
+    logging.debug("Saving new token for farm: " + str(farm.id))
     token_in = FarmTokenCreate(farm_id=farm.id, **token)
 
     # Make sure we have a DB session and Farm object.
@@ -189,38 +192,39 @@ def _save_token(token, db_session=None, farm=None):
 
 # Create a farmOS.py client.
 def get_farm_client(db_session, farm):
-    client_id = 'farmos_api_client'
+    client_id = settings.AGGREGATOR_OAUTH_CLIENT_ID
+    client_secret = settings.AGGREGATOR_OAUTH_CLIENT_SECRET
 
-    config = ClientConfig()
+    scope = settings.AGGREGATOR_OAUTH_DEFAULT_SCOPE
+    if farm.scope is not None:
+        scope = farm.scope
 
-    config_values = {
-        'Profile': {
-            'development': 'True',
-            'hostname': farm.url,
-            'oauth_client_id': client_id,
-            'oauth_scope': farm.scope
-        }
-    }
-
-    if farm.token is not None:
-        config_values['Profile']['access_token'] = farm.token.access_token
-        config_values['Profile']['refresh_token'] = farm.token.refresh_token
-        config_values['Profile']['expires_at'] = farm.token.expires_at
-    config.read_dict(config_values)
+    token = FarmTokenBase.from_orm(farm.token)
 
     token_updater = partial(_save_token, db_session=db_session, farm=farm)
 
+    # Allow OAuth over http
+    if settings.AGGREGATOR_OAUTH_INSECURE_TRANSPORT:
+        os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
     try:
-        client = farmOS(config=config, profile_name="Profile", token_updater=token_updater)
+        client = farmOS(
+            hostname=farm.url,
+            client_id=client_id,
+            client_secret=client_secret,
+            scope=scope,
+            token=token.dict(),
+            token_updater=token_updater
+        )
         crud.farm.update_last_accessed(db_session, farm_id=farm.id)
         crud.farm.update_is_authorized(db_session, farm_id=farm.id, is_authorized=True)
     except Exception as e:
-        #logging.exception("Cannot authenticate farmOS client" + repr(e) + str(e))
+        logging.error("Cannot authenticate client with farmOS server id: " + str(farm.id) + " - " + repr(e) + str(e))
         crud.farm.update_is_authorized(db_session, farm_id=farm.id, is_authorized=False, auth_error=str(e))
         raise ClientError(e)
 
-
     return client
+
 
 def get_oauth_token(farm_url, auth_params):
     logging.debug("Completing Authorization Code flow for: " + farm_url)

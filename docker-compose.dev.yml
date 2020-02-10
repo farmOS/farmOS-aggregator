@@ -37,6 +37,8 @@ services:
       dockerfile: tests.dockerfile
       args:
         env: dev
+        OPEN_FARM_REGISTRATION: ${AGGREGATOR_OPEN_FARM_REGISTRATION}
+        INVITE_FARM_REGISTRATION: ${AGGREGATOR_INVITE_FARM_REGISTRATION}
     environment:
       - JUPYTER=jupyter notebook --ip=0.0.0.0 --allow-root
     volumes:

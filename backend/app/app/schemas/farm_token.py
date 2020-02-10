@@ -8,7 +8,7 @@ class FarmTokenBase(APIModel):
     access_token: Optional[str] = None
     expires_in: Optional[str] = None
     refresh_token: Optional[str] = None
-    expires_at: Optional[str] = None
+    expires_at: Optional[float] = None
 
 
 class FarmTokenCreate(FarmTokenBase):

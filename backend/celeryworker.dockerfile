@@ -1,6 +1,6 @@
 FROM python:3.7
 
-RUN pip install raven celery~=4.3 passlib[bcrypt] tenacity requests "fastapi==0.47.1" "pydantic==1.4" emails pyjwt email_validator jinja2 psycopg2-binary alembic SQLAlchemy "farmOS==0.1.6b2"
+RUN pip install raven celery~=4.3 passlib[bcrypt] tenacity requests "fastapi==0.47.1" "pydantic==1.4" emails pyjwt email_validator jinja2 psycopg2-binary alembic SQLAlchemy "farmOS==0.1.6b3"
 
 # Load farm registration configuration.
 ARG OPEN_FARM_REGISTRATION

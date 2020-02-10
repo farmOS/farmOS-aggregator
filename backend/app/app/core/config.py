@@ -2,8 +2,9 @@ import os
 import secrets
 from typing import List
 
-from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, validator
+from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, validator, Json
 from celery.schedules import crontab
+
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
@@ -93,6 +94,11 @@ class Settings(BaseSettings):
     AGGREGATOR_OPEN_FARM_REGISTRATION: bool = False
     AGGREGATOR_INVITE_FARM_REGISTRATION: bool = False
     FARM_ACTIVE_AFTER_REGISTRATION: bool = False
+
+    AGGREGATOR_OAUTH_CLIENT_ID: str
+    AGGREGATOR_OAUTH_CLIENT_SECRET: str = None
+    AGGREGATOR_OAUTH_DEFAULT_SCOPE: str = None
+    AGGREGATOR_OAUTH_INSECURE_TRANSPORT: bool = False
 
     class Config:
         case_sensitive = True
