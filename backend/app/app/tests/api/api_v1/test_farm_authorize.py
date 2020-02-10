@@ -3,7 +3,7 @@ from urllib.parse import urlparse, parse_qs
 import requests
 import pytest
 
-from app.core import config
+from app.core.config import settings
 from app.schemas.farm_token import FarmAuthorizationParams
 from app.tests.utils.utils import farmOS_testing_server, get_server_api, random_lower_string, get_scope_token_headers
 from app.api.utils.security import _validate_token
@@ -26,7 +26,7 @@ def test_authorize_farm(test_farm, farm_authorize_headers):
     )
 
     r = requests.post(
-        f"{server_api}{config.API_V1_STR}/utils/authorize-farm/{test_farm.id}",
+        f"{server_api}{settings.API_V1_STR}/utils/authorize-farm/{test_farm.id}",
         headers=farm_authorize_headers,
         json=data.dict(),
     )
@@ -51,16 +51,16 @@ def test_authorize_farm(test_farm, farm_authorize_headers):
 def test_farm_authorize_oauth_scope(test_farm):
     server_api = get_server_api()
 
-    r = requests.post(f"{server_api}{config.API_V1_STR}/utils/authorize-farm/{test_farm.id}")
+    r = requests.post(f"{server_api}{settings.API_V1_STR}/utils/authorize-farm/{test_farm.id}")
     assert r.status_code == 401
 
 
 def test_get_farm_auth_link(test_farm, superuser_token_headers):
     server_api = get_server_api()
-    server_host = config.SERVER_HOST
+    server_host = settings.SERVER_HOST
 
     r = requests.post(
-        f"{server_api}{config.API_V1_STR}/utils/farm-auth-link/{test_farm.id}",
+        f"{server_api}{settings.API_V1_STR}/utils/farm-auth-link/{test_farm.id}",
         headers=superuser_token_headers,
     )
     assert 200 <= r.status_code < 300
@@ -95,7 +95,7 @@ def test_get_farm_auth_link(test_farm, superuser_token_headers):
 
     # Test that the api_token has access to read /api/v1/farms/{id}
     r = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/{test_farm.id}",
+        f"{server_api}{settings.API_V1_STR}/farms/{test_farm.id}",
         headers={'api-token': token},
     )
     assert 200 <= r.status_code < 300
@@ -113,7 +113,7 @@ def test_get_farm_auth_link(test_farm, superuser_token_headers):
     )
 
     r = requests.post(
-        f"{server_api}{config.API_V1_STR}/utils/authorize-farm/{test_farm.id}",
+        f"{server_api}{settings.API_V1_STR}/utils/authorize-farm/{test_farm.id}",
         headers={'api-token': token},
         json=data.dict(),
     )

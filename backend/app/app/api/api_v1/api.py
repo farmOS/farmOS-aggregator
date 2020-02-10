@@ -2,7 +2,6 @@ import logging
 
 from fastapi import APIRouter, Depends, Security
 
-from app.core import config
 from app.api.api_v1.endpoints import login, users, utils
 from app.api.api_v1.endpoints.farms import farms, info, logs, assets, terms, areas
 from app.api.utils.security import get_farm_access

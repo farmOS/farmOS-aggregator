@@ -9,7 +9,7 @@ from pydantic import BaseModel, ValidationError
 
 from app import crud
 from app.api.utils.db import get_db
-from app.core import config
+from app.core.config import settings
 from app.core.jwt import ALGORITHM
 from app.models.user import User
 from app.schemas.token import TokenData, FarmAccess
@@ -31,12 +31,12 @@ oauth_scopes = {
 }
 
 optional_oauth2 = OAuth2PasswordBearer(
-    tokenUrl="/api/v1/login/access-token",
+    tokenUrl=f"{settings.API_V1_STR}/login/access-token",
     scopes=oauth_scopes,
     auto_error=False
 )
 reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl="/api/v1/login/access-token",
+    tokenUrl=f"{settings.API_V1_STR}/login/access-token",
     scopes=oauth_scopes,
     auto_error=True
 )
@@ -193,7 +193,7 @@ def get_farm_access_allow_public(
     farm_access = None
 
     # If open registration is enabled, allow minimal access.
-    if config.AGGREGATOR_OPEN_FARM_REGISTRATION is True:
+    if settings.AGGREGATOR_OPEN_FARM_REGISTRATION is True:
         farm_access = FarmAccess(scopes=[], farm_id_list=[], all_farms=False)
 
     # Still check for a request with higher permissions.
@@ -217,7 +217,7 @@ def get_farm_access_allow_public(
 
 
 def _validate_token(token):
-    payload = jwt.decode(token, config.SECRET_KEY, algorithms=[ALGORITHM])
+    payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
     user_id: int = payload.get("sub", None)
     farm_id = payload.get("farm_id", [])
     token_scopes = payload.get("scopes", [])

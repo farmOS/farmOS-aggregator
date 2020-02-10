@@ -1,7 +1,7 @@
 import requests
 import pytest
 
-from app.core import config
+from app.core.config import settings
 from app.tests.utils.utils import farmOS_testing_server, get_server_api, get_scope_token_headers
 
 
@@ -17,7 +17,7 @@ def test_create_asset(test_farm, test_asset, farm_assets_headers):
     data = test_asset
 
     response = requests.post(
-        f"{server_api}{config.API_V1_STR}/farms/assets/?farm_id={test_farm.id}",
+        f"{server_api}{settings.API_V1_STR}/farms/assets/?farm_id={test_farm.id}",
         headers=farm_assets_headers,
         json=data,
     )
@@ -37,7 +37,7 @@ def test_create_asset(test_farm, test_asset, farm_assets_headers):
 
     # Check that the creats asset has correct attributes
     response = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/assets/?farm_id={test_farm.id}&id={test_asset['id']}",
+        f"{server_api}{settings.API_V1_STR}/farms/assets/?farm_id={test_farm.id}&id={test_asset['id']}",
         headers=farm_assets_headers,
         json=data,
     )
@@ -58,7 +58,7 @@ def test_get_assets(test_farm, farm_assets_headers):
     server_api = get_server_api()
 
     r = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/assets/?farm_id={test_farm.id}",
+        f"{server_api}{settings.API_V1_STR}/farms/assets/?farm_id={test_farm.id}",
         headers=farm_assets_headers,
     )
     # Check response
@@ -92,7 +92,7 @@ def test_update_asset(test_farm, test_asset, farm_assets_headers):
     data = test_asset
 
     response = requests.put(
-        f"{server_api}{config.API_V1_STR}/farms/assets/?farm_id={test_farm.id}",
+        f"{server_api}{settings.API_V1_STR}/farms/assets/?farm_id={test_farm.id}",
         headers=farm_assets_headers,
         json=data,
     )
@@ -109,7 +109,7 @@ def test_update_asset(test_farm, test_asset, farm_assets_headers):
 
     # Check that the updated asset has correct attributes
     response = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/assets/?farm_id={test_farm.id}&id={test_asset['id']}",
+        f"{server_api}{settings.API_V1_STR}/farms/assets/?farm_id={test_farm.id}&id={test_asset['id']}",
         headers=farm_assets_headers,
     )
     # Check response
@@ -129,7 +129,7 @@ def test_delete_asset(test_farm, test_asset, farm_assets_headers):
     server_api = get_server_api()
 
     response = requests.delete(
-        f"{server_api}{config.API_V1_STR}/farms/assets/?farm_id={test_farm.id}&id={test_asset['id']}",
+        f"{server_api}{settings.API_V1_STR}/farms/assets/?farm_id={test_farm.id}&id={test_asset['id']}",
         headers=farm_assets_headers,
     )
 
@@ -142,5 +142,5 @@ def test_delete_asset(test_farm, test_asset, farm_assets_headers):
 def test_farm_assets_oauth_scope():
     server_api = get_server_api()
 
-    r = requests.get(f"{server_api}{config.API_V1_STR}/farms/assets")
+    r = requests.get(f"{server_api}{settings.API_V1_STR}/farms/assets")
     assert r.status_code == 401

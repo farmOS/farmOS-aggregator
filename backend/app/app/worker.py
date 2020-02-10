@@ -2,13 +2,13 @@ import logging
 
 from raven import Client
 
-from app.core import config
+from app.core.config import settings
 from app.core.celery_app import celery_app
 from app.db.session import Session
 from app import crud
 from app.api.utils.farms import get_farm_client
 
-client_sentry = Client(config.SENTRY_DSN)
+client_sentry = Client(settings.SENTRY_DSN)
 
 
 @celery_app.task()
