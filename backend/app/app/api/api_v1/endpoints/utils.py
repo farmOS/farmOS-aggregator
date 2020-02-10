@@ -1,4 +1,6 @@
+import os
 import logging
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, Security, HTTPException, Body
 from pydantic.networks import EmailStr
@@ -8,6 +10,7 @@ from farmOS.config import ClientConfig
 
 from app import crud
 from app.api.utils.db import get_db
+from app.core.config import settings
 from app.api.utils.security import get_current_active_superuser
 from app.core.celery_app import celery_app
 from app.schemas.msg import Msg
@@ -83,29 +86,36 @@ def authorize_farm(
 
     token = get_oauth_token(farm_url, auth_params)
 
-    client_id = 'farmos_api_client'
-    client_secret = 'client_secret'
+    # Check the token expiration time.
+    if token is not None and 'expires_at' in token:
+        # Create datetime objects for comparison.
+        now = datetime.now()
+        expiration_time = datetime.fromtimestamp(float(token['expires_at']))
 
-    config = ClientConfig()
+        # Calculate seconds until expiration.
+        timedelta = expiration_time - now
+        expires_in = timedelta.total_seconds()
 
-    config_values = {
-        'Profile': {
-            'development': 'True',
-            'hostname': farm_url,
-            'oauth_client_id': client_id,
-            'oauth_scope': auth_params.scope
-        }
-    }
+        # Update the token expires_in value
+        token['expires_in'] = expires_in
 
-    if token is not None:
-        config_values['Profile']['access_token'] = token.access_token
-        config_values['Profile']['refresh_token'] = token.refresh_token
-        config_values['Profile']['expires_at'] = token.expires_at
-    config.read_dict(config_values)
+    client_id = settings.AGGREGATOR_OAUTH_CLIENT_ID
+    client_secret = settings.AGGREGATOR_OAUTH_CLIENT_SECRET
+
+    # Allow OAuth over http
+    if settings.AGGREGATOR_OAUTH_INSECURE_TRANSPORT:
+        os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
     try:
         logging.debug("Testing OAuth token with farmOS client.")
-        client = farmOS(config=config, profile_name="Profile")
+        logging.debug(token.dict())
+        client = farmOS(
+            hostname=farm_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            scope=auth_params.scope,
+            token=token.dict(),
+        )
         info = client.info()
 
         return {
