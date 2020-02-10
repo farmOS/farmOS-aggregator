@@ -6,7 +6,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.core import config
+from app.core.config import settings
 from app.models.farm import Farm
 from app.schemas.farm import FarmCreate, FarmUpdate
 from app.models.farm_token import FarmToken
@@ -55,7 +55,7 @@ def create(db_session: Session, *, farm_in: FarmCreate) -> Farm:
         logging.debug(f"New farm provided 'active = {farm_in.active}'")
         active = farm_in.active
     # Enable farm profile if configured and not overridden above.
-    elif config.FARM_ACTIVE_AFTER_REGISTRATION:
+    elif settings.FARM_ACTIVE_AFTER_REGISTRATION:
         logging.debug(f"FARM_ACTIVE_AFTER_REGISTRATION is enabled. New farm will be active.")
         active = True
 

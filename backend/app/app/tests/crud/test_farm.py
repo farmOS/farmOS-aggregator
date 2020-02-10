@@ -1,4 +1,4 @@
-from app.core import config
+from app.core.config import settings
 from app import crud
 from app.db.session import db_session
 from app.schemas.farm import FarmCreate, FarmUpdate
@@ -29,7 +29,7 @@ def test_create_delete_default_farm_with_token():
     assert farm.farm_name == farm_name
     assert farm.url == url
 
-    if config.FARM_ACTIVE_AFTER_REGISTRATION:
+    if settings.FARM_ACTIVE_AFTER_REGISTRATION:
         assert farm.active is True
     else:
         assert farm.active is False
@@ -63,7 +63,7 @@ def test_create_farm_update_token():
     assert farm.url == url
     assert farm.token is None
 
-    if config.FARM_ACTIVE_AFTER_REGISTRATION:
+    if settings.FARM_ACTIVE_AFTER_REGISTRATION:
         assert farm.active is True
     else:
         assert farm.active is False
@@ -142,7 +142,7 @@ def test_create_farm_cant_delete_token():
     assert farm.farm_name == farm_name
     assert farm.url == url
 
-    if config.FARM_ACTIVE_AFTER_REGISTRATION:
+    if settings.FARM_ACTIVE_AFTER_REGISTRATION:
         assert farm.active is True
     else:
         assert farm.active is False
@@ -175,7 +175,7 @@ def test_create_farm_cant_delete_token():
 
 
 def test_create_delete_active_farm():
-    """Configure the active flag to True."""
+    """settingsure the active flag to True."""
 
     farm_name = random_lower_string()
     url = random_lower_string()
@@ -197,7 +197,7 @@ def test_create_delete_active_farm():
 
 
 def test_create_delete_inactive_farm():
-    """Configure the active flag to False."""
+    """settingsure the active flag to False."""
 
     farm_name = random_lower_string()
     url = random_lower_string()

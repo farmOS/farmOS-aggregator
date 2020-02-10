@@ -4,11 +4,11 @@ import string
 import requests
 import pytest
 
-from app.core import config
+from app.core.config import settings
 
 
 farmOS_testing_server = pytest.mark.skipif(
-    not config.has_valid_test_configuration(),
+    settings.TEST_FARM_URL is None,
     reason="farmOS Testing Server not configured. Skipping farmOS test server integration tests.",
 )
 
@@ -18,18 +18,18 @@ def random_lower_string():
 
 
 def get_server_api():
-    server_name = f"http://{config.SERVER_NAME}"
+    server_name = f"http://{settings.SERVER_NAME}"
     return server_name
 
 
 def get_superuser_token_headers():
     server_api = get_server_api()
     login_data = {
-        "username": config.FIRST_SUPERUSER,
-        "password": config.FIRST_SUPERUSER_PASSWORD,
+        "username": settings.FIRST_SUPERUSER,
+        "password": settings.FIRST_SUPERUSER_PASSWORD,
     }
     r = requests.post(
-        f"{server_api}{config.API_V1_STR}/login/access-token", data=login_data
+        f"{server_api}{settings.API_V1_STR}/login/access-token", data=login_data
     )
     tokens = r.json()
     a_token = tokens["access_token"]
@@ -49,12 +49,12 @@ def get_scope_token_headers(scopes):
 def _create_headers_with_scopes(scopes):
     server_api = get_server_api()
     login_data = {
-        "username": config.FIRST_SUPERUSER,
-        "password": config.FIRST_SUPERUSER_PASSWORD,
+        "username": settings.FIRST_SUPERUSER,
+        "password": settings.FIRST_SUPERUSER_PASSWORD,
         "scope": scopes,
     }
     r = requests.post(
-        f"{server_api}{config.API_V1_STR}/login/access-token", data=login_data
+        f"{server_api}{settings.API_V1_STR}/login/access-token", data=login_data
     )
     tokens = r.json()
     a_token = tokens["access_token"]

@@ -9,6 +9,7 @@ services:
     command: /start-reload.sh
     environment:
       - 'JUPYTER=jupyter notebook --ip=0.0.0.0 --allow-root'
+      - SERVER_NAME=${DOMAIN}
       - SERVER_HOST=http://${DOMAIN}
     networks:
       default:

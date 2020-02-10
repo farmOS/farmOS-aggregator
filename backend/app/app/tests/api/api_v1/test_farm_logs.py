@@ -1,7 +1,7 @@
 import requests
 import pytest
 
-from app.core import config
+from app.core.config import settings
 from app.tests.utils.utils import farmOS_testing_server, get_server_api, get_scope_token_headers
 
 
@@ -15,7 +15,7 @@ def test_get_logs(test_farm, farm_logs_headers):
     server_api = get_server_api()
 
     r = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
+        f"{server_api}{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
         headers=farm_logs_headers,
     )
     # Check response
@@ -46,7 +46,7 @@ def test_create_log(test_farm, test_log, farm_logs_headers):
     data = test_log
 
     response = requests.post(
-        f"{server_api}{config.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
+        f"{server_api}{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
         headers=farm_logs_headers,
         json=data,
     )
@@ -66,7 +66,7 @@ def test_create_log(test_farm, test_log, farm_logs_headers):
 
     # Check that the created log has correct attributes
     response = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
+        f"{server_api}{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
         headers=farm_logs_headers,
         json=data,
     )
@@ -92,7 +92,7 @@ def test_update_log(test_farm, test_log, farm_logs_headers):
     data = test_log
 
     response = requests.put(
-        f"{server_api}{config.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
+        f"{server_api}{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
         headers=farm_logs_headers,
         json=data,
     )
@@ -109,7 +109,7 @@ def test_update_log(test_farm, test_log, farm_logs_headers):
 
     # Check that the updated log has correct attributes
     response = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
+        f"{server_api}{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
         headers=farm_logs_headers,
     )
     # Check response
@@ -129,7 +129,7 @@ def test_delete_log(test_farm, test_log, farm_logs_headers):
     server_api = get_server_api()
 
     response = requests.delete(
-        f"{server_api}{config.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
+        f"{server_api}{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
         headers=farm_logs_headers,
     )
 
@@ -142,5 +142,5 @@ def test_delete_log(test_farm, test_log, farm_logs_headers):
 def test_farm_logs_oauth_scope():
     server_api = get_server_api()
 
-    r = requests.get(f"{server_api}{config.API_V1_STR}/farms/logs")
+    r = requests.get(f"{server_api}{settings.API_V1_STR}/farms/logs")
     assert r.status_code == 401

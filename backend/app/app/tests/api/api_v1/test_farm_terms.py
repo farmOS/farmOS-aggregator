@@ -1,7 +1,7 @@
 import requests
 import pytest
 
-from app.core import config
+from app.core.config import settings
 from app.tests.utils.utils import farmOS_testing_server, get_server_api, get_scope_token_headers
 
 
@@ -17,7 +17,7 @@ def test_create_term(test_farm, test_term, farm_terms_headers):
     data = test_term
 
     response = requests.post(
-        f"{server_api}{config.API_V1_STR}/farms/terms/?farm_id={test_farm.id}",
+        f"{server_api}{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}",
         headers=farm_terms_headers,
         json=data,
     )
@@ -37,7 +37,7 @@ def test_create_term(test_farm, test_term, farm_terms_headers):
 
     # Check that the creats term has correct attributes
     response = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
+        f"{server_api}{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
         headers=farm_terms_headers,
         json=data,
     )
@@ -58,7 +58,7 @@ def test_get_terms(test_farm, farm_terms_headers):
     server_api = get_server_api()
 
     r = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/terms/?farm_id={test_farm.id}",
+        f"{server_api}{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}",
         headers=farm_terms_headers,
     )
     # Check response
@@ -92,7 +92,7 @@ def test_update_term(test_farm, test_term, farm_terms_headers):
     data = test_term
 
     response = requests.put(
-        f"{server_api}{config.API_V1_STR}/farms/terms/?farm_id={test_farm.id}",
+        f"{server_api}{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}",
         headers=farm_terms_headers,
         json=data,
     )
@@ -109,7 +109,7 @@ def test_update_term(test_farm, test_term, farm_terms_headers):
 
     # Check that the updated term has correct attributes
     response = requests.get(
-        f"{server_api}{config.API_V1_STR}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
+        f"{server_api}{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
         headers=farm_terms_headers,
     )
     # Check response
@@ -129,7 +129,7 @@ def test_delete_term(test_farm, test_term, farm_terms_headers):
     server_api = get_server_api()
 
     response = requests.delete(
-        f"{server_api}{config.API_V1_STR}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
+        f"{server_api}{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
         headers=farm_terms_headers,
     )
 
@@ -142,5 +142,5 @@ def test_delete_term(test_farm, test_term, farm_terms_headers):
 def test_farm_terms_oauth_scope():
     server_api = get_server_api()
 
-    r = requests.get(f"{server_api}{config.API_V1_STR}/farms/terms")
+    r = requests.get(f"{server_api}{settings.API_V1_STR}/farms/terms")
     assert r.status_code == 401
