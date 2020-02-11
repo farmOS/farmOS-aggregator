@@ -6,6 +6,8 @@ services:
       dockerfile: backend.dockerfile
       args:
         env: dev
+        OPEN_FARM_REGISTRATION: ${AGGREGATOR_OPEN_FARM_REGISTRATION}
+        INVITE_FARM_REGISTRATION: ${AGGREGATOR_INVITE_FARM_REGISTRATION}
     command: /start-reload.sh
     environment:
       - 'JUPYTER=jupyter notebook --ip=0.0.0.0 --allow-root'
@@ -48,6 +50,8 @@ services:
       context: ./frontend
       args:
         FRONTEND_ENV: dev
+        OPEN_FARM_REGISTRATION: ${AGGREGATOR_OPEN_FARM_REGISTRATION}
+        INVITE_FARM_REGISTRATION: ${AGGREGATOR_INVITE_FARM_REGISTRATION}
     ports:
       - '5555:5555'
   proxy:
