@@ -11,7 +11,6 @@ class FarmBase(APIModel):
     url: Optional[str] = None
     notes: Optional[str] = None
     tags: Optional[str] = None
-    info: Optional[FarmInfo] = None
     active: Optional[bool] = None
     scope: Optional[str] = None
     token: Optional[FarmToken] = None
@@ -40,6 +39,7 @@ class FarmUpdate(FarmBase):
 class Farm(FarmBaseInDB):
     last_accessed: Optional[datetime] = None
     is_authorized: Optional[bool] = None
+    info: Optional[FarmInfo] = None
     auth_error: Optional[str] = None
 
 
