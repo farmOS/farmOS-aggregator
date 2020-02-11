@@ -18,9 +18,6 @@ services:
       - '/etc/letsencrypt:/etc/letsencrypt:ro'
       - '/var/www/letsencrypt:/var/www/letsencrypt:ro'
     restart: always
-  flower:
-    ports:
-      - '5555:5555'
 
 volumes:
   app-db-data:

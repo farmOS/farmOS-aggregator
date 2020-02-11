@@ -6,13 +6,6 @@ services:
     env_file:
       - env-postgres.env
       - env-backend.env
-  celeryworker:
-    depends_on:
-      - db
-      - queue
-    env_file:
-      - env-postgres.env
-      - env-backend.env
   db:
     image: postgres:11
     env_file:
@@ -34,12 +27,3 @@ services:
       - DOMAIN=${DOMAIN}
       - NGINX_WORKER_PROCESSES=${NGINX_WORKER_PROCESSES}
       - NGINX_WORKER_CONNECTIONS=${NGINX_WORKER_CONNECTIONS}
-  flower:
-    image: mher/flower
-    env_file:
-      - env-flower.env
-    command:
-      - "--broker=amqp://guest@queue:5672//"
-      - "--broker_api=http://guest:guest@queue:15672/api//"
-  queue:
-    image: rabbitmq:3-management
