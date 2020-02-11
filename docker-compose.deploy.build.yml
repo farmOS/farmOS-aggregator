@@ -7,10 +7,6 @@ services:
       args:
         OPEN_FARM_REGISTRATION: ${AGGREGATOR_OPEN_FARM_REGISTRATION}
         INVITE_FARM_REGISTRATION: ${AGGREGATOR_INVITE_FARM_REGISTRATION}
-  celeryworker:
-    build:
-      context: ./backend
-      dockerfile: celeryworker.dockerfile
   frontend:
     build: 
       context: ./frontend

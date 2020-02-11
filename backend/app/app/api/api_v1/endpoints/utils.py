@@ -6,18 +6,16 @@ from fastapi import APIRouter, Depends, Security, HTTPException, Body
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
 from farmOS import farmOS
-from farmOS.config import ClientConfig
 
 from app import crud
 from app.api.utils.db import get_db
 from app.core.config import settings
 from app.api.utils.security import get_current_active_superuser
-from app.core.celery_app import celery_app
 from app.schemas.msg import Msg
 from app.schemas.user import UserInDB
 from app.schemas.farm import Farm
 from app.schemas.farm_token import FarmTokenCreate, FarmAuthorizationParams
-from app.api.utils.farms import get_farm_by_id, get_oauth_token
+from app.api.utils.farms import get_farm_by_id, get_oauth_token, get_farm_client
 from app.api.utils.security import get_farm_access, get_farm_access_allow_public
 from app.utils import send_test_email, generate_farm_authorization_link, generate_farm_registration_link
 
@@ -26,15 +24,30 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post("/ping-farms/", response_model=Msg, status_code=201)
+@router.post(
+    "/ping-farms/",
+    dependencies=[Security(get_farm_access)],
+    response_model=Msg,
+    status_code=200
+)
 def ping_farms(
-    current_user: UserInDB = Depends(get_current_active_superuser)
+    db: Session = Depends(get_db)
 ):
     """
-    Ping all farms.
+    Ping all active farms.
     """
-    celery_app.send_task("app.worker.ping_farms")
-    return {"msg": "Task created. Check farm last_updated values."}
+    farm_list = crud.farm.get_multi(db, active=True)
+
+    total_response = 0
+    for farm in farm_list:
+        try:
+            farm_client = get_farm_client(db_session=db, farm=farm)
+            info = farm_client.info()
+            total_response += 1
+        except Exception as e:
+            continue
+
+    return {"msg": f"Pinged {total_response}/{len(farm_list)} active farms."}
 
 
 @router.post("/test-email/", response_model=Msg, status_code=201)

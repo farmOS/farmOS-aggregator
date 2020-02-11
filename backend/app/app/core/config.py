@@ -3,7 +3,6 @@ import secrets
 from typing import List
 
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, validator, Json
-from celery.schedules import crontab
 
 
 class Settings(BaseSettings):
@@ -27,13 +26,6 @@ class Settings(BaseSettings):
         return v
 
     PROJECT_NAME: str
-
-    SENTRY_DSN: HttpUrl = None
-    @validator("SENTRY_DSN", pre=True)
-    def sentry_dsn_can_be_blank(cls, v):
-        if len(v) == 0:
-            return None
-        return v
 
     POSTGRES_SERVER: str
     POSTGRES_USER: str
@@ -103,7 +95,5 @@ class Settings(BaseSettings):
     class Config:
         case_sensitive = True
 
-
-CELERY_WORKER_PING_INTERVAL = crontab(minute='0', hour='0,12')
 
 settings = Settings()

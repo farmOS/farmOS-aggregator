@@ -21,18 +21,6 @@ services:
       - '8888:8888'
     volumes:
       - ./backend/app:/app
-  celeryworker:
-    build:
-      context: ./backend
-      dockerfile: celeryworker.dockerfile
-      args:
-        env: dev
-    environment:
-      - RUN=celery worker -A app.worker -l info -Q main-queue -c 1
-      - JUPYTER=jupyter notebook --ip=0.0.0.0 --allow-root
-      - SERVER_HOST=http://${DOMAIN}
-    volumes:
-      - ./backend/app:/app
   backend-tests:
     build:
       context: ./backend
