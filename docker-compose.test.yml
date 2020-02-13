@@ -39,4 +39,6 @@ services:
   backend:
     environment:
       # Don't send emails during testing
+      - SERVER_NAME=${DOMAIN}
+      - SERVER_HOST=http://${DOMAIN}
       - SMTP_HOST=
