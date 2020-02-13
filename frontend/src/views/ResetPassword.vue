@@ -33,13 +33,13 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { Store } from 'vuex';
 import { IUserProfileUpdate } from '@/interfaces';
-import { appName } from '@/env';
+import { env } from '@/env';
 import { commitAddNotification } from '@/store/main/mutations';
 import { dispatchResetPassword } from '@/store/main/actions';
 
 @Component
 export default class UserProfileEdit extends Vue {
-  public appName = appName;
+  public appName = env('appName');
   public valid = true;
   public password1 = '';
   public password2 = '';

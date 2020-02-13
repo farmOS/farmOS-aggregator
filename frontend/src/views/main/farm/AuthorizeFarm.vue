@@ -109,19 +109,18 @@
 </template>
 
 <script lang="ts">
-import { appName } from '@/env';
+import { env } from '@/env';
 import { Component, Vue } from 'vue-property-decorator';
 import { dispatchGetFarms, dispatchCreateFarmAuthLink, dispatchGetFarmInfo } from '@/store/farm/actions';
 import { readOneFarm } from '@/store/farm/getters';
 import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
 import FarmAuthorizationForm from '@/components/FarmAuthorizationForm.vue';
-import {FarmProfile} from '@/interfaces';
 
 @Component({
     components: {FarmAuthorizationStatus, FarmAuthorizationForm},
 })
 export default class AuthorizeFarm extends Vue {
-  public appName = appName;
+  public appName = env('appName');
 
   // Properties from the Farm Profile.
   public farmName: string = '';

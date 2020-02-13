@@ -1,5 +1,12 @@
 version: '3.3'
 services:
+  backend:
+    environment:
+      - SERVER_NAME=${DOMAIN}
+      - SERVER_HOST=https://${DOMAIN}
+  frontend:
+    environment:
+      - SERVER_HOST=https://${DOMAIN}
   db:
     volumes:
       - app-db-data:/var/lib/postgresql/data/pgdata

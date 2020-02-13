@@ -33,8 +33,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { api } from '@/api';
-import { appName } from '@/env';
+import { env } from '@/env';
 import { readLoginError } from '@/store/main/getters';
 import { dispatchLogIn } from '@/store/main/actions';
 
@@ -44,7 +43,7 @@ const defaultOAuthScopes = 'farm:create farm:read farm:update farm:delete farm:a
 export default class Login extends Vue {
   public email: string = '';
   public password: string = '';
-  public appName = appName;
+  public appName = env('appName');
   public defaultOAuthScopes = defaultOAuthScopes;
 
   public get loginError() {

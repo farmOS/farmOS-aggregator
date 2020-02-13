@@ -4,13 +4,6 @@ services:
     build: 
       context: ./backend
       dockerfile: backend.dockerfile
-      args:
-        OPEN_FARM_REGISTRATION: ${AGGREGATOR_OPEN_FARM_REGISTRATION}
-        INVITE_FARM_REGISTRATION: ${AGGREGATOR_INVITE_FARM_REGISTRATION}
   frontend:
     build: 
       context: ./frontend
-      args:
-        FRONTEND_ENV: ${FRONTEND_ENV-production}
-        OPEN_FARM_REGISTRATION: ${AGGREGATOR_OPEN_FARM_REGISTRATION}
-        INVITE_FARM_REGISTRATION: ${AGGREGATOR_INVITE_FARM_REGISTRATION}

@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+
+echo "Loading Aggregator config from env var..."
+echo "SERVER_HOST: $SERVER_HOST"
+echo "AGGREGATOR_NAME: $AGGREGATOR_NAME"
+echo "AGGREGATOR_OPEN_FARM_REGISTRATION: $AGGREGATOR_OPEN_FARM_REGISTRATION"
+echo "AGGREGATOR_INVITE_FARM_REGISTRATION: $AGGREGATOR_INVITE_FARM_REGISTRATION"
+echo "AGGREGATOR_OAUTH_CLIENT_ID: $AGGREGATOR_OAUTH_CLIENT_ID"
+echo "AGGREGATOR_OAUTH_CLIENT_SECRET: $AGGREGATOR_OAUTH_SECRET"
+echo "AGGREGATOR_OAUTH_SCOPES: $AGGREGATOR_OAUTH_SCOPES"
+echo "AGGREGATOR_OAUTH_DEFAULT_SCOPES: $AGGREGATOR_OAUTH_DEFAULT_SCOPES"
+echo "AGGREGATOR_OAUTH_REQUIRED_SCOPES: $AGGREGATOR_OAUTH_REQUIRED_SCOPES"
+
+# Build the env.js config file to be loaded at runtime.
+envsubst < /env-template.js > /usr/share/nginx/html/env.js
+
+# Execute the arguments passed into this script.
+echo "Attempting: $@"
+exec "$@"

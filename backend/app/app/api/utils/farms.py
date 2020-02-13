@@ -195,7 +195,7 @@ def get_farm_client(db_session, farm):
     client_id = settings.AGGREGATOR_OAUTH_CLIENT_ID
     client_secret = settings.AGGREGATOR_OAUTH_CLIENT_SECRET
 
-    scope = settings.AGGREGATOR_OAUTH_DEFAULT_SCOPE
+    scope = None
     if farm.scope is not None:
         scope = farm.scope
 

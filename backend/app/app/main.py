@@ -11,13 +11,13 @@ from app.db.session import Session
 # Configure logging. Change INFO to DEBUG for development logging.
 logging.basicConfig(level=logging.INFO)
 
-app = FastAPI(title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json")
+app = FastAPI(title=settings.AGGREGATOR_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json")
 
 # Set all CORS enabled origins
 if settings.BACKEND_CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[str(origin for origin in settings.BACKEND_CORS_ORIGINS)],
+        allow_origins=settings.BACKEND_CORS_ORIGINS,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

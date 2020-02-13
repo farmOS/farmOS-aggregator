@@ -72,7 +72,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import {FarmProfile, FarmToken} from '@/interfaces';
-import {appName, inviteFarmRegistration, openFarmRegistration} from '@/env';
+import { env } from '@/env';
 import { commitAddNotification } from '@/store/main/mutations';
 import { dispatchGetOneFarm } from '@/store/farm/actions';
 import FarmAuthorizationForm from '@/components/FarmAuthorizationForm.vue';
@@ -85,7 +85,9 @@ export default class UserProfileEdit extends Vue {
       authForm: HTMLFormElement,
   };
 
-  public appName = appName;
+  // Load environment configs
+  public appName = env('appName');
+
   // Query params.
   public farmID: number = 0;
   public apiToken: string = '';
@@ -122,7 +124,7 @@ export default class UserProfileEdit extends Vue {
 
           } else if (this.authError === 'access_denied') {
               this.authErrorDialogText = 'Authorization Denied';
-              this.authErrorDialogDescriptionText = 'You denied the Authorization request. In order to add your farm to the ' + appName + ', you must authorize access to your farmOS Server.';
+              this.authErrorDialogDescriptionText = 'You denied the Authorization request. In order to add your farm to the ' + this.appName + ', you must authorize access to your farmOS Server.';
               this.authErrorDialog = true;
           } else {
               commitAddNotification(this.$store, {

@@ -25,7 +25,7 @@ class Settings(BaseSettings):
             return [i.strip() for i in v.split(",")]
         return v
 
-    PROJECT_NAME: str
+    AGGREGATOR_NAME: str
 
     POSTGRES_SERVER: str
     POSTGRES_USER: str
@@ -56,7 +56,7 @@ class Settings(BaseSettings):
     @validator("EMAILS_FROM_NAME")
     def get_project_name(cls, v, values):
         if not v:
-            return values["PROJECT_NAME"]
+            return values["AGGREGATOR_NAME"]
         return v
 
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
@@ -89,7 +89,6 @@ class Settings(BaseSettings):
 
     AGGREGATOR_OAUTH_CLIENT_ID: str
     AGGREGATOR_OAUTH_CLIENT_SECRET: str = None
-    AGGREGATOR_OAUTH_DEFAULT_SCOPE: str = None
     AGGREGATOR_OAUTH_INSECURE_TRANSPORT: bool = False
 
     class Config:
