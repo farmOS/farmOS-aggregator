@@ -1,11 +1,15 @@
 version: '3.3'
 services:
+  frontend:
+    env_file:
+      - env-aggregator.env
   backend:
     depends_on:
       - db
     env_file:
       - env-postgres.env
       - env-backend.env
+      - env-aggregator.env
   db:
     image: postgres:11
     env_file:

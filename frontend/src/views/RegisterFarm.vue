@@ -266,7 +266,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { FarmProfileCreate, FarmToken, FarmInfo } from '@/interfaces';
-import { appName, openFarmRegistration, inviteFarmRegistration } from '@/env';
+import { env } from '@/env';
 import { commitAddNotification } from '@/store/main/mutations';
 import {
     dispatchCreateFarm,
@@ -282,7 +282,9 @@ export default class RegisterFarm extends Vue {
       authForm: HTMLFormElement,
   };
 
-  public appName = appName;
+  public appName = env('appName');
+  public openFarmRegistration = env('openFarmRegistration');
+  public inviteFarmRegistration = env('inviteFarmRegistration');
   // Query params.
   public apiToken: string = '';
 
@@ -356,7 +358,7 @@ export default class RegisterFarm extends Vue {
 
         } else if (this.authError === 'access_denied') {
             this.authErrorDialogText = 'Authorization Denied';
-            this.authErrorDialogDescriptionText = 'You denied the Authorization request. In order to add your farm to the ' + appName + ', you must authorize access to your farmOS Server.';
+            this.authErrorDialogDescriptionText = 'You denied the Authorization request. In order to add your farm to the ' + this.appName + ', you must authorize access to your farmOS Server.';
             this.authErrorDialog = true;
         } else {
             commitAddNotification(this.$store, {
@@ -380,7 +382,7 @@ export default class RegisterFarm extends Vue {
     this.apiToken = this.$router.currentRoute.query.api_token as string;
 
     // Check farm registration configuration.
-    if (!openFarmRegistration && inviteFarmRegistration) {
+    if (!this.openFarmRegistration && this.inviteFarmRegistration) {
         // Verify an APIToken was provided.
         if (!this.apiToken) {
             commitAddNotification(this.$store, {
@@ -391,7 +393,7 @@ export default class RegisterFarm extends Vue {
         }
     }
 
-    if (!openFarmRegistration && !inviteFarmRegistration) {
+    if (!this.openFarmRegistration && !this.inviteFarmRegistration) {
         commitAddNotification(this.$store, {
             content: 'You cannot join this aggregator without an invitation from the administrator.',
             color: 'error',

@@ -3,15 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "env": "envsub --all -S -f .env env-template.js public/env.js",
+    "serve": "npm run env && vue-cli-service serve",
+    "build": "npm run env && vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "npm run env && vue-cli-service test:unit"
   },
   "dependencies": {
     "@babel/polyfill": "^7.6.0",
     "@mdi/font": "^4.5.95",
     "axios": "^0.18.1",
+    "envsub": "^4.0.7",
     "register-service-worker": "^1.6.2",
     "sass": "^1.23.0",
     "sass-loader": "^8.0.0",

@@ -29,14 +29,14 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { appName } from '@/env';
+import { env } from '@/env';
 import { dispatchPasswordRecovery } from '@/store/main/actions';
 
 @Component
 export default class Login extends Vue {
   public valid = true;
   public username: string = '';
-  public appName = appName;
+  public appName = env('appName');
 
   public cancel() {
     this.$router.back();

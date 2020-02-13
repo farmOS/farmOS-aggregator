@@ -15,21 +15,20 @@
       Permissions
     </div>
     <v-checkbox
-      v-for="scope in scopes"
-      v-model="oauthScopes"
+      v-for="scope in oauthScopes"
+      v-model="oauthSelectedScopes"
       v-bind:key="scope.name"
       v-bind:value="scope.name"
       v-bind:label="scope.label"
       v-bind:hint="scope.description"
-      :disabled = "requiredScopes.includes(scope.name)"
+      :disabled = "oauthRequiredScopes.includes(scope.name)"
       persistent-hint
     ></v-checkbox>
   </form>
 </template>
 
 <script lang="ts">
-    import { apiUrl } from '@/env';
-    import oauthConfig from '../oauthConfig.json';
+    import { env } from '@/env';
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import {FarmProfileAuthorize, FarmAuthorizationNonce} from '@/interfaces';
     import {dispatchAuthorizeFarm, dispatchAuthorizeNewFarm} from '@/store/farm/actions';
@@ -47,10 +46,17 @@
         @Prop({default: null}) public farmName!: string;
         @Prop({default: null}) public farmId!: number;
 
+        // Load environment config
+        public apiUrl = env('apiUrl');
+
         // Load the the configured oauth settings for this aggregator.
-        public scopes = oauthConfig.scopes!;
-        public requiredScopes: string[] = oauthConfig.requiredScopes!;
-        public oauthScopes: string[] = oauthConfig.defaultScopes!;
+        public oauthClientId = env('oauthClientId');
+        public oauthClientSecret = env('oauthClientSecret');
+        public oauthScopes = env('oauthScopes');
+        public oauthRequiredScopes = env('oauthRequiredScopes');
+
+        // Selected Scopes starts as Default OAuth Scopes
+        public oauthSelectedScopes = env('oauthDefaultScopes');
 
         // Generate a random string for the state param of OAuth Authorization Flow.
         public authState: string =
@@ -66,15 +72,15 @@
                 state: this.authState,
                 farmId: this.farmId,
                 farmUrl: this.farmUrl,
-                scopes: this.oauthScopes,
+                scopes: this.oauthSelectedScopes,
             };
 
             // Build the OAuth query parameters.
             const responseType = 'code';
-            const clientID = oauthConfig.clientId;
-            const clientSecret = oauthConfig.clientSecret;
+            const clientID = this.oauthClientId;
+            const clientSecret = this.oauthClientSecret;
             const scopes = this.cleanOAuthStrings();
-            const redirectURI = `${apiUrl}${this.redirectUri}`;
+            const redirectURI = `${this.apiUrl}${this.redirectUri}`;
             const state = this.authState;
 
             let queryParams = '';
@@ -102,7 +108,7 @@
                 this.$router.push(this.$route.path);
                 return;
             }
-            this.oauthScopes = nonce.scopes!;
+            this.oauthSelectedScopes = nonce.scopes!;
             const scope = this.cleanOAuthStrings();
             const savedState = nonce.state!;
             const farmUrl = nonce.farmUrl!;
@@ -126,9 +132,9 @@
                 grant_type: 'authorization_code',
                 code: authCode,
                 state: authState,
-                client_id: oauthConfig.clientId!,
-                client_secret: oauthConfig.clientSecret!,
-                redirect_uri: `${apiUrl}${this.redirectUri}`,
+                client_id: this.oauthClientId,
+                client_secret: this.oauthClientSecret,
+                redirect_uri: `${this.apiUrl}${this.redirectUri}`,
                 scope,
             };
 
@@ -169,7 +175,7 @@
                 // Change the OAuth Scopes from a list of strings to one space separated string of scopes.
                 // These are embedded in the query parameters.
                 let allScopes: string = '';
-                for (const scope of this.oauthScopes) {
+                for (const scope of this.oauthSelectedScopes) {
                     allScopes += scope + ' ';
                 }
                 return allScopes;

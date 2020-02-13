@@ -35,7 +35,6 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "src/oauthConfig.json"
   ],
   "exclude": [
     "node_modules"
