@@ -1,0 +1,88 @@
+version: '3.3'
+services:
+  backend:
+    image: farmos/aggregator:backend
+    depends_on:
+      - db
+    environment:
+      - SERVER_NAME=${DOMAIN}
+      - SERVER_HOST=https://${DOMAIN}
+      # Configuration for postgres DB.
+      - POSTGRES_SERVER
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      # Configuration for backend app.
+      - BACKEND_CORS_ORIGINS
+      - SECRET_KEY
+      - FIRST_SUPERUSER
+      - FIRST_SUPERUSER_PASSWORD
+      - SMTP_TLS
+      - SMTP_PORT
+      - SMTP_HOST
+      - SMTP_USER
+      - SMTP_PASSWORD
+      - EMAILS_FROM_EMAIL
+      - USERS_OPEN_REGISTRATION
+      # General aggregator configuration.
+      - AGGREGATOR_NAME
+      - FARM_ACTIVE_AFTER_REGISTRATION
+      - AGGREGATOR_OAUTH_INSECURE_TRANSPORT
+      - AGGREGATOR_OPEN_FARM_REGISTRATION
+      - AGGREGATOR_INVITE_FARM_REGISTRATION
+      - AGGREGATOR_OAUTH_CLIENT_ID
+      - AGGREGATOR_OAUTH_CLIENT_SECRET
+      - AGGREGATOR_OAUTH_SCOPES
+      - AGGREGATOR_OAUTH_DEFAULT_SCOPES
+      - AGGREGATOR_OAUTH_REQUIRED_SCOPES
+  frontend:
+    image: farmos/aggregator:frontend
+    environment:
+      - SERVER_HOST=https://${DOMAIN}
+      # General aggregator configuration.
+      - AGGREGATOR_NAME
+      - FARM_ACTIVE_AFTER_REGISTRATION
+      - AGGREGATOR_OAUTH_INSECURE_TRANSPORT
+      - AGGREGATOR_OPEN_FARM_REGISTRATION
+      - AGGREGATOR_INVITE_FARM_REGISTRATION
+      - AGGREGATOR_OAUTH_CLIENT_ID
+      - AGGREGATOR_OAUTH_CLIENT_SECRET
+      - AGGREGATOR_OAUTH_SCOPES
+      - AGGREGATOR_OAUTH_DEFAULT_SCOPES
+      - AGGREGATOR_OAUTH_REQUIRED_SCOPES
+  db:
+    image: postgres:11
+    volumes:
+      - app-db-data:/var/lib/postgresql/data/pgdata
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_SERVER
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+  proxy:
+    image: nginx:stable-alpine
+    depends_on:
+      - backend
+      - frontend
+    environment:
+      - DOMAIN=${DOMAIN}
+      - NGINX_WORKER_PROCESSES=${NGINX_WORKER_PROCESSES}
+      - NGINX_WORKER_CONNECTIONS=${NGINX_WORKER_CONNECTIONS}
+    command: sh -c "
+        envsubst '$$DOMAIN' < /etc/nginx/conf.d/nginx.deploy.template > /etc/nginx/conf.d/default.conf
+        && sed -i '/worker_processes\s/c\worker_processes ${NGINX_WORKER_PROCESSES};' /etc/nginx/nginx.conf
+        && sed -i '/worker_connections\s/c\worker_connections ${NGINX_WORKER_CONNECTIONS};' /etc/nginx/nginx.conf
+        && exec nginx-debug -g 'daemon off;'
+      "
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - './nginx.deploy.template:/etc/nginx/conf.d/nginx.deploy.template:ro'
+      - '/etc/letsencrypt:/etc/letsencrypt:ro'
+      - '/var/www/letsencrypt:/var/www/letsencrypt:ro'
+    restart: always
+
+volumes:
+  app-db-data:
