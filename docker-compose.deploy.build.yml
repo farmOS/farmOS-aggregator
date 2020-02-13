@@ -3,7 +3,6 @@ services:
   backend:
     build: 
       context: ./backend
-      dockerfile: backend.dockerfile
   frontend:
     build: 
       context: ./frontend
