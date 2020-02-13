@@ -47,6 +47,3 @@ services:
       - '80:80'
     volumes:
       - ./nginx.dev.template:/etc/nginx/conf.d/nginx.dev.template
-  pgadmin:
-    ports:
-      - '5050:5050'
