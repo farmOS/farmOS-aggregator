@@ -16,12 +16,6 @@ services:
       - env-postgres.env
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
-  pgadmin:
-    image: dpage/pgadmin4
-    depends_on:
-      - db
-    env_file:
-      - env-pgadmin.env
   proxy:
     image: nginx:stable-alpine
     depends_on:
