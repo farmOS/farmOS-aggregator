@@ -1,21 +1,58 @@
 version: '3.3'
 services:
   frontend:
-    env_file:
-      - env-aggregator.env
+    environment:
+      # General aggregator configuration.
+      - AGGREGATOR_NAME
+      - FARM_ACTIVE_AFTER_REGISTRATION
+      - AGGREGATOR_OAUTH_INSECURE_TRANSPORT
+      - AGGREGATOR_OPEN_FARM_REGISTRATION
+      - AGGREGATOR_INVITE_FARM_REGISTRATION
+      - AGGREGATOR_OAUTH_CLIENT_ID
+      - AGGREGATOR_OAUTH_CLIENT_SECRET
+      - AGGREGATOR_OAUTH_SCOPES
+      - AGGREGATOR_OAUTH_DEFAULT_SCOPES
+      - AGGREGATOR_OAUTH_REQUIRED_SCOPES
   backend:
     depends_on:
       - db
-    env_file:
-      - env-postgres.env
-      - env-backend.env
-      - env-aggregator.env
+    environment:
+      # Configuration for postgres DB.
+      - POSTGRES_SERVER
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      # Configuration for backend app.
+      - BACKEND_CORS_ORIGINS
+      - SECRET_KEY
+      - FIRST_SUPERUSER
+      - FIRST_SUPERUSER_PASSWORD
+      - SMTP_TLS
+      - SMTP_PORT
+      - SMTP_HOST
+      - SMTP_USER
+      - SMTP_PASSWORD
+      - EMAILS_FROM_EMAIL
+      - USERS_OPEN_REGISTRATION
+      # General aggregator configuration.
+      - AGGREGATOR_NAME
+      - FARM_ACTIVE_AFTER_REGISTRATION
+      - AGGREGATOR_OAUTH_INSECURE_TRANSPORT
+      - AGGREGATOR_OPEN_FARM_REGISTRATION
+      - AGGREGATOR_INVITE_FARM_REGISTRATION
+      - AGGREGATOR_OAUTH_CLIENT_ID
+      - AGGREGATOR_OAUTH_CLIENT_SECRET
+      - AGGREGATOR_OAUTH_SCOPES
+      - AGGREGATOR_OAUTH_DEFAULT_SCOPES
+      - AGGREGATOR_OAUTH_REQUIRED_SCOPES
   db:
     image: postgres:11
-    env_file:
-      - env-postgres.env
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_SERVER
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
   proxy:
     image: nginx:stable-alpine
     depends_on:
