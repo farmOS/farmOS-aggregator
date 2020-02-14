@@ -15,7 +15,7 @@ from app.schemas.msg import Msg
 from app.schemas.user import UserInDB
 from app.schemas.farm import Farm
 from app.schemas.farm_token import FarmTokenCreate, FarmAuthorizationParams
-from app.api.utils.farms import get_farm_by_id, get_oauth_token, get_farm_client
+from app.api.utils.farms import get_farm_by_id, get_oauth_token, get_farm_client, admin_alert_email
 from app.api.utils.security import get_farm_access, get_farm_access_allow_public
 from app.utils import (
     generate_farm_registration_link,
@@ -51,6 +51,10 @@ def ping_farms(
             total_response += 1
         except Exception as e:
             continue
+
+    difference = len(farm_list) - total_response
+    if difference > 0 and settings.AGGREGATOR_ALERT_PING_FARMS_ERRORS:
+        admin_alert_email(db_session=db, message=f"Pinged {total_response}/{len(farm_list)} active farms. {difference} did not respond. Check the list of farm profiles for authorization status errors.")
 
     return {"msg": f"Pinged {total_response}/{len(farm_list)} active farms."}
 

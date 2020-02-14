@@ -19,6 +19,7 @@ from app.crud.farm_token import create_farm_token, update_farm_token
 from app.schemas.farm import Farm, FarmUpdate
 from app.schemas.token import FarmAccess
 from app.api.utils.security import get_farm_access
+from app.utils import send_admin_alert_email
 
 
 logger = logging.getLogger(__name__)
@@ -219,6 +220,8 @@ def get_farm_client(db_session, farm):
         crud.farm.update_last_accessed(db_session, farm_id=farm.id)
         crud.farm.update_is_authorized(db_session, farm_id=farm.id, is_authorized=True)
     except Exception as e:
+        if settings.AGGREGATOR_ALERT_ALL_ERRORS:
+            admin_alert_email(db_session=db_session, message="Cannot authenticate client with farmOS server id: " + str(farm.id) + " - " + repr(e) + str(e))
         logging.error("Cannot authenticate client with farmOS server id: " + str(farm.id) + " - " + repr(e) + str(e))
         crud.farm.update_is_authorized(db_session, farm_id=farm.id, is_authorized=False, auth_error=str(e))
         raise ClientError(e)
@@ -257,6 +260,16 @@ def get_oauth_token(farm_url, auth_params):
     else:
         logging.error("Could not complete OAuth Authorization Flow: " )
         raise HTTPException(status_code=400, detail="Could not retrieve an access token.")
+
+
+def admin_alert_email(db_session, message: str):
+    if settings.EMAILS_ENABLED:
+        logging.info("Sending admin alert message: " + message)
+        users = crud.user.get_multi(db_session)
+
+        for user in users:
+            if user.is_superuser:
+                send_admin_alert_email(email_to=user.email, message=message)
 
 
 class ClientError(Exception):
