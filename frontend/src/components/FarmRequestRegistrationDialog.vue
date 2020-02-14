@@ -4,7 +4,7 @@
             max-width="600"
     >
         <v-card>
-            <v-card-title class="headline">Request Authorization</v-card-title>
+            <v-card-title class="headline">Request Registration</v-card-title>
 
             <v-card-text>
                 Input the email to send a registration link. This should be the farmOS admin email.
@@ -45,7 +45,8 @@
                 <v-btn
                         color="green darken-1"
                         text
-                        @click="requestRegistrationDialog = false"
+                        :disabled="registrationEmailLoading || registrationEmailSent"
+                        @click="sendRegistrationEmail()"
                 >
                     Send
                 </v-btn>
@@ -56,14 +57,19 @@
 
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
-    import { dispatchCreateFarmRegistrationLink } from '@/store/farm/actions';
+    import { dispatchCreateFarmRegistrationLink, dispatchSendFarmRegistrationEmail } from '@/store/farm/actions';
 
     @Component
     export default class FarmRequestRegistrationDialog extends Vue {
-        @Prop({default: ''}) public userEmail!: string;
-
-        // Properties for the Authorization Request Dialog.
         public requestRegistrationDialog: boolean = false;
+
+        public userEmail: string = '';
+
+        // Properties for the Registration Request Email.
+        public registrationEmailLoading: boolean = false;
+        public registrationEmailSent: boolean = false;
+
+        // Properties for the Registration Generate Link.
         public registrationLinkLoading: boolean = false;
         public registrationLinkLoaded: boolean = false;
         public registrationLink: string = '';
@@ -79,8 +85,26 @@
             this.registrationLinkLoading = false;
         }
 
+        public async sendRegistrationEmail() {
+
+            this.registrationEmailLoading = true;
+            await dispatchSendFarmRegistrationEmail(
+              this.$store,
+              {emailTo: this.userEmail},
+            ).then((success) => {
+                this.registrationEmailLoading = false;
+                this.registrationEmailSent = true;
+              }, (failure) => {
+                this.registrationEmailLoading = false;
+                this.registrationEmailSent = false;
+              },
+            );
+        }
+
         public openDialog() {
             this.requestRegistrationDialog = true;
+            this.registrationEmailSent = false;
+            this.userEmail = '';
         }
 
         public closeDialog() {

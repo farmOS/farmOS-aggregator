@@ -7,15 +7,27 @@ import emails
 import jwt
 from emails.template import JinjaTemplate
 from jwt.exceptions import InvalidTokenError
+from fastapi import HTTPException
+from starlette.status import HTTP_403_FORBIDDEN
 
 from app.core.config import settings
 from app.core.jwt import create_farm_api_token
+from app.schemas.farm import FarmBase
 
 password_reset_jwt_subject = "preset"
 
 
 def send_email(email_to: str, subject_template="", html_template="", environment={}):
-    assert settings.EMAILS_ENABLED, "no provided configuration for email variables"
+    if not settings.EMAILS_ENABLED:
+        if settings.EMAIL_TESTING:
+            logging.info("\nMessage: " + subject_template + "\nSent to: " + email_to)
+            return
+
+        raise HTTPException(
+            status_code=HTTP_403_FORBIDDEN,
+            detail="Emails not enabled."
+        )
+
     message = emails.Message(
         subject=JinjaTemplate(subject_template),
         html=JinjaTemplate(html_template),
@@ -30,19 +42,6 @@ def send_email(email_to: str, subject_template="", html_template="", environment
         smtp_options["password"] = settings.SMTP_PASSWORD
     response = message.send(to=email_to, render=environment, smtp=smtp_options)
     logging.info(f"send email result: {response}")
-
-
-def send_test_email(email_to: str):
-    aggregator_name = settings.AGGREGATOR_NAME
-    subject = f"{aggregator_name} - Test email"
-    with open(Path(settings.EMAIL_TEMPLATES_DIR) / "test_email.html") as f:
-        template_str = f.read()
-    send_email(
-        email_to=email_to,
-        subject_template=subject,
-        html_template=template_str,
-        environment={"aggregator_name": settings.AGGREGATOR_NAME, "email": email_to},
-    )
 
 
 def send_reset_password_email(email_to: str, email: str, token: str):
@@ -110,6 +109,43 @@ def verify_password_reset_token(token) -> Optional[str]:
         return decoded_token["email"]
     except InvalidTokenError:
         return None
+
+
+def send_farm_registration_email(email_to: str, link: str):
+    aggregator_name = settings.AGGREGATOR_NAME
+    subject = f"Register with the {aggregator_name}"
+
+    with open(Path(settings.EMAIL_TEMPLATES_DIR) / "registration_invite.html") as f:
+        template_str = f.read()
+
+    send_email(
+        email_to=email_to,
+        subject_template=subject,
+        html_template=template_str,
+        environment={
+            "aggregator_name": settings.AGGREGATOR_NAME,
+            "link": link,
+        },
+    )
+
+
+def send_farm_authorization_email(email_to: str, link: str, farm: FarmBase):
+    aggregator_name = settings.AGGREGATOR_NAME
+    subject = f"Authorize your farmOS server with the {aggregator_name}"
+
+    with open(Path(settings.EMAIL_TEMPLATES_DIR) / "authorize_email.html") as f:
+        template_str = f.read()
+
+    send_email(
+        email_to=email_to,
+        subject_template=subject,
+        html_template=template_str,
+        environment={
+            "aggregator_name": settings.AGGREGATOR_NAME,
+            "link": link,
+            "farm": FarmBase,
+        },
+    )
 
 
 def generate_farm_authorization_link(farm_id):

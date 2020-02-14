@@ -87,8 +87,17 @@ export const api = {
   async createFarmAuthLink(token: string, farmID: number) {
     return axios.post(`${env('apiUrl')}/api/v1/utils/farm-auth-link/${farmID}`, null, authHeaders(token));
   },
+  async sendFarmAuthorizationEmail(token: string, farmID: number, emailTo: string) {
+    return axios.post(`${env('apiUrl')}/api/v1/utils/send-farm-authorization-email/?email_to=${emailTo}&farm_id=${farmID}`, null, authHeaders(token));
+  },
   async createFarmRegistrationLink(token: string) {
     return axios.post(`${env('apiUrl')}/api/v1/utils/farm-registration-link`, null, authHeaders(token));
+  },
+  async sendFarmRegistrationEmail(token: string, emailTo: string) {
+    return axios.post(
+        `${env('apiUrl')}/api/v1/utils/send-farm-registration-email/?email_to=${emailTo}`,
+        null,
+        authHeaders(token));
   },
   async getOneFarm(token: string, farmID: number, apiToken?: string ) {
     return axios.get<FarmProfile>(`${env('apiUrl')}/api/v1/farms/${farmID}`, authHeaders(token, apiToken));

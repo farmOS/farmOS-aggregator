@@ -34,74 +34,18 @@
          <v-spacer></v-spacer>
          <v-btn @click="cancel">Cancel</v-btn>
          <v-btn
-                 color="secondary"
-                 @click="authorizeNow(farm.id)"
-                 :loading="authLinkLoading"
-                 :disabled="authLinkLoading"
-         >
-             Authorize Now
-         </v-btn>
-         <v-btn
                  color="primary"
-                 @click.stop="authorizationRequestDialog = true"
+                 @click="$refs.AuthorizationRegistrationDialog.openDialog()"
 
          >
              Request Authorization
          </v-btn>
 
-        <v-dialog
-                v-model="authorizationRequestDialog"
-                max-width="600"
-        >
-            <v-card>
-                <v-card-title class="headline">Request Authorization</v-card-title>
+          <FarmAuthorizationRegistrationDialog
+            ref="AuthorizationRegistrationDialog"
+            v-bind:farmID="farmId"
 
-                <v-card-text>
-                    Input the email to send a verification link. By default, this is the farmOS admin email.
-
-                    <v-text-field type="email" label="farmOS Admin Email" ></v-text-field>
-
-                    OR
-
-                    <v-btn
-                            class="ma-2"
-                            :loading="authLinkLoading"
-                            :disabled="authLinkLoaded"
-                            color="secondary"
-                            @click="generateAuthLink(farm.id)"
-                    >
-                        Generate Authorization Link
-                    </v-btn>
-
-                    <v-text-field
-                            label="Authorization Link"
-                            v-if="authLinkLoaded"
-                            v-model="authLink"
-                            readonly
-                    ></v-text-field>
-                </v-card-text>
-
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-
-                    <v-btn
-                            color="green darken-1"
-                            text
-                            @click="authorizationRequestDialog = false"
-                    >
-                        Cancel
-                    </v-btn>
-
-                    <v-btn
-                            color="green darken-1"
-                            text
-                            @click="dialog = false"
-                    >
-                        Send
-                    </v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
+          />
      </v-card-actions>
 
     </v-card>
@@ -115,9 +59,10 @@ import { dispatchGetFarms, dispatchCreateFarmAuthLink, dispatchGetFarmInfo } fro
 import { readOneFarm } from '@/store/farm/getters';
 import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
 import FarmAuthorizationForm from '@/components/FarmAuthorizationForm.vue';
+import FarmAuthorizationRegistrationDialog from '@/components/FarmAuthorizationRegistrationDialog.vue';
 
 @Component({
-    components: {FarmAuthorizationStatus, FarmAuthorizationForm},
+    components: {FarmAuthorizationRegistrationDialog, FarmAuthorizationStatus, FarmAuthorizationForm},
 })
 export default class AuthorizeFarm extends Vue {
   public appName = env('appName');
@@ -137,16 +82,6 @@ export default class AuthorizeFarm extends Vue {
   public refreshToken: string = '';
   public expiresIn: string = '';
   public expiresAt: string = '';
-
-  // Properties for the Authorization Form Dialog.
-  public authorizationFormDialog = false;
-  public authStatus = 'not started';
-
-  // Properties for the Authorization Request Dialog.
-  public authorizationRequestDialog = false;
-  public authLinkLoading: boolean = false;
-  public authLinkLoaded: boolean = false;
-  public authLink: string = '';
 
   public async mounted() {
     await dispatchGetFarms(this.$store);
@@ -182,24 +117,6 @@ export default class AuthorizeFarm extends Vue {
 
   public cancel() {
     this.$router.back();
-  }
-
-  public async authorizeNow(farmID) {
-      await this.generateAuthLink(farmID).then( (res) => {
-          // Redirect to the authorization page.
-          location.replace(this.authLink);
-      });
-  }
-
-  public async generateAuthLink(farmID) {
-      // Query the API to get an Authorization link with an API token embedded in the query params.
-      this.authLinkLoading = true;
-      const link = await dispatchCreateFarmAuthLink(this.$store, { farmID });
-      if (link) {
-          this.authLink = link;
-          this.authLinkLoaded = true;
-      }
-      this.authLinkLoading = false;
   }
 
   get farm() {
