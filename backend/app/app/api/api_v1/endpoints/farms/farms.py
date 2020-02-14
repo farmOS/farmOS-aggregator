@@ -4,9 +4,10 @@ from fastapi import APIRouter, Body, Depends, Security, HTTPException, Query
 from sqlalchemy.orm import Session
 
 
+from app.core.config import settings
 from app import crud
 from app.api.utils.db import get_db
-from app.api.utils.farms import get_farms_url_or_list, get_farm_by_id
+from app.api.utils.farms import get_farms_url_or_list, get_farm_by_id, admin_alert_email
 from app.api.utils.security import get_farm_access, get_farm_access_allow_public
 from app.schemas.farm import Farm, FarmCreate, FarmUpdate
 
@@ -62,6 +63,9 @@ async def create_farm(
             status_code=409,
             detail="A farm with this URL already exists.",
         )
+
+    if settings.AGGREGATOR_ALERT_NEW_FARMS:
+        admin_alert_email(db_session=db, message="New farm created: " + farm_in.farm_name + " - " + farm_in.url)
 
     farm = crud.farm.create(db, farm_in=farm_in)
 
