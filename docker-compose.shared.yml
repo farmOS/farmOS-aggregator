@@ -58,7 +58,3 @@ services:
     depends_on:
       - backend
       - frontend
-    environment:
-      - DOMAIN=${DOMAIN}
-      - NGINX_WORKER_PROCESSES=${NGINX_WORKER_PROCESSES}
-      - NGINX_WORKER_CONNECTIONS=${NGINX_WORKER_CONNECTIONS}

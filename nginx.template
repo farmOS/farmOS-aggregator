@@ -1,7 +1,7 @@
 # Redirect port 80 traffic (except ACME challenges).
 server {
     listen 80;
-    server_name ${DOMAIN};
+    server_name localhost;
     location / {
         proxy_set_header Host $http_host;
         proxy_set_header X-Forwarded-Host $http_host;
