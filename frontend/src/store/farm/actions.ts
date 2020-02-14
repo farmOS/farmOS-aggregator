@@ -119,6 +119,29 @@ export const actions = {
             await dispatchCheckApiError(context, error);
         }
     },
+    async actionSendFarmAuthorizationEmail(context: MainContext, payload: {emailTo: string, farmID: number}) {
+        const loadingNotification = { content: 'sending', showProgress: true };
+        try {
+            commitAddNotification(context, loadingNotification);
+            const response = (await Promise.all([
+                api.sendFarmAuthorizationEmail(context.rootState.main.token, payload.farmID, payload.emailTo),
+                await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+            ]))[0];
+            commitRemoveNotification(context, loadingNotification);
+            commitAddNotification(context, { content: 'Email sent', color: 'success' });
+            return response;
+        } catch (error) {
+            if (error.response!.status === 403) {
+                commitRemoveNotification(context, loadingNotification);
+                commitAddNotification(context, {content: 'Sending emails is not configured.', color: 'error' });
+            } else if (error.response!.status === 422) {
+                commitRemoveNotification(context, loadingNotification);
+                commitAddNotification(context, {content: 'Error: invalid email.', color: 'error' });
+            } else {
+                await dispatchCheckApiError(context, error);
+            }
+        }
+    },
     async actionCreateFarmRegistrationLink(context: MainContext) {
         try {
             const response = await api.createFarmRegistrationLink(context.rootState.main.token);
@@ -127,6 +150,29 @@ export const actions = {
             }
         } catch (error) {
             await dispatchCheckApiError(context, error);
+        }
+    },
+    async actionSendFarmRegistrationEmail(context: MainContext, payload: {emailTo: string}) {
+        const loadingNotification = { content: 'sending', showProgress: true };
+        try {
+            commitAddNotification(context, loadingNotification);
+            const response = (await Promise.all([
+                api.sendFarmRegistrationEmail(context.rootState.main.token, payload.emailTo),
+                await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+            ]))[0];
+            commitRemoveNotification(context, loadingNotification);
+            commitAddNotification(context, { content: 'Email sent', color: 'success' });
+            return response;
+        } catch (error) {
+            if (error.response!.status === 403) {
+                commitRemoveNotification(context, loadingNotification);
+                commitAddNotification(context, {content: 'Sending emails is not configured.', color: 'error' });
+            } else if (error.response!.status === 422) {
+                commitRemoveNotification(context, loadingNotification);
+                commitAddNotification(context, {content: 'Error: invalid email.', color: 'error' });
+            } else {
+                await dispatchCheckApiError(context, error);
+            }
         }
     },
     async actionGetFarmInfo(context: MainContext, payload: {farmID: number}) {
@@ -191,7 +237,9 @@ export const dispatchUpdateFarm = dispatch(actions.actionUpdateFarm);
 export const dispatchAuthorizeFarm = dispatch(actions.actionAuthorizeFarm);
 export const dispatchAuthorizeNewFarm = dispatch(actions.actionAuthorizeNewFarm);
 export const dispatchCreateFarmAuthLink = dispatch(actions.actionCreateFarmAuthLink);
+export const dispatchSendFarmAuthorizationEmail = dispatch(actions.actionSendFarmAuthorizationEmail);
 export const dispatchCreateFarmRegistrationLink = dispatch(actions.actionCreateFarmRegistrationLink);
+export const dispatchSendFarmRegistrationEmail = dispatch(actions.actionSendFarmRegistrationEmail);
 export const dispatchGetFarmInfo = dispatch(actions.actionGetFarmInfo);
 export const dispatchGetOneFarm = dispatch(actions.actionGetOneFarm);
 export const dispatchValidateFarmUrl = dispatch(actions.actionValidateFarmUrl);

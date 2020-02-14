@@ -17,7 +17,12 @@ from app.schemas.farm import Farm
 from app.schemas.farm_token import FarmTokenCreate, FarmAuthorizationParams
 from app.api.utils.farms import get_farm_by_id, get_oauth_token, get_farm_client
 from app.api.utils.security import get_farm_access, get_farm_access_allow_public
-from app.utils import send_test_email, generate_farm_authorization_link, generate_farm_registration_link
+from app.utils import (
+    generate_farm_registration_link,
+    send_farm_registration_email,
+    generate_farm_authorization_link,
+    send_farm_authorization_email
+)
 
 logger = logging.getLogger(__name__)
 
@@ -50,17 +55,6 @@ def ping_farms(
     return {"msg": f"Pinged {total_response}/{len(farm_list)} active farms."}
 
 
-@router.post("/test-email/", response_model=Msg, status_code=201)
-def test_email(
-    email_to: EmailStr, current_user: UserInDB = Depends(get_current_active_superuser)
-):
-    """
-    Test emails.
-    """
-    send_test_email(email_to=email_to)
-    return {"msg": "Test email sent"}
-
-
 @router.post(
     "/farm-registration-link",
     dependencies=[Security(get_farm_access, scopes=['farm:create'])]
@@ -71,12 +65,47 @@ def farm_registration_link(
     return link
 
 
+@router.post(
+    "/send-farm-registration-email/",
+    dependencies=[Security(get_farm_access, scopes=['farm:create'])],
+    response_model=Msg,
+    status_code=201
+)
+def send_registration_email(
+    email_to: EmailStr,
+):
+    """
+    Test emails.
+    """
+    link = generate_farm_registration_link()
+    send_farm_registration_email(email_to=email_to, link=link)
+    return {"msg": "Registration email sent to: " + email_to}
+
+
 @router.post("/farm-auth-link/{farm_id}")
 def farm_auth_link(
     farm: Farm = Depends(get_farm_by_id),
 ):
     link = generate_farm_authorization_link(farm.id)
     return link
+
+
+@router.post(
+    "/send-farm-authorization-email/",
+    dependencies=[Security(get_farm_access, scopes=['farm:create'])],
+    response_model=Msg,
+    status_code=201
+)
+def send_registration_email(
+    email_to: EmailStr,
+    farm: Farm = Depends(get_farm_by_id)
+):
+    """
+    Test emails.
+    """
+    link = generate_farm_authorization_link(farm.id)
+    send_farm_authorization_email(email_to=email_to, link=link, farm=farm)
+    return {"msg": "Authorization email sent to: " + email_to}
 
 
 @router.post(
