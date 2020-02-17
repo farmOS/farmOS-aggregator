@@ -39,6 +39,7 @@ services:
       - AGGREGATOR_OAUTH_SCOPES
       - AGGREGATOR_OAUTH_DEFAULT_SCOPES
       - AGGREGATOR_OAUTH_REQUIRED_SCOPES
+    restart: always
   frontend:
     image: farmos/aggregator:frontend
     environment:
@@ -54,6 +55,7 @@ services:
       - AGGREGATOR_OAUTH_SCOPES
       - AGGREGATOR_OAUTH_DEFAULT_SCOPES
       - AGGREGATOR_OAUTH_REQUIRED_SCOPES
+    restart: always
   db:
     image: postgres:11
     volumes:
@@ -64,15 +66,12 @@ services:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
+    restart: always
   proxy:
     image: nginx:stable-alpine
     depends_on:
       - backend
       - frontend
-    environment:
-      - DOMAIN=${DOMAIN}
-      - NGINX_WORKER_PROCESSES=${NGINX_WORKER_PROCESSES}
-      - NGINX_WORKER_CONNECTIONS=${NGINX_WORKER_CONNECTIONS}
     ports:
       - '80:80'
       - '443:443'
