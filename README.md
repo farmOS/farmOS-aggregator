@@ -21,9 +21,10 @@ For more information on farmOS, visit [farmOS.org](https://farmOS.org).
 ## Documentation 
 
  - _**Using** the farmOS-aggregator_: [docs/using-farmos-aggregator.md](docs/using-farmos-aggregator.md)
+ - _**Configuring** a farmOS-aggregator_: [docs/configuration.md](docs/configuration.md)
  - _**Deploying** a farmOS-aggregator_: [docs/deployment.md](docs/deployment.md)
- - _**API Documentation**_ :  [docs/api.md](docs/api.md)
- - _**Development**_ : [docs/development.md](docs/development.md)
+ - _**API Documentation**_:  [docs/api.md](docs/api.md)
+ - _**Development**_: [docs/development.md](docs/development.md)
 
 ## FAQ
 
