@@ -25,6 +25,7 @@ A dashboard with an overview of information is available at [http://localhost/da
 
 ![Farm Profiles](../img/ui/manage_farms.png)
 
+Features:
 - Lists all farm profiles in a sortable table
 - Sort by the farm `active` flag
 - Displays the `authorization` status of the farm.
@@ -38,6 +39,7 @@ A dashboard with an overview of information is available at [http://localhost/da
 
 ![Add Farm](../img/ui/add_farm.png)
 
+Features:
 - Add a farm profile to the aggregator. _Note that you can only pre-populate values for the farm_ - **_You will not be able
 to connect to the farm after adding via the admin UI_**
 - After adding, the farm must be `authorized` by requesting authorization from the farmOS server admin.
@@ -45,11 +47,12 @@ to connect to the farm after adding via the admin UI_**
 
 #### Registering Farm Profiles
 
-![Register Farm Profiles](../img/ui/ui_register_step2.png)
+![Register Farm Profiles](../img/ui/register_step2.png)
 
 The registration page allows farmOS admins to select which of the configured OAuth scopes they would like to
 authorize the farmOS Aggregator with access to their data.
 
+Features:
 - If `OPEN_FARM_REGISTRATION` is enabled then this page will be accessible to the public. The 
 `FARM_ACTIVE_AFTER_REGISTRATION` setting allows you to configure if registered farms will be enabled by default. This
 can be useful to prevent the malicious intent if many farm profiles are added.
@@ -65,8 +68,7 @@ embedded `api_token`. See _[Requsting Registration](#requesting-registration)_
 
 ![Request Registration](../img/ui/request_registration.png)
 
-TODO: Fix title of Request Registration overlay.
-
+Features:
 - Aggregator admins can _request registration_ by generating a special link users can use to join the aggregator.
 - An email can be supplied to automatically send an email requesting registration OR
 - The link can be generated and copy/pasted to share with the user manually.
