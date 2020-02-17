@@ -16,7 +16,7 @@ Deployment requires a few steps:
 
 1. Configure Aggregator Settings
     - Configure environment variables to configure the Aggregator as desired. A `.env` template used for configuring the
-    Aggregator environment variables is provided in the GitHub repo at [https://raw.githubusercontent.com/farmOS/farmOS-aggregator/master/.env-template]()
+    Aggregator environment variables is provided in the GitHub repo at [https://raw.githubusercontent.com/farmOS/farmOS-aggregator/master/.env-template](https://raw.githubusercontent.com/farmOS/farmOS-aggregator/master/.env-template)
     - Rename the file to `.env`. This will automatically be loaded by `docker-compose`.
     - Configure the domain:
       - Set the `DOMAIN` variable to the domain with Aggregator will be deployed to. (Without HTTP)
@@ -44,7 +44,7 @@ Deployment requires a few steps:
     
 2. Setup the `docker-compose` file
     - Download the template docker-compose file provided in the GitHub 
-repo at [https://raw.githubusercontent.com/farmOS/farmOS-aggregator/master/docker-compose.deploy-template.yml]()
+repo at [https://raw.githubusercontent.com/farmOS/farmOS-aggregator/master/docker-compose.deploy-template.yml](https://raw.githubusercontent.com/farmOS/farmOS-aggregator/master/docker-compose.deploy-template.yml)
     - Rename the `docker-compose.deploy-template.yml` file to `docker-compose.yml`. 
     - Note that this template defaults to using the `backend` and `frontend` images which are aliases for the latest
      release from Docker Hub. The image tag can be modified to request a certain tagged release, if desired. See the 
@@ -54,9 +54,9 @@ repo at [https://raw.githubusercontent.com/farmOS/farmOS-aggregator/master/docke
     proxy.
     
 3. Configure NGINX proxy.
-    - Download the NGNIX configuration template from [https://raw.githubusercontent.com/farmOS/farmOS-aggregator/master/nginx.deploy.template]()
+    - Download the NGNIX configuration template from [https://raw.githubusercontent.com/farmOS/farmOS-aggregator/master/nginx.deploy.template](https://raw.githubusercontent.com/farmOS/farmOS-aggregator/master/nginx.deploy.template)
       - If you are just deploying the aggregator locally for testing, you may want to use the development NGINX config
-      file from [https://raw.githubusercontent.com/farmOS/farmOS-aggregator/master/nginx.template]() This will not
+      file from [https://raw.githubusercontent.com/farmOS/farmOS-aggregator/master/nginx.template](https://raw.githubusercontent.com/farmOS/farmOS-aggregator/master/nginx.template) This will not
       require setting up SSL certs, but _should not be used in deployment!!!_
     - Rename the file to `nginx.template` so it is correctly loaded in the proxy container.
     - Inside the template, replace `$DOMAIN` with the domain the Aggregator will be deployed to.
