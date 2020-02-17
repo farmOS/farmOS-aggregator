@@ -83,6 +83,7 @@ Modify or add SQLAlchemy models in `./backend/app/app/models/`, Pydantic schemas
 API endpoints in `./backend/app/app/api/`, CRUD (Create, Read, Update, Delete) utils in `./backend/app/app/crud/`.
 
 There is an `.env` file that has Docker Compose default values, and all default configuration values for the Aggregator.
+(Read more about configuring a farmOS Aggregator [here](./configuration.md))
 
 ### API Routes
 
@@ -214,6 +215,8 @@ The `./frontend/env-template.js` file is used to generate the static `env.js` th
 For development, it is automatically generated when running `npm run serve` and loads configuration from the
 default file `./frontend/.env`. Values in the file can modified or overwritten by exporting them to the shell
 environment that runs the `npm run serve` command.
+
+(Read more about configuring a farmOS Aggregator [here](./configuration.md))
 
 ### Views
 

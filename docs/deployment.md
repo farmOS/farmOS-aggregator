@@ -40,7 +40,7 @@ Deployment requires a few steps:
       - Configure `SMTP_` variables to configure sending emails from the Aggregator.
     - Configure Aggregator Settings:
        - These settings are used to configure both the `backend` and `frontend` images at run-time. See 
-        _configuring an aggregator_ (TODO: Document configuration) for more documentation on each variable.
+        [configuring an aggregator](./configuration.md) for documentation on available configurations.
     
 2. Setup the `docker-compose` file
     - Download the template docker-compose file provided in the GitHub 

@@ -10,6 +10,7 @@
     - [Requesting Authorization](#requesting-authorization)
     - [Authorization Form](#authorization-form)
   
+See [configuration](./configuration.md) on how to configure farmOS Aggregator.
 
 ## Dashboard
 
