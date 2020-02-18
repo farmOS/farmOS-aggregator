@@ -19,10 +19,10 @@
           <a href="https://farmos.org/">farmOS.org</a>
         </li>
         <li>
-          farmOS-aggregator documentation
+          <a href="https://github.com/farmOS/farmOS-aggregator/blob/master/docs/using-farmos-aggregator.md">farmOS-aggregator documentation</a>
         </li>
         <li>
-          <a href="https://github.com/farmOS/farmOS-aggregator">farmOS-aggregator Github</a>
+          <a href="https://github.com/farmOS/farmOS-aggregator">farmOS-aggregator Code Repository</a>
         </li>
       </ul>
 
@@ -37,17 +37,28 @@
 
       <v-card-text>
         <div class="subheading">Manage farmOS profiles</div>
-        <v-card-actions>
-          <v-btn color="primary" to="/main/farm/farms/">
-            Manage Farms
-            <v-icon right dark>list</v-icon>
-          </v-btn>
-          <v-btn color="accent" to="/main/farm/farms/add">
-            Add Farm
-            <v-icon right dark>add</v-icon>
-          </v-btn>
-        </v-card-actions>
       </v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" to="/main/farm/farms/">
+          Manage Farms
+          <v-icon right dark>list</v-icon>
+        </v-btn>
+        <v-btn
+          color="secondary"
+          class="ma-2"
+          @click="$refs.RequestRegistrationDialog.openDialog()"
+        >
+          Request Registration
+          <v-icon right dark>send</v-icon>
+        </v-btn>
+        <FarmRequestRegistrationDialog
+          ref="RequestRegistrationDialog"
+        />
+        <v-btn color="accent" to="/main/farm/farms/add">
+          Add Farm
+          <v-icon right dark>add</v-icon>
+        </v-btn>
+      </v-card-actions>
 
     </v-card>
 
@@ -58,21 +69,21 @@
 
       <v-card-text>
         <div class="subheading">Manage user profiles</div>
-        <v-card-actions>
-          <v-btn to="/main/profile/view">
-            View Profile
-            <v-icon right dark>info</v-icon>
-          </v-btn>
-          <v-btn to="/main/profile/edit">
-            Edit Profile
-            <v-icon right dark>edit</v-icon>
-          </v-btn>
-          <v-btn to="/main/profile/password">
-            Change Password
-            <v-icon right dark>edit</v-icon>
-          </v-btn>
-        </v-card-actions>
       </v-card-text>
+      <v-card-actions>
+        <v-btn to="/main/profile/view">
+          View Profile
+          <v-icon right dark>info</v-icon>
+        </v-btn>
+        <v-btn to="/main/profile/edit">
+          Edit Profile
+          <v-icon right dark>edit</v-icon>
+        </v-btn>
+        <v-btn to="/main/profile/password">
+          Change Password
+          <v-icon right dark>edit</v-icon>
+        </v-btn>
+      </v-card-actions>
 
     </v-card>
   </v-container>
@@ -80,10 +91,13 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { Store } from 'vuex';
 import { readUserProfile } from '@/store/main/getters';
+import FarmRequestRegistrationDialog from '@/components/FarmRequestRegistrationDialog.vue';
+import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
 
-@Component
+@Component({
+    components: {FarmRequestRegistrationDialog},
+})
 export default class Dashboard extends Vue {
   get greetedUser() {
     const userProfile = readUserProfile(this.$store);
