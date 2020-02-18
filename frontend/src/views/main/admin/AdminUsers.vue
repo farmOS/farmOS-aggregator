@@ -8,20 +8,24 @@
       <v-btn color="primary" to="/main/admin/users/create">Create User</v-btn>
     </v-toolbar>
     <v-data-table :headers="headers" :items="users">
-      <template slot="items" slot-scope="props">
-        <td>{{ props.item.name }}</td>
-        <td>{{ props.item.email }}</td>
-        <td>{{ props.item.full_name }}</td>
-        <td><v-icon v-if="props.item.is_active">checkmark</v-icon></td>
-        <td><v-icon v-if="props.item.is_superuser">checkmark</v-icon></td>
-        <td class="justify-center layout px-0">
-          <v-tooltip top>
-            <span>Edit</span>
-            <v-btn slot="activator" flat :to="{name: 'main-admin-users-edit', params: {id: props.item.id}}">
-              <v-icon>edit</v-icon>
-            </v-btn>
-          </v-tooltip>
-        </td>
+      <template v-slot:item.is_active="{ item } ">
+         <v-simple-checkbox v-model="item.is_active" disabled/>
+      </template>
+      <template v-slot:item.is_superuser="{ item } ">
+        <v-simple-checkbox v-model="item.is_superuser" disabled/>
+      </template>
+      <template v-slot:item.action="{ item }">
+        <v-btn
+          text
+          icon
+          :to="{name: 'main-admin-users-edit', params: {id: item.id}}"
+        >
+          <v-icon
+            class="mr-2"
+          >
+            edit
+          </v-icon>
+        </v-btn>
       </template>
     </v-data-table>
   </div>
@@ -38,12 +42,6 @@ import { dispatchGetUsers } from '@/store/admin/actions';
 export default class AdminUsers extends Vue {
   public headers = [
     {
-      text: 'Name',
-      sortable: true,
-      value: 'name',
-      align: 'left',
-    },
-    {
       text: 'Email',
       sortable: true,
       value: 'email',
@@ -58,18 +56,18 @@ export default class AdminUsers extends Vue {
     {
       text: 'Is Active',
       sortable: true,
-      value: 'isActive',
+      value: 'is_active',
       align: 'left',
     },
     {
       text: 'Is Superuser',
       sortable: true,
-      value: 'isSuperuser',
+      value: 'is_superuser',
       align: 'left',
     },
     {
       text: 'Actions',
-      value: 'id',
+      value: 'action',
     },
   ];
   get users() {
