@@ -28,12 +28,7 @@
     </v-toolbar>
     <v-data-table :headers="headers" :items="farms" :loading="loading" loading-text="Loading... Please wait">
       <template v-slot:item.active="{ item } ">
-         <span v-if="item.active">
-            <v-icon>check_box</v-icon>
-         </span>
-        <span v-else>
-            <v-icon>check_box_outline_blank</v-icon>
-        </span>
+        <v-simple-checkbox v-model="item.active" disabled/>
       </template>
       <template v-slot:item.is_authorized="{ item }">
         <FarmAuthorizationStatus v-bind:farm=item ></FarmAuthorizationStatus>
@@ -57,11 +52,25 @@
            </span>
       </template>
       <template v-slot:item.action="{ item }">
-        <v-btn :to="{name: 'main-farm-farms-edit', params: {id: item.id}}">
-          <v-icon>edit</v-icon>
+        <v-btn
+          text
+          icon
+          :to="{name: 'main-farm-farms-edit', params: {id: item.id}}">
+          <v-icon
+            class="mr-2"
+          >
+            edit
+          </v-icon>
         </v-btn>
-        <v-btn  @click="loadFarmInfo(item.id)">
-          <v-icon>info</v-icon>
+        <v-btn
+          text
+          icon
+          @click="loadFarmInfo(item.id)">
+          <v-icon
+            class="mr-2"
+          >
+            autorenew
+          </v-icon>
         </v-btn>
       </template>
     </v-data-table>
