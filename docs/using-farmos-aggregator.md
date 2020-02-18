@@ -18,6 +18,10 @@ See [configuration](./configuration.md) on how to configure farmOS Aggregator.
 
 A dashboard with an overview of information is available at [http://localhost/dashboard](http://localhost/dashboard)
 
+Features:
+- Displays simple stats showing the total number of farms, active farms, and authorized farms. Useful to quickly see if
+any farms have become unauthorized.
+
 ## Managing farmOS Aggregator Users
 
 ![Users](../img/ui/manage_users.png)

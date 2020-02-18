@@ -6,12 +6,6 @@
       </v-card-title>
       <v-card-text>
         <div class="headline ma-3">Welcome {{greetedUser}}</div>
-        <div class="body2 font-weight ">
-          <p>
-            This is the dashboard page of farmOS-aggregator. Use the menu on the left
-            or some of the options below to view and manage farmOS profiles.
-          </p>
-        </div>
       </v-card-text>
       <v-card-text>
       <ul>
@@ -37,6 +31,60 @@
 
       <v-card-text>
         <div class="subheading">Manage farmOS profiles</div>
+
+        <div class="d-flex flex-row justify-center text-center">
+          <div class="pa-5">
+            <p class="display-2 font-weight-bold pt-4">
+              {{ totalFarms }}
+            </p>
+            <p class="headline font-weight-bold">
+              Total Farms
+            </p>
+          </div>
+          <div class="pa-5">
+            <v-progress-circular
+              :rotate="-90"
+              :size="100"
+              :width="15"
+              :value="(activeFarms/totalFarms)*100"
+              color="primary"
+            >
+              {{ activeFarms }} / {{ totalFarms}}
+            </v-progress-circular>
+            <p class="headline font-weight-bold">
+              Active Farms
+            </p>
+          </div>
+          <div class="pa-5">
+            <v-progress-circular
+              :rotate="-90"
+              :size="100"
+              :width="15"
+              :value="(authorizedFarms/activeFarms)*100"
+              color="secondary"
+            >
+              {{ authorizedFarms }} / {{ activeFarms}}
+            </v-progress-circular>
+            <p class="headline font-weight-bold">
+              Authorized Farms
+            </p>
+          </div>
+          <div class="pa-5" v-if="unauthorizedFarms > 0">
+            <v-progress-circular
+              :rotate="-90"
+              :size="100"
+              :width="15"
+              :value="(unauthorizedFarms/activeFarms)*100"
+              color="red"
+            >
+              {{ unauthorizedFarms }} / {{ activeFarms}}
+            </v-progress-circular>
+            <p class="headline font-weight-bold">
+              Unauthorized Farms!
+            </p>
+          </div>
+        </div>
+
       </v-card-text>
       <v-card-actions>
         <v-btn color="primary" to="/main/farm/farms/">
@@ -94,11 +142,30 @@ import { Component, Vue } from 'vue-property-decorator';
 import { readUserProfile } from '@/store/main/getters';
 import FarmRequestRegistrationDialog from '@/components/FarmRequestRegistrationDialog.vue';
 import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
+import {readFarms} from '@/store/farm/getters';
 
 @Component({
     components: {FarmRequestRegistrationDialog},
 })
 export default class Dashboard extends Vue {
+  public totalFarms: number = 0;
+  public activeFarms: number = 0;
+  public inactiveFarms: number = 0;
+  public authorizedFarms: number = 0;
+  public unauthorizedFarms: number = 0;
+
+  public async mounted() {
+      this.totalFarms = this.farms.length;
+      this.activeFarms = this.farms.filter((farm) => farm.active).length;
+      this.inactiveFarms = this.farms.filter((farm) => !farm.active).length;
+      this.authorizedFarms = this.farms.filter((farm) => farm.active && farm.is_authorized).length;
+      this.unauthorizedFarms = this.farms.filter((farm) => farm.active && !farm.is_authorized).length;
+  }
+
+  get farms() {
+      return readFarms(this.$store);
+  }
+
   get greetedUser() {
     const userProfile = readUserProfile(this.$store);
     if (userProfile && userProfile.full_name) {
