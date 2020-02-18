@@ -10,6 +10,11 @@
           <v-text-field label="Farm Name" v-model="farmName" required></v-text-field>
           <v-text-field label="URL" v-model="url" required></v-text-field>
           <v-text-field label="OAuth Scope" v-model="scope" required></v-text-field>
+          <v-text-field label="Tags" v-model="tags" ></v-text-field>
+          <div>
+            <FarmTagsChips v-bind:tags="tags"/>
+          </div>
+          <br>
           <FarmAuthorizationStatus v-bind:farm=farm></FarmAuthorizationStatus>
 
           <div class="d-flex">
@@ -84,9 +89,10 @@ import { dispatchGetFarms, dispatchUpdateFarm } from '@/store/farm/actions';
 import { readOneFarm } from '@/store/farm/getters';
 import Farm from '@/views/main/farm/Farm.vue';
 import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
+import FarmTagsChips from '@/components/FarmTagsChips.vue';
 
 @Component({
-  components: {FarmAuthorizationStatus, Farm},
+  components: {FarmTagsChips, FarmAuthorizationStatus, Farm},
 })
 export default class EditFarm extends Vue {
   public valid = false;

@@ -180,6 +180,9 @@
                               data-vv-scope="farmInfoForm"
                               :error-messages="errors.first('farmInfoForm.tags')"
                       />
+                      <div>
+                        <FarmTagsChips v-bind:tags="tags"/>
+                      </div>
                     </form>
                   </v-card-text>
                   <v-card-actions>
@@ -238,6 +241,9 @@
                               data-vv-scope="farmVerifyForm"
                               :error-messages="errors.first('farmVerifyForm.tags')"
                       />
+                      <div>
+                        <FarmTagsChips v-bind:tags="tags"/>
+                      </div>
                     </form>
                   </v-card-text>
                   <v-card-actions>
@@ -296,9 +302,10 @@ import {
     dispatchValidateFarmUrl,
 } from '@/store/farm/actions';
 import FarmAuthorizationForm from '@/components/FarmAuthorizationForm.vue';
+import FarmTagsChips from '@/components/FarmTagsChips.vue';
 
 @Component({
-  components: {FarmAuthorizationForm},
+  components: {FarmAuthorizationForm, FarmTagsChips},
 })
 export default class RegisterFarm extends Vue {
   public $refs!: {

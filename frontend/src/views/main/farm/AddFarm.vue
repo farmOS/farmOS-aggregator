@@ -1,4 +1,4 @@
-<template>
+<template xmlns="">
   <v-container fluid>
     <v-card class="ma-3 pa-3">
       <v-card-title primary-title>
@@ -12,6 +12,9 @@
           <v-text-field label="OAuth Scope" v-model="scope"></v-text-field>
           <v-text-field label="Notes (Optional)" v-model="notes"></v-text-field>
           <v-text-field label="Tags (Optional)" v-model="tags"></v-text-field>
+          <div>
+            <FarmTagsChips v-bind:tags="tags"/>
+          </div>
 
 
           <div class="d-flex">
@@ -53,9 +56,10 @@ import {
 } from '@/interfaces';
 import { dispatchGetFarms, dispatchCreateFarm } from '@/store/farm/actions';
 import FarmRequestRegistrationDialog from '@/components/FarmRequestRegistrationDialog.vue';
+import FarmTagsChips from '@/components/FarmTagsChips.vue';
 
 @Component({
-    components: {FarmRequestRegistrationDialog},
+    components: {FarmRequestRegistrationDialog, FarmTagsChips},
 })
 export default class AddFarm extends Vue {
   public valid = false;

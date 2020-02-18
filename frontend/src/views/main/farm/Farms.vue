@@ -38,6 +38,9 @@
       <template v-slot:item.is_authorized="{ item }">
         <FarmAuthorizationStatus v-bind:farm=item ></FarmAuthorizationStatus>
       </template>
+      <template v-slot:item.tags="{ item }">
+        <FarmTagsChips v-bind:tags="item.tags"/>
+      </template>
       <template v-slot:item.last_accessed="{ item }">
            <span v-if="item.last_accessed" >
                 {{new Date(item.last_accessed).toLocaleString()}}
@@ -71,10 +74,11 @@ import { readFarms } from '@/store/farm/getters';
 import { dispatchGetFarms, dispatchGetFarmInfo, dispatchGetOneFarm } from '@/store/farm/actions';
 import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
 import FarmRequestRegistrationDialog from '@/components/FarmRequestRegistrationDialog.vue';
+import FarmTagsChips from '@/components/FarmTagsChips.vue';
 import {FarmProfile} from '@/interfaces';
 
 @Component({
-    components: {FarmAuthorizationStatus, FarmRequestRegistrationDialog},
+    components: {FarmAuthorizationStatus, FarmRequestRegistrationDialog, FarmTagsChips},
 })
 export default class Farms extends Vue {
   public headers = [
@@ -103,6 +107,12 @@ export default class Farms extends Vue {
       align: 'left',
     },
     {
+        text: 'Tags',
+        sortable: true,
+        value: 'tags',
+        align: 'left',
+    },
+    {
       text: 'API Version',
       sortable: true,
       value: 'info.api_version',
@@ -114,13 +124,7 @@ export default class Farms extends Vue {
       value: 'last_accessed',
       align: 'left',
     },
-    {
-      text: 'Updated',
-      sortable: true,
-      value: 'time_updated',
-      align: 'left',
-    },
-    {
+   {
       text: 'Created',
       sortable: true,
       value: 'time_created',

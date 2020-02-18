@@ -36,6 +36,7 @@ Features:
 - Displays the `authorization` status of the farm.
   - Hover over the `re-authorize` button to see the error.
   - Click on the authorized status button to see more info on the __ page.
+- Displays `tags` that can be used to categorize farms.
 - Displays `last_accessed` and `created` times.
 - Button to `edit` the farm profile - see edit farms.
 - Button to quickly refresh `farm info`. This is useful to diagnose connection problems.
