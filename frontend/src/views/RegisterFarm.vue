@@ -147,7 +147,7 @@
                     <form data-vv-scope="farmInfoForm">
                       <v-text-field
                               label="Farm Name"
-                              v-model="this.farmName"
+                              v-model="farmName"
                               v-validate="'required'"
                               data-vv-name="name"
                               data-vv-scope="farmInfoForm"
@@ -156,7 +156,7 @@
                       />
                       <v-text-field
                               label="URL"
-                              v-model="this.farmUrl"
+                              v-model="farmUrl"
                               v-validate="{ required: true, url: {require_protocol: true } }"
                               data-vv-name="url"
                               data-vv-scope="farmInfoForm"
@@ -205,7 +205,7 @@
                     <form data-vv-scope="farmVerifyForm">
                       <v-text-field
                               label="Farm Name"
-                              v-model="this.farmName"
+                              v-model="farmName"
                               v-validate="'required'"
                               data-vv-name="name"
                               data-vv-scope="farmVerifyForm"
@@ -214,7 +214,7 @@
                       />
                       <v-text-field
                               label="URL"
-                              v-model="this.farmUrl"
+                              v-model="farmUrl"
                               v-validate="{ required: true, url: {require_protocol: true } }"
                               data-vv-name="url"
                               data-vv-scope="farmVerifyForm"
@@ -244,6 +244,7 @@
                     <v-spacer></v-spacer>
                     <v-btn
                             color="primary"
+                            :disabled="farmCreated"
                             @click="createFarm"
                     >
                       Save
@@ -251,6 +252,28 @@
                   </v-card-actions>
 
                 </v-card>
+
+                <!-- Dialog for presenting successful creation -->
+                <v-dialog v-model="successDialog" persistent max-width="450">
+                  <v-card>
+                    <v-card-title class="headline">Farm Registered!</v-card-title>
+                    <v-card-text>
+                      <p>
+                        Your farm, {{ farmName }}, was successfully registered with the {{ appName }}!
+                      </p>
+
+                      <p class="font-weight-black">
+                        Your farm has ID={{ farmID }}
+                      </p>
+
+                      <p>
+                        No further action is required. Administrators of the {{ appName }} must approve your farm before its data is used.
+                      </p>
+
+                    </v-card-text>
+                  </v-card>
+                </v-dialog>
+
               </v-stepper-content>
 
 
@@ -312,6 +335,10 @@ export default class RegisterFarm extends Vue {
   };
   public farmInfo: FarmInfo = {};
 
+  // Variables for success dialog
+  public successDialog: boolean = false;
+  public farmCreated: boolean = false;
+  public farmID: number|null = null;
 
   public currentStep: number = 1;
   public steps: object[] = [
@@ -448,6 +475,7 @@ export default class RegisterFarm extends Vue {
   }
 
   public createFarm() {
+    this.farmCreated = true;
     this.$validator.validateAll('FarmVerifyForm').then( (isValid) => {
         if (isValid) {
             const newFarm: FarmProfileCreate = {
@@ -457,7 +485,12 @@ export default class RegisterFarm extends Vue {
                 token: this.authToken,
                 scope: this.scope,
             };
-            dispatchCreateFarm(this.$store, { data: newFarm, apiToken: this.apiToken } );
+            dispatchCreateFarm(this.$store, { data: newFarm, apiToken: this.apiToken } ).then(
+                (success) => {
+                    this.successDialog = true;
+                    this.farmID = success.id;
+                },
+            );
         }
     });
 
