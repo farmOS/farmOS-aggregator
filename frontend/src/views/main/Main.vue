@@ -100,7 +100,7 @@
       </v-layout>
     </v-navigation-drawer>
     <v-app-bar dark color="primary">
-      <v-btn @click.stop="switchShowDrawer"></v-btn>
+      <v-app-bar-nav-icon @click.stop="switchShowDrawer"></v-app-bar-nav-icon>
       <v-toolbar-title v-text="appName"></v-toolbar-title>
       <v-spacer></v-spacer>
       <v-menu bottom left offset-y>
