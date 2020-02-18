@@ -134,7 +134,7 @@
     </v-content>
     <v-footer class="pa-3" fixed app>
       <v-spacer></v-spacer>
-      <span>&copy; {{appName}}</span>
+      <span>{{appName}}</span>
     </v-footer>
   </div>
 </template>
