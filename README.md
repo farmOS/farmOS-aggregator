@@ -7,6 +7,10 @@
 [![Twitter](https://img.shields.io/twitter/follow/farmOSorg.svg?label=%40farmOSorg&style=flat)](https://twitter.com/farmOSorg)
 [![Chat](https://img.shields.io/matrix/farmOS:matrix.org.svg)](https://riot.im/app/#/room/#farmOS:matrix.org)
 
+<p align="center">
+  <img width="446" height="413" src="img/aggregator_logo.png">
+</p>
+
 farmOS-aggregator is an application for interacting with multiple [farmOS](https://farmOS.org)
 instances. The application provides a GUI for registering farmOS instances with the Aggregator
 and a REST API for interacting with farmOS instances. Depending on how an Aggregator is configured,
