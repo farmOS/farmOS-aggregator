@@ -31,11 +31,11 @@ any farms have become unauthorized.
 ![Farm Profiles](../img/ui/manage_farms.png)
 
 Features:
-- Lists all farm profiles in a sortable table
-- Sort by the farm `active` flag
+- Lists all farm profiles in a sortable table.
+- Sorts by the farm `active` flag.
 - Displays the `authorization` status of the farm.
-  - Hover over the `re-authorize` button to see the error.
-  - Click on the authorized status button to see more info on the __ page.
+    - Hover over the `re-authorize` button to see the error.
+    - Click on the `authorized` button to see more info on the __ page.
 - Displays `tags` that can be used to categorize farms.
 - Displays `last_accessed` and `created` times.
 - Button to `edit` the farm profile - see edit farms.
@@ -46,8 +46,7 @@ Features:
 ![Add Farm](../img/ui/add_farm.png)
 
 Features:
-- Add a farm profile to the aggregator. _Note that you can only pre-populate values for the farm_ - **_You will not be able
-to connect to the farm after adding via the admin UI_**
+- Add a farm profile to the aggregator. _Note that you can only pre-populate values for the farm._ **_After you add a farm via the admin UI, you will not be able to connect to the farm._**
 - After adding, the farm must be `authorized` by requesting authorization from the farmOS server admin.
 - The `active` flag can be configured when adding a farm.
 
@@ -55,19 +54,19 @@ to connect to the farm after adding via the admin UI_**
 
 ![Register Farm Profiles](../img/ui/register_step2.png)
 
-The registration page allows farmOS admins to select which of the configured OAuth scopes they would like to
-authorize the farmOS Aggregator with access to their data.
+The registration page allows farmOS admins to select for which of the configured OAuth scopes they would like to
+authorize the farmOS Aggregator to access their data.
 
 Features:
 - If `OPEN_FARM_REGISTRATION` is enabled then this page will be accessible to the public. The 
 `FARM_ACTIVE_AFTER_REGISTRATION` setting allows you to configure if registered farms will be enabled by default. This
-can be useful to prevent the malicious intent if many farm profiles are added.
+can be useful to guard against malicious intent if many farm profiles are added.
 - If `INVITE_FARM_REGISTRATION` is enabled then this page will be accessible to users that receive a link with an
-embedded `api_token`. See _[Requsting Registration](#requesting-registration)_
-- The registration is multi step process (step 2 is show above):
-  1) farmOS Server Hostname is input
-  2) User selects which of the configured OAuth Scopes they want to authorize
-  3) The user is redirected to their farmOS server to complete the OAuth Authorization Flow
+embedded `api_token`. See _[Requesting Registration](#requesting-registration)_
+- The registration is a multi step process (step 2 is show above):
+  1) User inputs farmOS Server Hostname.
+  2) User selects which of the configured OAuth Scopes they want to authorize.
+  3) The user is redirected to their farmOS server to complete the OAuth Authorization Flow.
   4) Basic farm values are pre-populated in the registration form. The user verifies their information.
 
 #### Requesting Registration
@@ -76,8 +75,8 @@ embedded `api_token`. See _[Requsting Registration](#requesting-registration)_
 
 Features:
 - Aggregator admins can _request registration_ by generating a special link users can use to join the aggregator.
-- An email can be supplied to automatically send an email requesting registration OR
-- The link can be generated and copy/pasted to share with the user manually.
+    - An email can be supplied to automatically send an email requesting registration, OR
+    - The link can be generated and copy/pasted to share with the user manually.
 
 ### Authorizing Farm Profiles
 
@@ -85,10 +84,10 @@ Authorization is a crucial part of the farmOS Aggregator. Because farmOS server 
 saved in the database, access to farmOS servers must be _authorized_ via the OAuth2 Authorization protocol. There are a
 few instances when authorization may be required of users:
 - After manually adding a farm via the admin UI
-- If communication with the farmOS server is ever broken for an extend amount of time, the existing authorization could
-expire. The server must then be _re-authorized_
+- If communication with the farmOS server is ever broken for an extended amount of time, the existing authorization could
+expire. The server must then be _re-authorized_.
 - If the Aggregator ever wants to request that users authorize with new or additional OAuth Scopes, then admins must 
-request users to _re-authorize- with those additional scopes.
+request users to _re-authorize_ with those additional scopes.
 
 
 #### Requesting Authorization
@@ -98,18 +97,18 @@ request users to _re-authorize- with those additional scopes.
 Features:
 - Aggregator admins can _request authorization_ of a farmOS server by generating a special link users can use to
 authorize their farmOS server. **_This link is unique to each individual farm profile. It should only be shared with
-the owner of that farmOS server_**
-- An email be supplied to automatically send an email to the farmOS admin (if provided, this will default to the email
-saved in the farm profile)
-- The link can also be generated and copy/pasted to share with the user manually.
+the owner of that farmOS server._**
+    - An email address can be supplied to automatically send an email to the farmOS admin. (This will default to the email
+saved in the farm profile, if applicable.)
+    - The link can also be generated and copy/pasted to share with the user manually.
 
 #### Authorization Form
 
 ![Re-Authorize](../img/ui/re-authorize.png)
 
-This is the form that users are directed to with the generated authorization links.
+This is the form that users are directed to by the generated authorization links.
 
 - Authorization is a 3 step process:
-  1) User selects which of the configured OAuth Scopes they want to authorize
-  2) The user is redirected to their farmOS server to complete the OAuth Authorization Flow
+  1) User selects which of the configured OAuth Scopes they want to authorize.
+  2) The user is redirected to their farmOS server to complete the OAuth Authorization Flow.
   3) The user is redirected to the Aggregator showing that the authorization was successful.
