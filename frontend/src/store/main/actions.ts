@@ -99,9 +99,9 @@ export const actions = {
         await dispatchLogOut(context);
         commitAddNotification(context, { content: 'Logged out', color: 'success' });
     },
-    actionRouteLogOut(context: MainContext) {
+    async actionRouteLogOut(context: MainContext) {
         if (router.currentRoute.path !== '/login') {
-            router.push('/login');
+            await router.push('/login');
         }
     },
     async actionCheckApiError(context: MainContext, payload: AxiosError) {
@@ -109,9 +109,9 @@ export const actions = {
             await dispatchLogOut(context);
         }
     },
-    actionRouteLoggedIn(context: MainContext) {
+    async actionRouteLoggedIn(context: MainContext) {
         if (router.currentRoute.path === '/login' || router.currentRoute.path === '/') {
-            router.push('/main');
+            await router.push('/main');
         }
     },
     async removeNotification(context: MainContext, payload: { notification: AppNotification, timeout: number }) {

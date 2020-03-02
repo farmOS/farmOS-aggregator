@@ -143,13 +143,14 @@
 import { Vue, Component } from 'vue-property-decorator';
 
 import { env } from '@/env';
+import router from '@/router';
 import { readDashboardMiniDrawer, readDashboardShowDrawer, readHasAdminAccess } from '@/store/main/getters';
 import { commitSetDashboardShowDrawer, commitSetDashboardMiniDrawer } from '@/store/main/mutations';
 import { dispatchUserLogOut } from '@/store/main/actions';
 
 const routeGuardMain = async (to, from, next) => {
   if (to.path === '/main') {
-    next('/main/dashboard');
+    await router.push('/main/dashboard');
   } else {
     next();
   }
