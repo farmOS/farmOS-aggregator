@@ -6,7 +6,7 @@ RUN pip install --default-timeout=100 requests pytest tenacity passlib[bcrypt] "
 # Using inside the container:
 # jupyter notebook --ip=0.0.0.0 --allow-root
 ARG env=prod
-RUN bash -c "if [ $env == 'dev' ] ; then pip install jupyter ; fi"
+# RUN bash -c "if [ $env == 'dev' ] ; then pip install jupyter ; fi"
 EXPOSE 8888
 
 COPY ./app /app
