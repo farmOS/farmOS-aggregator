@@ -14,7 +14,7 @@
           </v-list-item>
           <v-list-item v-show="hasAdminAccess" to="/main/farm/farms/all">
             <v-list-item-action>
-              <v-icon>group</v-icon>
+              <v-icon>eco</v-icon>
             </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>Manage Farms</v-list-item-title>
