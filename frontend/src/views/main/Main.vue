@@ -12,6 +12,25 @@
               <v-list-item-title>Dashboard</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item v-show="hasAdminAccess" to="/main/farm/farms/all">
+            <v-list-item-action>
+              <v-icon>group</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Manage Farms</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item v-show="hasAdminAccess" to="/main/admin/users/all">
+            <v-list-item-action>
+              <v-icon>group</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Manage Users</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+        <v-spacer></v-spacer>
+        <v-list>
           <v-list-item to="/main/profile/view">
             <v-list-item-action>
               <v-icon>person</v-icon>
@@ -20,65 +39,6 @@
               <v-list-item-title>Profile</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item to="/main/profile/edit">
-            <v-list-item-action>
-              <v-icon>edit</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Edit Profile</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/main/profile/password">
-            <v-list-item-action>
-              <v-icon>vpn_key</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Change Password</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-        <v-divider></v-divider>
-        <v-list subheader v-show="hasAdminAccess">
-          <v-subheader>Farm</v-subheader>
-          <v-list-item to="/main/farm/farms/all">
-            <v-list-item-action>
-              <v-icon>group</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Manage Farms</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/main/farm/farms/add">
-            <v-list-item-action>
-              <v-icon>person_add</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Add Farm</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-        <v-divider></v-divider>
-        <v-list subheader v-show="hasAdminAccess">
-          <v-subheader>Admin</v-subheader>
-          <v-list-item to="/main/admin/users/all">
-            <v-list-item-action>
-              <v-icon>group</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Manage Users</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item to="/main/admin/users/create">
-            <v-list-item-action>
-              <v-icon>person_add</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Create User</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-        <v-spacer></v-spacer>
-        <v-list>
           <v-list-item @click="logout">
             <v-list-item-action>
               <v-icon>close</v-icon>
