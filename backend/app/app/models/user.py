@@ -11,3 +11,5 @@ class User(Base):
     hashed_password = Column(String)
     is_active = Column(Boolean(), default=True)
     is_superuser = Column(Boolean(), default=False)
+    # Temporary test field to test update procedure.
+    test_update = Column(Boolean(), default=False)

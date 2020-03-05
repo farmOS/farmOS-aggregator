@@ -43,6 +43,8 @@ def create(db_session: Session, *, user_in: UserCreate) -> User:
         hashed_password=get_password_hash(user_in.password),
         full_name=user_in.full_name,
         is_superuser=user_in.is_superuser,
+        # Temporary test field to test update procedure.
+        test_update=user_in.test_update,
     )
     db_session.add(user)
     db_session.commit()
