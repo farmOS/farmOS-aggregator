@@ -9,8 +9,6 @@ class UserBase(APIModel):
     is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False
     full_name: Optional[str] = None
-    # Temporary test field to test update procedure.
-    test_update: Optional[bool] = True
 
 class UserBaseInDB(UserBase):
     id: int = None
