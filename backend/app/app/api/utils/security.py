@@ -41,8 +41,11 @@ reusable_oauth2 = OAuth2PasswordBearer(
     auto_error=True
 )
 
-API_KEY_NAME = "api-token"
-api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+# Define a header to check for API Tokens.
+# API Tokens are short-lived JWT Tokens used to authenticate
+# farmOS server owners for registration and authorization purposes.
+API_TOKEN_NAME = "api-token"
+api_token_header = APIKeyHeader(name=API_TOKEN_NAME, auto_error=False)
 
 
 def get_current_user(
@@ -139,7 +142,7 @@ def get_current_user_farm_access(
 
 def get_api_token_farm_access(
     security_scopes: SecurityScopes,
-    api_token: str = Security(api_key_header),
+    api_token: str = Security(api_token_header),
 ):
     if api_token is None:
         return None
