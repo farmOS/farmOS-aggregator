@@ -220,6 +220,7 @@ def _validate_token(token):
     payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
     user_id: int = payload.get("sub", None)
     farm_id = payload.get("farm_id", [])
+    all_farms = payload.get("all_farms", False)
     token_scopes = payload.get("scopes", [])
-    token_data = TokenData(scopes=token_scopes, user_id=user_id, farm_id=farm_id)
+    token_data = TokenData(scopes=token_scopes, user_id=user_id, farm_id=farm_id, all_farms=all_farms)
     return token_data

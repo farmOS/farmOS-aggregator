@@ -12,6 +12,7 @@ class TokenData(APIModel):
     user_id: int = None
     scopes: List[str] = []
     farm_id: List[int] = []
+    all_farms: bool = False
 
 
 class FarmAccess(APIModel):
