@@ -5,6 +5,7 @@ import requests
 import pytest
 
 from app.core.config import settings
+from app.schemas.api_key import ApiKeyCreate
 
 
 farmOS_testing_server = pytest.mark.skipif(
@@ -59,4 +60,17 @@ def _create_headers_with_scopes(scopes):
     tokens = r.json()
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}
+    return headers
+
+
+def get_api_key_headers(api_key_params: ApiKeyCreate):
+    server_api = get_server_api()
+    r = requests.post(
+        f"{server_api}{settings.API_V1_STR}/api-keys",
+        headers=get_superuser_token_headers(),
+        data=api_key_params.json()
+    )
+    api_key = r.json()
+    key = api_key["key"]
+    headers = {"api-key": f"{key}"}
     return headers
