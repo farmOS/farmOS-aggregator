@@ -47,6 +47,12 @@ reusable_oauth2 = OAuth2PasswordBearer(
 API_TOKEN_NAME = "api-token"
 api_token_header = APIKeyHeader(name=API_TOKEN_NAME, auto_error=False)
 
+# Define a header to check for API Keys.
+# API Keys allow administrators to create scoped access for
+# services integrating with an aggregator.
+API_KEY_NAME = "api-key"
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+
 
 def get_current_user(
     security_scopes: SecurityScopes,
@@ -140,6 +146,46 @@ def get_current_user_farm_access(
         return FarmAccess(scopes=token_data.scopes, user_id=token_data.user_id, all_farms=all_farms)
 
 
+def get_api_key_farm_access(
+    security_scopes: SecurityScopes,
+    db: Session = Depends(get_db),
+    api_key: str = Security(api_key_header),
+):
+    if api_key is None:
+        return None
+    else:
+        try:
+            token_data = _validate_token(api_key)
+        except (PyJWTError, ValidationError) as e:
+            raise HTTPException(
+                status_code=HTTP_401_UNAUTHORIZED,
+                detail="Could not validate api key.",
+            )
+
+        for scope in security_scopes.scopes:
+            if scope not in token_data.scopes:
+                raise HTTPException(
+                    status_code=HTTP_401_UNAUTHORIZED,
+                    detail="Not enough permissions.",
+                )
+
+        key_in_db = crud.api_key.get_by_key(db, key=api_key.encode())
+
+        if key_in_db is None:
+            raise HTTPException(
+                status_code=HTTP_401_UNAUTHORIZED,
+                detail="API Key doesn't exist.",
+            )
+
+        if not key_in_db.enabled:
+            raise HTTPException(
+                status_code=HTTP_401_UNAUTHORIZED,
+                detail="API Key is not enabled."
+            )
+
+        return FarmAccess(scopes=token_data.scopes, farm_id_list=token_data.farm_id, all_farms=token_data.all_farms)
+
+
 def get_api_token_farm_access(
     security_scopes: SecurityScopes,
     api_token: str = Security(api_token_header),
@@ -167,7 +213,8 @@ def get_api_token_farm_access(
 
 def get_farm_access(
     user_access: dict = Depends(get_current_user_farm_access),
-    api_token_access: dict = Depends(get_api_token_farm_access)
+    api_token_access: dict = Depends(get_api_token_farm_access),
+    api_key_access: dict = Depends(get_api_key_farm_access)
 ):
     farm_access = None
 
@@ -178,6 +225,10 @@ def get_farm_access(
     if api_token_access is not None:
         logger.debug(f"Request has api_token access: {api_token_access}")
         farm_access = api_token_access
+
+    if api_key_access is not None:
+        logger.debug(f"Request has api_key access: {api_key_access}")
+        farm_access = api_key_access
 
     if farm_access is None:
         logger.debug(f"Request has no farm access.")
@@ -192,6 +243,7 @@ def get_farm_access(
 def get_farm_access_allow_public(
     user_access: dict = Depends(get_current_user_farm_access),
     api_token_access: dict = Depends(get_api_token_farm_access),
+    api_key_access: dict = Depends(get_api_key_farm_access)
 ):
     farm_access = None
 
@@ -208,6 +260,10 @@ def get_farm_access_allow_public(
     if api_token_access is not None:
         logger.debug(f"Request has api_token access: {api_token_access}")
         farm_access = api_token_access
+
+    if api_key_access is not None:
+        logger.debug(f"Request has api_key access: {api_key_access}")
+        farm_access = api_key_access
 
     if farm_access is None:
         logger.debug(f"Request has no farm access.")
