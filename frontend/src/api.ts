@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { env } from '@/env';
-import { IUserProfile, IUserProfileUpdate, IUserProfileCreate } from './interfaces';
+import { IUserProfile, IUserProfileUpdate, IUserProfileCreate, ApiKey } from './interfaces';
 import { FarmProfile, FarmProfileCreate, FarmProfileUpdate, FarmProfileAuthorize } from './interfaces';
 
 function accessTokenAuthHeaders(token: string) {
@@ -117,5 +117,9 @@ export const api = {
         {farm_url: farmUrl},
         headers,
     );
+  },
+  // Aggregator API Key APIs
+  async getApiKeys(token: string) {
+    return axios.get<ApiKey[]>(`${env('apiUrl')}/api/v1/api-keys`, authHeaders(token));
   },
 };

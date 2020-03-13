@@ -92,6 +92,15 @@ export default new VueRouter({
                   component: () => import(
                     /* webpackChunkName: "main-admin-users-create" */ './views/main/admin/CreateUser.vue'),
                 },
+                {
+                  path: 'api-keys/',
+                  redirect: 'api-keys/all',
+                },
+                {
+                  path: 'api-keys/all',
+                  component: () => import(
+                      './views/main/admin/ApiKeys.vue'),
+                },
               ],
             },
             {

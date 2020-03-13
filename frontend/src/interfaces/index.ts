@@ -22,6 +22,18 @@ export interface IUserProfileCreate {
     is_superuser?: boolean;
 }
 
+export interface ApiKey {
+    id: number;
+    time_created: string;
+    key: string;
+    enabled: boolean;
+    name: string;
+    notes: string;
+    farm_id: number[];
+    all_farms: boolean;
+    scopes: string[];
+}
+
 export interface FarmToken {
     access_token: string;
     refresh_token: string;

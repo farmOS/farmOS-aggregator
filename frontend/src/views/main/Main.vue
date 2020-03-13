@@ -28,6 +28,14 @@
               <v-list-item-title>Manage Users</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item v-show="hasAdminAccess" to="/main/admin/api-keys/all">
+            <v-list-item-action>
+              <v-icon>security</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Manage API Keys</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
         <v-spacer></v-spacer>
         <v-list>
