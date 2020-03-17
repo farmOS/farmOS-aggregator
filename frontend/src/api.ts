@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { env } from '@/env';
-import { IUserProfile, IUserProfileUpdate, IUserProfileCreate, ApiKey } from './interfaces';
+import { IUserProfile, IUserProfileUpdate, IUserProfileCreate, ApiKey, ApiKeyCreate, ApiKeyUpdate } from './interfaces';
 import { FarmProfile, FarmProfileCreate, FarmProfileUpdate, FarmProfileAuthorize } from './interfaces';
 
 function accessTokenAuthHeaders(token: string) {
@@ -121,5 +121,14 @@ export const api = {
   // Aggregator API Key APIs
   async getApiKeys(token: string) {
     return axios.get<ApiKey[]>(`${env('apiUrl')}/api/v1/api-keys`, authHeaders(token));
+  },
+  async createApiKey(token: string, data: ApiKeyCreate) {
+    return axios.post(`${env('apiUrl')}/api/v1/api-keys/`, data, authHeaders(token));
+  },
+  async updateApiKey(token: string, id: number, data: ApiKeyUpdate) {
+    return axios.put(`${env('apiUrl')}/api/v1/api-keys/${id}`, data, authHeaders(token));
+  },
+  async deleteApiKey(token: string, id: number) {
+    return axios.delete(`${env('apiUrl')}/api/v1/api-keys/${id}`, authHeaders(token));
   },
 };
