@@ -53,6 +53,7 @@
                 <v-text-field v-model="selectedApiKey.name" label="Name"></v-text-field>
                 <v-text-field v-model="selectedApiKey.notes" label="Notes"></v-text-field>
                 <v-text-field v-model="new Date(selectedApiKey.time_created).toLocaleString()" label="Created" disabled></v-text-field>
+                <v-textarea v-model="selectedApiKey.key" label="Key" auto-grow readonly></v-textarea>
                 <v-checkbox v-model="selectedApiKey.all_farms" label="All Farms" disabled></v-checkbox>
                 <v-select
                   v-model="selectedApiKey.farm_id"
