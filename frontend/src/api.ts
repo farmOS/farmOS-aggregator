@@ -120,7 +120,7 @@ export const api = {
   },
   // Aggregator API Key APIs
   async getApiKeys(token: string) {
-    return axios.get<ApiKey[]>(`${env('apiUrl')}/api/v1/api-keys`, authHeaders(token));
+    return axios.get<ApiKey[]>(`${env('apiUrl')}/api/v1/api-keys/`, authHeaders(token));
   },
   async createApiKey(token: string, data: ApiKeyCreate) {
     return axios.post(`${env('apiUrl')}/api/v1/api-keys/`, data, authHeaders(token));
