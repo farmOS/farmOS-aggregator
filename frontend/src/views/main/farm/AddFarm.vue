@@ -9,7 +9,6 @@
         <v-card-text>
           <v-text-field label="Farm Name" v-model="farmName" required></v-text-field>
           <v-text-field label="URL" v-model="url" required></v-text-field>
-          <v-text-field label="OAuth Scope" v-model="scope"></v-text-field>
           <v-text-field label="Notes (Optional)" v-model="notes"></v-text-field>
           <v-text-field label="Tags (Optional)" v-model="tags"></v-text-field>
           <div>
@@ -65,7 +64,6 @@ export default class AddFarm extends Vue {
   public valid = false;
   public farmName: string = '';
   public url: string = '';
-  public scope: string = '';
   public notes: string = '';
   public tags: string = '';
   public active: boolean = false;
@@ -91,7 +89,6 @@ export default class AddFarm extends Vue {
       const updatedFarm: FarmProfileCreate = {
         farm_name: this.farmName,
         url: this.url,
-        scope: this.scope,
         notes: this.notes,
         tags: this.tags,
         active: this.active,

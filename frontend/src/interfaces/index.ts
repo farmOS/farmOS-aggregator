@@ -86,7 +86,6 @@ export interface FarmProfileUpdate {
     notes?: string;
     tags?: string;
     active?: boolean;
-    scope?: string;
 }
 
 export interface FarmProfileCreate {

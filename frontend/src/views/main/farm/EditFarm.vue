@@ -9,7 +9,7 @@
         <v-card-text>
           <v-text-field label="Farm Name" v-model="farmName" required></v-text-field>
           <v-text-field label="URL" v-model="url" required></v-text-field>
-          <v-text-field label="OAuth Scope" v-model="scope" required></v-text-field>
+          <v-text-field label="OAuth Scope (readonly)" v-model="scope" readonly></v-text-field>
           <v-text-field label="Tags" v-model="tags" ></v-text-field>
           <div>
             <FarmTagsChips v-bind:tags="tags"/>
@@ -157,9 +157,6 @@ export default class EditFarm extends Vue {
       // Only update the farm URL if it is different, avoid 409 error.
       if (this.url !== this.oldUrl) {
         updatedFarm.url = this.url;
-      }
-      if (this.scope) {
-          updatedFarm.scope = this.scope;
       }
       if (this.notes) {
         updatedFarm.notes = this.notes;
