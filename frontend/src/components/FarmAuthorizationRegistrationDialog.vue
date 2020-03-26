@@ -87,7 +87,7 @@
         public async authorizeNow(farmID) {
             await this.generateAuthorizationLink().then( (res) => {
                 // Redirect to the authorization page.
-                location.replace(this.authLink);
+                window.open(this.authorizationLink);
             });
         }
 
