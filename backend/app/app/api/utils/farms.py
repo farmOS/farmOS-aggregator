@@ -190,6 +190,10 @@ def _save_token(token, db_session=None, farm=None):
         else:
             create_farm_token(db_session, token_in)
 
+        # Update the Farm.scope attribute based on what the server returned.
+        if 'scope' in token:
+            crud.farm.update_scope(db_session, farm=farm, scope=token['scope'])
+
 
 # Create a farmOS.py client.
 def get_farm_client(db_session, farm):

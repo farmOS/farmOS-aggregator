@@ -22,7 +22,6 @@ def test_create_delete_default_farm_with_token():
     farm_in = FarmCreate(
         farm_name=farm_name,
         url=url,
-        scope='user_access',
         token=token,
     )
     farm = crud.farm.create(db_session, farm_in=farm_in)
@@ -55,7 +54,6 @@ def test_create_farm_update_token():
 
     farm_in = FarmCreate(
         farm_name=farm_name,
-        scope='user_access',
         url=url,
     )
     farm = crud.farm.create(db_session, farm_in=farm_in)
@@ -135,7 +133,6 @@ def test_create_farm_cant_delete_token():
     farm_in = FarmCreate(
         farm_name=farm_name,
         url=url,
-        scope='user_access',
         token=token,
     )
     farm = crud.farm.create(db_session, farm_in=farm_in)
@@ -182,7 +179,6 @@ def test_create_delete_active_farm():
     farm_in = FarmCreate(
         farm_name=farm_name,
         url=url,
-        scope='user_access',
         active=True,
     )
     farm = crud.farm.create(db_session, farm_in=farm_in)
@@ -204,7 +200,6 @@ def test_create_delete_inactive_farm():
     farm_in = FarmCreate(
         farm_name=farm_name,
         url=url,
-        scope='user_access',
         active=False,
     )
     farm = crud.farm.create(db_session, farm_in=farm_in)

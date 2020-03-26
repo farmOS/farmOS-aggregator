@@ -197,6 +197,9 @@ def authorize_farm(
     else:
         token = crud.farm_token.update_farm_token(db, token=old_token, token_in=new_token)
 
+    # Update the scope attribute of the Farm profile to the scope that was just authorized.
+    crud.farm.update_scope(db, farm=farm, scope=auth_params.scope)
+
     return token
 
 

@@ -110,6 +110,14 @@ def update(db_session: Session, *, farm: Farm, farm_in: FarmUpdate):
     return farm
 
 
+def update_scope(db_session: Session, *, farm: Farm, scope: str):
+    setattr(farm, 'scope', scope)
+    db_session.add(farm)
+    db_session.commit()
+    db_session.refresh(farm)
+    return farm
+
+
 def update_info(db_session: Session, *, farm: Farm, info: FarmInfo):
     setattr(farm, 'info', info)
     db_session.add(farm)
