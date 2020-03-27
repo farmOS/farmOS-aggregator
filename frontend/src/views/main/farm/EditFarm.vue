@@ -40,10 +40,11 @@
                   <v-text-field   label="Server Name" v-model="farm.info.name" readonly ></v-text-field>
                   <v-text-field   label="URL" v-model="farm.info.url" readonly ></v-text-field>
                   <v-text-field   label="API Version" v-model="farm.info.api_version" readonly ></v-text-field>
-                  <v-text-field   label="System Of Measurement" v-model="farm.info.system_of_measurement" readonly ></v-text-field>
-                  <v-text-field   label="Authorized User Email" v-model="farm.info.user.mail" readonly ></v-text-field>
+                  <v-text-field   v-if="hasAllServerInfo" label="System Of Measurement" v-model="farm.info.system_of_measurement" readonly ></v-text-field>
+                  <v-text-field   v-if="hasAllServerInfo" label="Authorized User Email" v-model="farm.info.user.mail" readonly ></v-text-field>
                 </template>
                 <v-treeview
+                        v-if="hasAllServerInfo"
                         dense
                         :items="this.resources"
                         :open-on-click="true"
@@ -111,6 +112,7 @@ export default class EditFarm extends Vue {
   public expiresAt: string = '';
 
   public hasServerInfo: boolean = false;
+  public hasAllServerInfo: boolean = false;
   public resources: object[] = [];
 
   public async mounted() {
@@ -139,7 +141,11 @@ export default class EditFarm extends Vue {
       }
       if (this.farm.info) {
         this.hasServerInfo = true;
-        this.resources = this.buildResourcesTree(this.farm);
+        /* tslint:disable:no-string-literal */
+        if (this.farm.info['user'] !== null) {
+          this.hasAllServerInfo = true;
+          this.resources = this.buildResourcesTree(this.farm);
+        }
       }
     }
   }
