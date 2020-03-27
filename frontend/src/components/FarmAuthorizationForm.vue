@@ -120,7 +120,9 @@
 
             commitSetFarmAuthorizationNonce(this.$store, nonce);
 
-            location.replace(this.farmUrl + oauthPath + queryParams);
+            const url = 'http://' + this.farmUrl.replace(/(^\w+:|^)\/\//, '');
+
+            location.replace(url + oauthPath + queryParams);
         }
 
         public async finishAuthorization(authCode, authState) {
