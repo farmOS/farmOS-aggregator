@@ -111,6 +111,10 @@ def update(db_session: Session, *, farm: Farm, farm_in: FarmUpdate):
 
 
 def update_scope(db_session: Session, *, farm: Farm, scope: str):
+    # Save scopes as a space separated list of strings.
+    if type(scope) == list:
+        scope = ' '.join(scope)
+
     setattr(farm, 'scope', scope)
     db_session.add(farm)
     db_session.commit()
