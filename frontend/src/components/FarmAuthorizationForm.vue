@@ -1,30 +1,53 @@
 <template>
-  <form>
-    <div class="headline text--primary">
-      farmOS Server Authorization
-    </div>
-    <div class="subtitle-1 text--primary">
-      Authorize your farmOS server with the {{appName}}. This will give the {{appName}} access to your data
-      at the level you define.
-    </div>
-    <br>
-    <v-text-field label="farmOS Server URL" v-model="farmUrl" readonly></v-text-field>
+  <div>
+    <!-- Dialog for presenting successful Authorization -->
+    <v-dialog v-model="authSuccessDialog" persistent max-width="450">
+      <v-card>
+        <v-card-title class="headline">Farm Authorized!</v-card-title>
+        <v-card-text>
+          <p>
+            Your farm was successfully authorized with the {{ appName }}!
+          </p>
+
+          <p class="font-weight-black">
+            Your farm has ID={{ farmId }}
+          </p>
+
+          <p>
+            No further action is required. You may close this window.
+          </p>
+
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <form>
+      <div class="headline text--primary">
+        farmOS Server Authorization
+      </div>
+      <div class="subtitle-1 text--primary">
+        Authorize your farmOS server with the {{appName}}. This will give the {{appName}} access to your data
+        at the level you define.
+      </div>
+      <br>
+      <v-text-field label="farmOS Server URL" v-model="farmUrl" readonly></v-text-field>
 
 
-    <div class="headline text--primary">
-      Permissions
-    </div>
-    <v-checkbox
-      v-for="scope in oauthScopes"
-      v-model="oauthSelectedScopes"
-      v-bind:key="scope.name"
-      v-bind:value="scope.name"
-      v-bind:label="scope.label"
-      v-bind:hint="scope.description"
-      :disabled = "oauthRequiredScopes.includes(scope.name)"
-      persistent-hint
-    ></v-checkbox>
-  </form>
+      <div class="headline text--primary">
+        Permissions
+      </div>
+      <v-checkbox
+        v-for="scope in oauthScopes"
+        v-model="oauthSelectedScopes"
+        v-bind:key="scope.name"
+        v-bind:value="scope.name"
+        v-bind:label="scope.label"
+        v-bind:hint="scope.description"
+        :disabled = "oauthRequiredScopes.includes(scope.name)"
+        persistent-hint
+      ></v-checkbox>
+    </form>
+  </div>
 </template>
 
 <script lang="ts">
@@ -48,6 +71,9 @@
 
         // Load environment config
         public apiUrl = env('apiUrl');
+
+        // Success Dialog
+        public authSuccessDialog: boolean = false;
 
         // Load the the configured oauth settings for this aggregator.
         public oauthClientId = env('oauthClientId');
@@ -112,7 +138,9 @@
             const scope = this.cleanOAuthStrings();
             const savedState = nonce.state!;
             const farmUrl = nonce.farmUrl!;
+            this.farmUrl = farmUrl;
             const farmId = +nonce.farmId!;
+            this.farmId = farmId;
             const apiToken = nonce.apiToken;
 
             if (savedState !== authState) {
@@ -144,28 +172,18 @@
                     this.$store,
                     {id: farmId, authValues, apiToken},
                 ).then( (response) => {
-                    this.$emit('update:authtoken', response.token);
-                    this.$emit('update:apiToken', apiToken);
-                    this.$emit('update:farminfo', response.info);
-                    this.$emit('update:farmName', response.info.name);
-                    this.$emit('update:farmUrl', response.info.url);
-                    this.$emit('update:scope', scope);
+                    this.$emit('update:apiToken', response);
                     this.$emit('update:authFinished', true);
-                    this.$emit('authorizationcomplete');
+                    this.authSuccessDialog = true;
                 });
             } else {
                 await dispatchAuthorizeNewFarm(
                     this.$store,
                     {farmUrl, authValues, apiToken},
                 ).then((response) => {
-                    this.$emit('update:authtoken', response.token);
-                    this.$emit('update:apiToken', apiToken);
-                    this.$emit('update:farminfo', response.info);
-                    this.$emit('update:farmName', response.info.name);
-                    this.$emit('update:farmUrl', response.info.url);
-                    this.$emit('update:scope', scope);
+                    this.$emit('update:apiToken', response);
                     this.$emit('update:authFinished', true);
-                    this.$emit('authorizationcomplete');
+                    this.authSuccessDialog = true;
                 });
             }
 
