@@ -200,11 +200,18 @@ def get_farm_client(db_session, farm):
     client_id = settings.AGGREGATOR_OAUTH_CLIENT_ID
     client_secret = settings.AGGREGATOR_OAUTH_CLIENT_SECRET
 
-    scope = None
-    if farm.scope is not None:
-        scope = farm.scope
-
+    if farm.token is None:
+        error = "No OAuth token. Farm must be Authorized before making requests."
+        crud.farm.update_is_authorized(db_session, farm_id=farm.id, is_authorized=False, auth_error=error)
+        raise ClientError(error)
     token = FarmTokenBase.from_orm(farm.token)
+
+    if farm.scope is None:
+        error = "No Scope. Farm must be Authorized before making requests."
+        crud.farm.update_is_authorized(db_session, farm_id=farm.id, is_authorized=False, auth_error=error)
+        raise ClientError(error)
+    # Use the saved scope.
+    scope = farm.scope
 
     token_updater = partial(_save_token, db_session=db_session, farm=farm)
 
