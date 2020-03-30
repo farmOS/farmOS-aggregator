@@ -97,7 +97,11 @@ repo at [https://raw.githubusercontent.com/farmOS/farmOS-aggregator/master/docke
         # Restart proxy container
         sudo docker-compose restart proxy
       ```
-      - TODO: Document creating a CRON job to auto-update certs.
+      - Create a CRON job to auto-update certs (replace `[proxy-container]` with
+      the name of the Docker proxy container, eg: `aggregator_proxy_1`).
+      ```shell script
+      16 2 * * * sudo docker run --rm --name certbot -v '/etc/letsencrypt:/etc/letsencrypt' -v '/var/log/letsencrypt:/var/log/letsencrypt' -v '/var/www/letsencrypt:/var/www/letsencrypt' certbot/certbot renew && sudo docker exec [proxy-container] service nginx reload > /dev/null
+      ```
  
  
 ## Deploying custom-built images
