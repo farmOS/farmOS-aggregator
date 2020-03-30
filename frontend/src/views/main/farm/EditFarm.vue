@@ -8,7 +8,7 @@
       <v-form v-model="valid" ref="form" lazy-validation>
         <v-card-text>
           <v-text-field label="Farm Name" v-model="farmName" required></v-text-field>
-          <v-text-field label="URL" v-model="url" required></v-text-field>
+          <v-text-field label="URL" v-model="url" prefix="https://" required></v-text-field>
           <v-text-field label="OAuth Scope (readonly)" v-model="scope" readonly></v-text-field>
           <v-text-field label="Tags" v-model="tags" ></v-text-field>
           <div>

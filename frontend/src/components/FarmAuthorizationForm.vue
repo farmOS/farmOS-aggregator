@@ -30,7 +30,7 @@
         at the level you define.
       </div>
       <br>
-      <v-text-field label="farmOS Server URL" v-model="farmUrl" readonly></v-text-field>
+      <v-text-field label="farmOS Server URL" v-model="farmUrl" prefix="https://" readonly></v-text-field>
 
 
       <div class="headline text--primary">

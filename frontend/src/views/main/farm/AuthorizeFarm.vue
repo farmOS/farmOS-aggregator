@@ -11,7 +11,7 @@
 
       <v-card-text>
         <v-text-field label="Farm Name" v-model="farmName" readonly></v-text-field>
-        <v-text-field label="URL" v-model="url" readonly></v-text-field>
+        <v-text-field label="URL" v-model="url" prefix="https://" readonly></v-text-field>
         <v-text-field label="OAuth Scope" v-model="scope" readonly></v-text-field>
         <v-text-field v-if="hasError" label="Authentication Error" v-model="authError" readonly/>
 
