@@ -15,7 +15,7 @@ from app.schemas.msg import Msg
 from app.schemas.user import UserInDB
 from app.schemas.farm import Farm
 from app.schemas.farm_token import FarmTokenCreate, FarmAuthorizationParams
-from app.api.utils.farms import get_farm_by_id, get_oauth_token, get_farm_client, admin_alert_email
+from app.api.utils.farms import get_farm_by_id, get_oauth_token, get_farm_client, admin_alert_email, ClientError
 from app.api.utils.security import get_farm_access, get_farm_access_allow_public
 from app.utils import (
     generate_farm_registration_link,
@@ -130,7 +130,14 @@ def authorize_farm(
     """
     logging.debug("Authorizing new farm: " + farm_url)
 
-    token = get_oauth_token(farm_url, auth_params)
+    try:
+        token = get_oauth_token(farm_url, auth_params)
+    except Exception as e:
+        error = f"Authorization flow failed: {e}"
+        raise HTTPException(
+            status_code=400,
+            detail=error,
+        )
 
     # Check the token expiration time.
     if token is not None and 'expires_at' in token:
@@ -187,7 +194,15 @@ def authorize_farm(
     """
     Authorize an existing farm. Complete the OAuth Authorization Flow.
     """
-    token = get_oauth_token(farm.url, auth_params)
+    try:
+        token = get_oauth_token(farm.url, auth_params)
+    except Exception as e:
+        error = f"Authorization flow failed: {e}"
+        crud.farm.update_is_authorized(db, farm_id=farm.id, is_authorized=False, auth_error=error)
+        raise HTTPException(
+            status_code=400,
+            detail=error,
+        )
 
     new_token = FarmTokenCreate(farm_id=farm.id, **token.dict())
 

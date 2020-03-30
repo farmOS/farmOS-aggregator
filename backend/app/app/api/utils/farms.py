@@ -2,6 +2,7 @@ import os
 import logging
 from typing import List
 import time
+from urllib.parse import urlparse, urlunparse
 
 import requests
 from fastapi import Query, Depends, HTTPException
@@ -221,7 +222,7 @@ def get_farm_client(db_session, farm):
 
     try:
         client = farmOS(
-            hostname=farm.url,
+            hostname=build_farm_url(farm.url),
             client_id=client_id,
             client_secret=client_secret,
             scope=scope,
@@ -255,7 +256,8 @@ def get_oauth_token(farm_url, auth_params):
     if auth_params.redirect_uri is not None:
         data['redirect_uri'] = auth_params.redirect_uri
 
-    token_url = farm_url + "/oauth2/token"
+    # Build the OAuth2 token URL
+    token_url = build_farm_url(farm_url) + "/oauth2/token"
 
     response = requests.post(token_url, data)
 
@@ -271,6 +273,48 @@ def get_oauth_token(farm_url, auth_params):
     else:
         logging.error("Could not complete OAuth Authorization Flow: " )
         raise HTTPException(status_code=400, detail="Could not retrieve an access token.")
+
+
+def build_farm_url(farm_url):
+    """Specify a default scheme if not already included in the farm_url."""
+
+    valid_schemes = ["https"]
+    default_scheme = "https"
+
+    # Make HTTP the default scheme for development.
+    if settings.AGGREGATOR_OAUTH_INSECURE_TRANSPORT:
+        default_scheme = "http"
+        valid_schemes.append("http")
+
+    parsed_url = urlparse(farm_url)
+
+    # Validate the hostname.
+    # Add a default scheme if not provided.
+    if not parsed_url.scheme:
+        parsed_url = parsed_url._replace(scheme=default_scheme)
+
+    # Check for a valid scheme.
+    if parsed_url.scheme not in valid_schemes:
+        if parsed_url.scheme == "http":
+            raise Exception("HTTP scheme not supported in production.")
+
+        raise Exception("Not a valid scheme.")
+
+    # If no netloc was provided, it was probably parsed as the path.
+    if not parsed_url.netloc and parsed_url.path:
+        parsed_url = parsed_url._replace(netloc=parsed_url.path)
+        parsed_url = parsed_url._replace(path='')
+
+    # Check for netloc.
+    if not parsed_url.netloc:
+        raise Exception("Invalid hostname. Must have netloc.")
+
+    # Don't allow path, params, or query.
+    if parsed_url.path or parsed_url.params or parsed_url.query:
+        raise Exception("Hostname cannot include path or query parameters.")
+
+    # Build the url again to include changes.
+    return urlunparse(parsed_url)
 
 
 def admin_alert_email(db_session, message: str):
