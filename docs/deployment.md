@@ -126,3 +126,54 @@ Steps:
  - Follow the instructions above for generating a self signed certificate, and then proceed to creating LetsEncrypt
  certificates with `certbot`. _NOTE: The proxy container will not start in production mode if it cannot load
  certificates!_
+
+# Maintaining Farm Profile Authorization
+
+The OAuth2 protocol relies on the concept of using short-lived `access_tokens` for `Authentication` to protected
+resources. These tokens get renewed with `refresh_tokens` that have a longer expiration time (currently 2 weeks in the 
+farmOS server). Additionally, a new `refresh_token` is provided with each request for a new `access_token`. This means 
+that requests must be made to the farmOS server every 2 weeks enable to maintain valid tokens. 
+
+In the context of the farmOS Aggregator an expired `refresh_token` means the associated farm profile must be 
+re-authorized before requests can be made to the farmOS server. Depending how an Aggregator is deployed, authorization 
+would likely require interaction from the farmOS server admin. Fortunately, it is easy to configure a CRON job to "ping"
+all active farmOS servers on a regular basis in order to keep tokens active.
+
+The protected `/api/v1/utils/ping-farms/` endpoint is provided for this use case. Requests can be made by either an 
+Aggregator user, or a pre-configured API key (The API key must have `all_farms` access. No special scope is required). 
+This endpoint will respond with number of (active) farms successfully pinged:
+
+```json
+{
+  "msg":"Pinged 3/4 active farms."
+}
+``` 
+
+ * If successful, the `last_accessed` time on farm profiles should reflect the time a `ping-farms` request was made:
+![CRON Last Accessed](../img/ui/cron_last_accessed.png)
+
+ * If the `AGGREGATOR_ALERT_PING_FARMS_ERRORS` variable is `true`, then this endpoint will alert Aggregator administrators 
+if any farmOS servers do not respond during this request.
+
+## Configuring a CRON job
+An example of a simple bash script:
+
+```shell script
+#!/bin/sh
+
+# Save in file named ping-farms.sh or similar.
+
+# Add pre-configured API key.
+API_KEY="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE1ODU1ODYxMDkuMDQ2NTA2LCJmYXJtX2lkIjpbXSwiYWxsX2Zhcm1zIjp0cnVlLCJzY29wZXMiOlsiZmFybTpyZWFkIl19.TUDUhnwfhBufdQKH_lQWyf19qXA0CAoJTOitbK5kL44"
+
+# POST to the /ping-farms/ endpoint. Trailing slash required.
+curl -X POST "http://localhost/api/v1/utils/ping-farms/" -H "accept: application/json" -H "api-key: $API_KEY"
+```
+
+This script can then be run daily by adding the following CRON job to the CRON tab (Edit the existing CRON tab with 
+`sudo crontab -e` and add the following line):
+```
+# Run the ping-farms.sh script daily at 12AM.
+0 0 * * * bash /path/to/script/ping-farms.sh
+```
+
