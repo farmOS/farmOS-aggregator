@@ -215,6 +215,21 @@ def authorize_farm(
     # Update the scope attribute of the Farm profile to the scope that was just authorized.
     crud.farm.update_scope(db, farm=farm, scope=auth_params.scope)
 
+    # Reconnect to the farmOS server and update farm info.
+    try:
+        farm_client = get_farm_client(db_session=db, farm=farm)
+
+        info = farm_client.info()
+
+        crud.farm.update_info(db, farm=farm, info=info)
+    except Exception as e:
+        error = f"Could not connect to farm after successful Authorization Flow: {e}"
+        crud.farm.update_is_authorized(db, farm_id=farm.id, is_authorized=False, auth_error=error)
+        raise HTTPException(
+            status_code=400,
+            detail=error,
+        )
+
     return token
 
 
