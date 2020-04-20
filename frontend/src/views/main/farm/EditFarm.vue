@@ -165,10 +165,10 @@ export default class EditFarm extends Vue {
       if (this.url !== this.oldUrl) {
         updatedFarm.url = this.url;
       }
-      if (this.notes) {
+      if (this.notes !== null) {
         updatedFarm.notes = this.notes;
       }
-      if (this.tags) {
+      if (this.tags !== null) {
         updatedFarm.tags = this.tags;
       }
 
