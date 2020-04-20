@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
@@ -111,7 +112,7 @@ def update_farm_logs(
 
 @router.delete("/")
 def delete_farm_logs(
-    id: int,
+    id: List[int] = Query(None),
     farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
 ):
@@ -126,9 +127,12 @@ def delete_farm_logs(
             continue
 
         # Make the request.
-        try:
-            data[farm.id].append(farm_client.log.delete(id=id))
-        except:
-            continue
+        for single_id in id:
+            try:
+                result = farm_client.log.delete(id=single_id)
+                data[farm.id].append({single_id: result.json()})
+            except:
+                data[farm.id].append({single_id: "error"})
+                continue
 
     return data
