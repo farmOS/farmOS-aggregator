@@ -1,0 +1,17 @@
+name: Run tests on push and nightly
+on:
+  push:
+    branches:
+      - '*'
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  build:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: Run test.sh
+        run: sh ./scripts/test.sh
