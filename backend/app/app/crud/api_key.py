@@ -40,7 +40,7 @@ def create(db_session: Session, api_key_in: ApiKeyCreate):
 
 def update(db_session: Session, *, api_key: ApiKey, api_key_in: ApiKeyUpdate):
     api_key_data = jsonable_encoder(api_key)
-    update_data = api_key_in.dict(skip_defaults=True)
+    update_data = api_key_in.dict(exclude_unset=True)
     for field in api_key_data:
         if field in update_data:
             setattr(api_key, field, update_data[field])
