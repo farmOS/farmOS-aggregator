@@ -18,16 +18,6 @@ services:
       - '8888:8888'
     volumes:
       - ./backend/app:/app
-  backend-tests:
-    build:
-      context: ./backend
-      dockerfile: tests.dockerfile
-      args:
-        env: dev
-    environment:
-      - JUPYTER=jupyter notebook --ip=0.0.0.0 --allow-root
-    volumes:
-      - ./backend/app:/app
   frontend:
     build:
       context: ./frontend
