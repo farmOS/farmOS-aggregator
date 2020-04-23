@@ -2,7 +2,10 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app import crud
-from app.core.config import settings
+from app.main import app
+from app.core.config import Settings, settings
+from app import utils
+from app.core.jwt import create_farm_api_token
 from app.db.session import db_session
 from app.tests.utils.utils import random_lower_string, get_scope_token_headers
 
@@ -240,14 +243,51 @@ def test_get_farm_by_id(client: TestClient, test_farm, farm_read_headers):
     farm = crud.farm.get_by_id(db_session, farm_id=response['id'])
     assert farm.farm_name == response["farm_name"]
 
-"""
-Skip this test for now. Need more settings to test settingsurable public/private endpoints.
-def test_farm_create_oauth_scope():
-    
 
+def test_farm_create_oauth_scope():
+    def settings_open_registration():
+        return Settings(AGGREGATOR_OPEN_FARM_REGISTRATION=True, AGGREGATOR_INVITE_FARM_REGISTRATION=True)
+
+    def settings_invite_registration():
+        return Settings(AGGREGATOR_OPEN_FARM_REGISTRATION=False, AGGREGATOR_INVITE_FARM_REGISTRATION=True)
+
+    def settings_closed_registration():
+        return Settings(AGGREGATOR_OPEN_FARM_REGISTRATION=False, AGGREGATOR_INVITE_FARM_REGISTRATION=False)
+
+    client = TestClient(app)
+
+    # Disable Open Farm Registration, assert the endpoint is not publicly accessible.
+    app.dependency_overrides[utils.get_settings] = settings_closed_registration
     r = client.post(f"{settings.API_V1_STR}/farms/")
     assert r.status_code == 401
-"""
+
+    # Disable Invite Farm Registration, assert the endpoint is not accessible with access token.
+    token = create_farm_api_token(farm_id=[], scopes=["farm:create", "farm:info"])
+    app.dependency_overrides[utils.get_settings] = settings_closed_registration
+    r = client.post(
+        f"{settings.API_V1_STR}/farms/",
+        headers={"api-token": token.decode("utf-8")}
+    )
+    assert r.status_code == 401
+
+    # Enable Invite Farm Registration, assert the endpoint is not publicly accessible.
+    app.dependency_overrides[utils.get_settings] = settings_invite_registration
+    r = client.post(f"{settings.API_V1_STR}/farms/")
+    assert r.status_code == 401
+
+    # Enable Invite Farm Registration, assert the endpoint is accessible with access token.
+    token = create_farm_api_token(farm_id=[], scopes=["farm:create", "farm:info"])
+    app.dependency_overrides[utils.get_settings] = settings_invite_registration
+    r = client.post(
+        f"{settings.API_V1_STR}/farms/",
+        headers={"api-token": token.decode("utf-8")}
+    )
+    assert r.status_code == 422
+
+    # Enable Open Farm Registration, assert the endpoint is publicly accessible.
+    app.dependency_overrides[utils.get_settings] = settings_open_registration
+    r = client.post(f"{settings.API_V1_STR}/farms/")
+    assert r.status_code == 422
 
 
 def test_farm_read_oauth_scope(client: TestClient):
