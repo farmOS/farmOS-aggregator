@@ -4,7 +4,8 @@ services:
     build:
       context: ./backend
       args:
-        env: dev
+        INSTALL_DEV: ${INSTALL_DEV-true}
+        INSTALL_JUPYTER: ${INSTALL_JUPYTER-true}
     command: /start-reload.sh
     environment:
       - 'JUPYTER=jupyter notebook --ip=0.0.0.0 --allow-root'
