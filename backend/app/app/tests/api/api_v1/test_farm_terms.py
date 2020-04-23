@@ -1,23 +1,21 @@
-import requests
 import pytest
+from fastapi.testclient import TestClient
 
 from app.core.config import settings
-from app.tests.utils.utils import farmOS_testing_server, get_server_api, get_scope_token_headers
+from app.tests.utils.utils import farmOS_testing_server, get_scope_token_headers
 
 
 @pytest.fixture
-def farm_terms_headers():
-    return get_scope_token_headers("farm:read farm.terms")
+def farm_terms_headers(client: TestClient):
+    return get_scope_token_headers(client=client, scopes="farm:read farm.terms")
 
 
 @farmOS_testing_server
-def test_create_term(test_farm, test_term, farm_terms_headers):
-    server_api = get_server_api()
-
+def test_create_term(client: TestClient, test_farm, test_term, farm_terms_headers):
     data = test_term
 
-    response = requests.post(
-        f"{server_api}{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}",
+    response = client.post(
+        f"{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}",
         headers=farm_terms_headers,
         json=data,
     )
@@ -36,8 +34,8 @@ def test_create_term(test_farm, test_term, farm_terms_headers):
     test_term['id'] = created_term_id
 
     # Check that the creats term has correct attributes
-    response = requests.get(
-        f"{server_api}{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
+    response = client.get(
+        f"{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
         headers=farm_terms_headers,
         json=data,
     )
@@ -54,11 +52,9 @@ def test_create_term(test_farm, test_term, farm_terms_headers):
 
 
 @farmOS_testing_server
-def test_get_terms(test_farm, farm_terms_headers):
-    server_api = get_server_api()
-
-    r = requests.get(
-        f"{server_api}{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}",
+def test_get_terms(client: TestClient, test_farm, farm_terms_headers):
+    r = client.get(
+        f"{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}",
         headers=farm_terms_headers,
     )
     # Check response
@@ -83,16 +79,14 @@ def test_get_terms(test_farm, farm_terms_headers):
 
 
 @farmOS_testing_server
-def test_update_term(test_farm, test_term, farm_terms_headers):
-    server_api = get_server_api()
-
+def test_update_term(client: TestClient, test_farm, test_term, farm_terms_headers):
     # Change term attributes
     test_term['name'] = "Updated name from farmOS-aggregator"
     test_term['description'] = "Updated description from farmOS-aggregator"
     data = test_term
 
-    response = requests.put(
-        f"{server_api}{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}",
+    response = client.put(
+        f"{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}",
         headers=farm_terms_headers,
         json=data,
     )
@@ -108,8 +102,8 @@ def test_update_term(test_farm, test_term, farm_terms_headers):
     assert test_term['id'] == str(response_term['id'])
 
     # Check that the updated term has correct attributes
-    response = requests.get(
-        f"{server_api}{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
+    response = client.get(
+        f"{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
         headers=farm_terms_headers,
     )
     # Check response
@@ -125,11 +119,9 @@ def test_update_term(test_farm, test_term, farm_terms_headers):
 
 
 @farmOS_testing_server
-def test_delete_term(test_farm, test_term, farm_terms_headers):
-    server_api = get_server_api()
-
-    response = requests.delete(
-        f"{server_api}{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
+def test_delete_term(client: TestClient, test_farm, test_term, farm_terms_headers):
+    response = client.delete(
+        f"{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
         headers=farm_terms_headers,
     )
 
@@ -139,8 +131,6 @@ def test_delete_term(test_farm, test_term, farm_terms_headers):
 
 
 @farmOS_testing_server
-def test_farm_terms_oauth_scope():
-    server_api = get_server_api()
-
-    r = requests.get(f"{server_api}{settings.API_V1_STR}/farms/terms")
+def test_farm_terms_oauth_scope(client: TestClient):
+    r = client.get(f"{settings.API_V1_STR}/farms/terms")
     assert r.status_code == 401

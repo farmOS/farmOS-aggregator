@@ -1,8 +1,8 @@
 import random
 import string
 
-import requests
 import pytest
+from fastapi.testclient import TestClient
 
 from app.core.config import settings
 from app.schemas.api_key import ApiKeyCreate
@@ -18,19 +18,13 @@ def random_lower_string():
     return "".join(random.choices(string.ascii_lowercase, k=32))
 
 
-def get_server_api():
-    server_name = f"http://{settings.SERVER_NAME}"
-    return server_name
-
-
-def get_superuser_token_headers():
-    server_api = get_server_api()
+def get_superuser_token_headers(client: TestClient):
     login_data = {
         "username": settings.FIRST_SUPERUSER,
         "password": settings.FIRST_SUPERUSER_PASSWORD,
     }
-    r = requests.post(
-        f"{server_api}{settings.API_V1_STR}/login/access-token", data=login_data
+    r = client.post(
+        f"{settings.API_V1_STR}/login/access-token", data=login_data
     )
     tokens = r.json()
     a_token = tokens["access_token"]
@@ -39,23 +33,22 @@ def get_superuser_token_headers():
     return headers
 
 
-def get_all_scopes_token_headers():
-    return _create_headers_with_scopes("farm:create farm:read farm:update farm:delete farm:authorize farm.info farm.logs farm.assets farm.terms farm.areas")
+def get_all_scopes_token_headers(client: TestClient):
+    return _create_headers_with_scopes(client=client, scopes="farm:create farm:read farm:update farm:delete farm:authorize farm.info farm.logs farm.assets farm.terms farm.areas")
 
 
-def get_scope_token_headers(scopes):
-    return _create_headers_with_scopes(scopes)
+def get_scope_token_headers(client: TestClient, scopes):
+    return _create_headers_with_scopes(client, scopes)
 
 
-def _create_headers_with_scopes(scopes):
-    server_api = get_server_api()
+def _create_headers_with_scopes(client: TestClient, scopes):
     login_data = {
         "username": settings.FIRST_SUPERUSER,
         "password": settings.FIRST_SUPERUSER_PASSWORD,
         "scope": scopes,
     }
-    r = requests.post(
-        f"{server_api}{settings.API_V1_STR}/login/access-token", data=login_data
+    r = client.post(
+        f"{settings.API_V1_STR}/login/access-token", data=login_data
     )
     tokens = r.json()
     a_token = tokens["access_token"]
@@ -63,11 +56,10 @@ def _create_headers_with_scopes(scopes):
     return headers
 
 
-def get_api_key_headers(api_key_params: ApiKeyCreate):
-    server_api = get_server_api()
-    r = requests.post(
-        f"{server_api}{settings.API_V1_STR}/api-keys",
-        headers=get_superuser_token_headers(),
+def get_api_key_headers(client: TestClient, api_key_params: ApiKeyCreate):
+    r = client.post(
+        f"{settings.API_V1_STR}/api-keys/",
+        headers=get_superuser_token_headers(client=client),
         data=api_key_params.json()
     )
     api_key = r.json()

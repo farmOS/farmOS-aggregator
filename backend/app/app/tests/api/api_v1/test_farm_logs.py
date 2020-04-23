@@ -1,21 +1,19 @@
-import requests
 import pytest
+from fastapi.testclient import TestClient
 
 from app.core.config import settings
-from app.tests.utils.utils import farmOS_testing_server, get_server_api, get_scope_token_headers
+from app.tests.utils.utils import farmOS_testing_server, get_scope_token_headers
 
 
 @pytest.fixture
-def farm_logs_headers():
-    return get_scope_token_headers("farm:read farm.logs")
+def farm_logs_headers(client: TestClient):
+    return get_scope_token_headers(client=client, scopes="farm:read farm.logs")
 
 
 @farmOS_testing_server
-def test_get_logs(test_farm, farm_logs_headers):
-    server_api = get_server_api()
-
-    r = requests.get(
-        f"{server_api}{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
+def test_get_logs(client: TestClient, test_farm, farm_logs_headers):
+    r = client.get(
+        f"{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
         headers=farm_logs_headers,
     )
     # Check response
@@ -40,13 +38,11 @@ def test_get_logs(test_farm, farm_logs_headers):
 
 
 @farmOS_testing_server
-def test_create_log(test_farm, test_log, farm_logs_headers):
-    server_api = get_server_api()
-
+def test_create_log(client: TestClient, test_farm, test_log, farm_logs_headers):
     data = test_log
 
-    response = requests.post(
-        f"{server_api}{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
+    response = client.post(
+        f"{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
         headers=farm_logs_headers,
         json=data,
     )
@@ -65,8 +61,8 @@ def test_create_log(test_farm, test_log, farm_logs_headers):
     test_log['id'] = created_log_id
 
     # Check that the created log has correct attributes
-    response = requests.get(
-        f"{server_api}{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
+    response = client.get(
+        f"{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
         headers=farm_logs_headers,
         json=data,
     )
@@ -83,16 +79,14 @@ def test_create_log(test_farm, test_log, farm_logs_headers):
 
 
 @farmOS_testing_server
-def test_update_log(test_farm, test_log, farm_logs_headers):
-    server_api = get_server_api()
-
+def test_update_log(client: TestClient, test_farm, test_log, farm_logs_headers):
     # Change log attributes
     test_log['name'] = "Updated name from farmOS-aggregator"
     test_log['done'] = False
     data = test_log
 
-    response = requests.put(
-        f"{server_api}{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
+    response = client.put(
+        f"{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
         headers=farm_logs_headers,
         json=data,
     )
@@ -108,8 +102,8 @@ def test_update_log(test_farm, test_log, farm_logs_headers):
     assert test_log['id'] == str(response_log['id'])
 
     # Check that the updated log has correct attributes
-    response = requests.get(
-        f"{server_api}{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
+    response = client.get(
+        f"{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
         headers=farm_logs_headers,
     )
     # Check response
@@ -125,11 +119,9 @@ def test_update_log(test_farm, test_log, farm_logs_headers):
 
 
 @farmOS_testing_server
-def test_delete_log(test_farm, test_log, farm_logs_headers):
-    server_api = get_server_api()
-
-    response = requests.delete(
-        f"{server_api}{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
+def test_delete_log(client: TestClient, test_farm, test_log, farm_logs_headers):
+    response = client.delete(
+        f"{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
         headers=farm_logs_headers,
     )
 
@@ -139,8 +131,6 @@ def test_delete_log(test_farm, test_log, farm_logs_headers):
 
 
 @farmOS_testing_server
-def test_farm_logs_oauth_scope():
-    server_api = get_server_api()
-
-    r = requests.get(f"{server_api}{settings.API_V1_STR}/farms/logs")
+def test_farm_logs_oauth_scope(client: TestClient):
+    r = client.get(f"{settings.API_V1_STR}/farms/logs")
     assert r.status_code == 401
