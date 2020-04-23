@@ -190,11 +190,12 @@ def get_api_key_farm_access(
 
 def get_api_token_farm_access(
     security_scopes: SecurityScopes,
+    settings=Depends(get_settings),
     api_token: str = Security(api_token_header),
 ):
-    if api_token is None:
-        return None
-    else:
+    # Right now, api-tokens are only used for Invite Farm Registration (if enabled)
+    # Don't authorize requests with valid api-tokens if this setting is not enabled.
+    if settings.AGGREGATOR_INVITE_FARM_REGISTRATION and api_token is not None:
         try:
             token_data = _validate_token(api_token)
         except (PyJWTError, ValidationError) as e:
@@ -211,6 +212,8 @@ def get_api_token_farm_access(
                 )
 
         return FarmAccess(scopes=token_data.scopes, farm_id_list=token_data.farm_id, all_farms=False)
+
+    return None
 
 
 def get_farm_access(
