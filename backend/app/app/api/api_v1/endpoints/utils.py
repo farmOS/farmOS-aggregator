@@ -9,15 +9,13 @@ from farmOS import farmOS
 
 from app import crud
 from app.api.utils.db import get_db
-from app.core.config import settings
-from app.api.utils.security import get_current_active_superuser
 from app.schemas.msg import Msg
-from app.schemas.user import UserInDB
 from app.schemas.farm import Farm
 from app.schemas.farm_token import FarmTokenCreate, FarmAuthorizationParams
 from app.api.utils.farms import get_farm_by_id, get_oauth_token, get_farm_client, admin_alert_email, ClientError
 from app.api.utils.security import get_farm_access, get_farm_access_allow_public
 from app.utils import (
+    get_settings,
     generate_farm_registration_link,
     send_farm_registration_email,
     generate_farm_authorization_link,
@@ -36,7 +34,8 @@ router = APIRouter()
     status_code=200
 )
 def ping_farms(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    settings=Depends(get_settings),
 ):
     """
     Ping all active farms.
@@ -121,6 +120,7 @@ def authorize_farm(
         db: Session = Depends(get_db),
         farm_url: str = Body(...),
         auth_params: FarmAuthorizationParams,
+        settings=Depends(get_settings)
 ):
     """
     Authorize a new farm. Complete the OAuth Authorization Flow.

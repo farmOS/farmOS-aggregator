@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from app import crud
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_user
-from app.core.config import settings
 from app.core.jwt import create_access_token
 from app.core.security import get_password_hash
 from app.models.user import User as DBUser
@@ -16,6 +15,7 @@ from app.schemas.msg import Msg
 from app.schemas.token import Token
 from app.schemas.user import User
 from app.utils import (
+    get_settings,
     generate_password_reset_token,
     send_reset_password_email,
     verify_password_reset_token,
@@ -28,7 +28,9 @@ router = APIRouter()
 
 @router.post("/login/access-token", response_model=Token, tags=["login"])
 def login_access_token(
-    db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
+        db: Session = Depends(get_db),
+        settings=Depends(get_settings),
+        form_data: OAuth2PasswordRequestForm = Depends(),
 ):
     """
     OAuth2 compatible token login, get an access token for future requests

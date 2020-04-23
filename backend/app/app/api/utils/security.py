@@ -8,14 +8,16 @@ from starlette.status import HTTP_403_FORBIDDEN, HTTP_401_UNAUTHORIZED
 from pydantic import BaseModel, ValidationError
 
 from app import crud
+from app.utils import get_settings
 from app.api.utils.db import get_db
-from app.core.config import settings
 from app.core.jwt import ALGORITHM
 from app.models.user import User
 from app.schemas.token import TokenData, FarmAccess
 
 
 logger = logging.getLogger(__name__)
+
+settings = get_settings()
 
 oauth_scopes = {
     "farm:create": "Create farm profiles",
@@ -241,6 +243,7 @@ def get_farm_access(
 
 
 def get_farm_access_allow_public(
+    settings=Depends(get_settings),
     user_access: dict = Depends(get_current_user_farm_access),
     api_token_access: dict = Depends(get_api_token_farm_access),
     api_key_access: dict = Depends(get_api_key_farm_access)

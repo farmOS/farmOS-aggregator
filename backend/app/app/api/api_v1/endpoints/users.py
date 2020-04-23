@@ -8,10 +8,9 @@ from sqlalchemy.orm import Session
 from app import crud
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
-from app.core.config import settings
 from app.models.user import User as DBUser
 from app.schemas.user import User, UserCreate, UserInDB, UserUpdate
-from app.utils import send_new_account_email
+from app.utils import get_settings, send_new_account_email
 
 router = APIRouter()
 
@@ -34,6 +33,7 @@ def read_users(
 def create_user(
     *,
     db: Session = Depends(get_db),
+    settings=Depends(get_settings),
     user_in: UserCreate,
     current_user: DBUser = Depends(get_current_active_superuser),
 ):
@@ -93,6 +93,7 @@ def read_user_me(
 def create_user_open(
     *,
     db: Session = Depends(get_db),
+    settings=Depends(get_settings),
     password: str = Body(...),
     email: EmailStr = Body(...),
     full_name: str = Body(None),

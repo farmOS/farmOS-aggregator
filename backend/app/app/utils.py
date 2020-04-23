@@ -1,4 +1,5 @@
 import logging
+from functools import lru_cache
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
@@ -10,11 +11,19 @@ from jwt.exceptions import InvalidTokenError
 from fastapi import HTTPException
 from starlette.status import HTTP_403_FORBIDDEN
 
-from app.core.config import settings
+from app.core import config
 from app.core.jwt import create_farm_api_token
 from app.schemas.farm import FarmBase
 
 password_reset_jwt_subject = "preset"
+
+
+@lru_cache()
+def get_settings():
+    return config.Settings()
+
+
+settings = get_settings()
 
 
 def send_email(email_to: str, subject_template="", html_template="", environment={}):
@@ -172,7 +181,6 @@ def generate_farm_authorization_link(farm_id):
     token = create_farm_api_token(farm_id=[farm_id], scopes=["farm:read", "farm:authorize", "farm.info"])
 
     server_host = settings.SERVER_HOST
-    api_path = settings.API_V1_STR
     link = f"{server_host}/authorize-farm/?farm_id={farm_id}&api_token={token.decode()}"
 
     return link
@@ -182,7 +190,6 @@ def generate_farm_registration_link():
     token = create_farm_api_token(farm_id=[], scopes=["farm:create", "farm:info"])
 
     server_host = settings.SERVER_HOST
-    api_path = settings.API_V1_STR
     link = f"{server_host}/register-farm?api_token={token.decode()}"
 
     return link

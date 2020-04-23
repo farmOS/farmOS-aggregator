@@ -14,16 +14,17 @@ from farmOS.config import ClientConfig
 
 from app import crud
 from app.api.utils.db import get_db
-from app.core.config import settings
 from app.schemas.farm_token import FarmTokenBase, FarmTokenCreate
 from app.crud.farm_token import create_farm_token, update_farm_token
 from app.schemas.farm import Farm, FarmUpdate
 from app.schemas.token import FarmAccess
 from app.api.utils.security import get_farm_access
-from app.utils import send_admin_alert_email
+from app.utils import get_settings, send_admin_alert_email
 
 
 logger = logging.getLogger(__name__)
+
+settings = get_settings()
 
 unauthorized_exception = HTTPException(
     status_code = HTTP_401_UNAUTHORIZED,

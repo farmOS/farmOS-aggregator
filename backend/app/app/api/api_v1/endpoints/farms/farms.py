@@ -4,8 +4,8 @@ from fastapi import APIRouter, Body, Depends, Security, HTTPException, Query
 from sqlalchemy.orm import Session
 
 
-from app.core.config import settings
 from app import crud
+from app.utils import get_settings
 from app.api.utils.db import get_db
 from app.api.utils.farms import get_farms_url_or_list, get_farm_by_id, admin_alert_email
 from app.api.utils.security import get_farm_access, get_farm_access_allow_public
@@ -52,7 +52,8 @@ def read_farm_by_id(
 async def create_farm(
     *,
     db: Session = Depends(get_db),
-    farm_in: FarmCreate
+    settings=Depends(get_settings),
+    farm_in: FarmCreate,
 ):
     """
     Create new farm
