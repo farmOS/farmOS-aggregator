@@ -11,7 +11,12 @@ from app.db.session import Session
 # Configure logging. Change INFO to DEBUG for development logging.
 logging.basicConfig(level=logging.INFO)
 
-app = FastAPI(title=settings.AGGREGATOR_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json")
+app = FastAPI(
+    title=settings.AGGREGATOR_NAME,
+    description="farmOS Aggregator Backend",
+    version="v0.9.5",
+    openapi_url=f"{settings.API_V1_STR}/openapi.json"
+)
 
 # Set all CORS enabled origins
 if settings.BACKEND_CORS_ORIGINS:
