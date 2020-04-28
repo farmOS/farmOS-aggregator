@@ -47,6 +47,7 @@ def ping_farms(
         try:
             farm_client = get_farm_client(db_session=db, farm=farm)
             info = farm_client.info()
+            crud.farm.update_info(db, farm=farm, info=info)
             total_response += 1
         except Exception as e:
             continue
