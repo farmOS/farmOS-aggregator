@@ -140,6 +140,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { readUserProfile } from '@/store/main/getters';
+import { dispatchGetFarms } from '@/store/farm/actions';
 import FarmRequestRegistrationDialog from '@/components/FarmRequestRegistrationDialog.vue';
 import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
 import {readFarms} from '@/store/farm/getters';
@@ -155,6 +156,7 @@ export default class Dashboard extends Vue {
   public unauthorizedFarms: number = 0;
 
   public async mounted() {
+      await dispatchGetFarms(this.$store);
       this.totalFarms = this.farms.length;
       this.activeFarms = this.farms.filter((farm) => farm.active).length;
       this.inactiveFarms = this.farms.filter((farm) => !farm.active).length;
