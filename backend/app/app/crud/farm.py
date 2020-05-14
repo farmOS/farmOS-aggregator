@@ -38,11 +38,11 @@ def get_by_url(db_session: Session, *, farm_url: str, active: bool = None):
         return db_session.query(Farm).filter(Farm.url == farm_url).first()
 
 
-def get_multi(db_session: Session, *, skip=0, limit=100, active: bool = None) -> List[Optional[Farm]]:
+def get_multi(db_session: Session, *, active: bool = None) -> List[Optional[Farm]]:
     if active is not None:
-        return db_session.query(Farm).filter(Farm.active.is_(active)).offset(skip).limit(limit).all()
+        return db_session.query(Farm).filter(Farm.active.is_(active)).all()
     else:
-        return db_session.query(Farm).offset(skip).limit(limit).all()
+        return db_session.query(Farm).all()
 
 
 def create(db_session: Session, *, farm_in: FarmCreate) -> Farm:
