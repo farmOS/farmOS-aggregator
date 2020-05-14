@@ -197,6 +197,26 @@ def _save_token(token, db_session=None, farm=None):
             crud.farm.update_scope(db_session, farm=farm, scope=token['scope'])
 
 
+# Helper function that pings all active farms.
+def handle_ping_farms(db: Session, settings):
+    farm_list = crud.farm.get_multi(db, active=True)
+
+    total_response = 0
+    for farm in farm_list:
+        try:
+            farm_client = get_farm_client(db_session=db, farm=farm)
+            info = farm_client.info()
+            crud.farm.update_info(db, farm=farm, info=info)
+            total_response += 1
+        except Exception as e:
+            continue
+
+    difference = len(farm_list) - total_response
+    if difference > 0 and settings.AGGREGATOR_ALERT_PING_FARMS_ERRORS:
+        admin_alert_email(db_session=db,
+                          message=f"Pinged {total_response}/{len(farm_list)} active farms. {difference} did not respond. Check the list of farm profiles for authorization status errors.")
+
+
 # Create a farmOS.py client.
 def get_farm_client(db_session, farm):
     client_id = settings.AGGREGATOR_OAUTH_CLIENT_ID

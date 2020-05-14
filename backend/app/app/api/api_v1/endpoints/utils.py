@@ -2,7 +2,7 @@ import os
 import logging
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, Security, HTTPException, Body
+from fastapi import APIRouter, BackgroundTasks, Depends, Security, HTTPException, Body
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
 from farmOS import farmOS
@@ -12,7 +12,7 @@ from app.api.utils.db import get_db
 from app.schemas.msg import Msg
 from app.schemas.farm import Farm
 from app.schemas.farm_token import FarmTokenCreate, FarmAuthorizationParams
-from app.api.utils.farms import get_farm_by_id, get_oauth_token, get_farm_client, admin_alert_email, ClientError
+from app.api.utils.farms import get_farm_by_id, get_oauth_token, get_farm_client, handle_ping_farms
 from app.api.utils.security import get_farm_access, get_farm_access_allow_public
 from app.utils import (
     get_settings,
@@ -34,29 +34,15 @@ router = APIRouter()
     status_code=200
 )
 def ping_farms(
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     settings=Depends(get_settings),
 ):
     """
     Ping all active farms.
     """
-    farm_list = crud.farm.get_multi(db, active=True)
-
-    total_response = 0
-    for farm in farm_list:
-        try:
-            farm_client = get_farm_client(db_session=db, farm=farm)
-            info = farm_client.info()
-            crud.farm.update_info(db, farm=farm, info=info)
-            total_response += 1
-        except Exception as e:
-            continue
-
-    difference = len(farm_list) - total_response
-    if difference > 0 and settings.AGGREGATOR_ALERT_PING_FARMS_ERRORS:
-        admin_alert_email(db_session=db, message=f"Pinged {total_response}/{len(farm_list)} active farms. {difference} did not respond. Check the list of farm profiles for authorization status errors.")
-
-    return {"msg": f"Pinged {total_response}/{len(farm_list)} active farms."}
+    background_tasks.add_task(handle_ping_farms, db, settings)
+    return {"msg": f"Created background task to ping farms."}
 
 
 @router.post(
