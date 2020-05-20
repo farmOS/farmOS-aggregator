@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 
@@ -33,7 +33,10 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.middleware("http")
 async def db_session_middleware(request: Request, call_next):
-    request.state.db = Session()
-    response = await call_next(request)
-    request.state.db.close()
+    response = Response("Internal server error", status_code=500)
+    try:
+        request.state.db = Session()
+        response = await call_next(request)
+    finally:
+        request.state.db.close()
     return response
