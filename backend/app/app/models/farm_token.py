@@ -7,11 +7,11 @@ from app.db.base_class import Base
 class FarmToken(Base):
     __tablename__ = 'farmtoken'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
     access_token = Column(String)
     expires_in = Column(String)
     refresh_token = Column(String)
     expires_at = Column(String)
 
-    farm_id = Column(Integer, ForeignKey("farm.id"), unique=True)
+    farm_id = Column(Integer, ForeignKey("farm.id"), unique=True, index=True)
     farm = relationship("Farm", uselist=False, back_populates="token")
