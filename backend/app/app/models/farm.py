@@ -29,6 +29,6 @@ class Farm(Base):
     info = Column(JSONB, nullable=True)
 
     is_authorized = Column(Boolean, default=False)
-    token = relationship("FarmToken", uselist=False, back_populates="farm")
+    token = relationship("FarmToken", uselist=False, back_populates="farm", lazy='joined')
     auth_error = Column(String, nullable=True)
 
