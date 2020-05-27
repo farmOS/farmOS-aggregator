@@ -1,11 +1,12 @@
+from sqlalchemy.orm import Session
+
 from app.core.config import settings
 from app import crud
-from app.db.session import db_session
 from app.schemas.farm import FarmCreate, FarmUpdate
 from app.tests.utils.utils import random_lower_string
 
 
-def test_create_delete_default_farm_with_token():
+def test_create_delete_default_farm_with_token(db: Session):
     """Leave the active flag unset. Test form correct system default flag."""
 
     farm_name = random_lower_string()
@@ -24,7 +25,7 @@ def test_create_delete_default_farm_with_token():
         url=url,
         token=token,
     )
-    farm = crud.farm.create(db_session, farm_in=farm_in)
+    farm = crud.farm.create(db, farm_in=farm_in)
     assert farm.farm_name == farm_name
     assert farm.url == url
 
@@ -41,12 +42,12 @@ def test_create_delete_default_farm_with_token():
     assert farm.token.expires_in == token['expires_in']
 
     # Remove farm from DB
-    crud.farm.delete(db_session, farm_id=farm.id)
-    farm = crud.farm.get_by_id(db_session, farm_id=farm.id)
+    crud.farm.delete(db, farm_id=farm.id)
+    farm = crud.farm.get_by_id(db, farm_id=farm.id)
     assert farm is None
 
 
-def test_create_farm_update_token():
+def test_create_farm_update_token(db: Session):
     """Update the token after farm is created."""
 
     farm_name = random_lower_string()
@@ -56,7 +57,7 @@ def test_create_farm_update_token():
         farm_name=farm_name,
         url=url,
     )
-    farm = crud.farm.create(db_session, farm_in=farm_in)
+    farm = crud.farm.create(db, farm_in=farm_in)
     assert farm.farm_name == farm_name
     assert farm.url == url
     assert farm.token is None
@@ -77,7 +78,7 @@ def test_create_farm_update_token():
     farm_update = FarmUpdate(
         token=new_token,
     )
-    farm = crud.farm.update(db_session, farm=farm, farm_in=farm_update)
+    farm = crud.farm.update(db, farm=farm, farm_in=farm_update)
     assert farm.farm_name == farm_name
     assert farm.url == url
 
@@ -99,7 +100,7 @@ def test_create_farm_update_token():
     farm_update = FarmUpdate(
         token=new_token,
     )
-    farm = crud.farm.update(db_session, farm=farm, farm_in=farm_update)
+    farm = crud.farm.update(db, farm=farm, farm_in=farm_update)
     assert farm.farm_name == farm_name
     assert farm.url == url
 
@@ -111,12 +112,12 @@ def test_create_farm_update_token():
     assert farm.token.expires_in == new_token['expires_in']
 
     # Remove farm from DB
-    crud.farm.delete(db_session, farm_id=farm.id)
-    farm = crud.farm.get_by_id(db_session, farm_id=farm.id)
+    crud.farm.delete(db, farm_id=farm.id)
+    farm = crud.farm.get_by_id(db, farm_id=farm.id)
     assert farm is None
 
 
-def test_create_farm_cant_delete_token():
+def test_create_farm_cant_delete_token(db: Session):
     """Ensure that the token cannot be removed when None is supplied."""
 
     farm_name = random_lower_string()
@@ -135,7 +136,7 @@ def test_create_farm_cant_delete_token():
         url=url,
         token=token,
     )
-    farm = crud.farm.create(db_session, farm_in=farm_in)
+    farm = crud.farm.create(db, farm_in=farm_in)
     assert farm.farm_name == farm_name
     assert farm.url == url
 
@@ -154,7 +155,7 @@ def test_create_farm_cant_delete_token():
     farm_update = FarmUpdate(
         token=None,
     )
-    farm = crud.farm.update(db_session, farm=farm, farm_in=farm_update)
+    farm = crud.farm.update(db, farm=farm, farm_in=farm_update)
     assert farm.farm_name == farm_name
     assert farm.url == url
 
@@ -166,12 +167,12 @@ def test_create_farm_cant_delete_token():
     assert farm.token.expires_in == token['expires_in']
 
     # Remove farm from DB
-    crud.farm.delete(db_session, farm_id=farm.id)
-    farm = crud.farm.get_by_id(db_session, farm_id=farm.id)
+    crud.farm.delete(db, farm_id=farm.id)
+    farm = crud.farm.get_by_id(db, farm_id=farm.id)
     assert farm is None
 
 
-def test_create_delete_active_farm():
+def test_create_delete_active_farm(db: Session):
     """settingsure the active flag to True."""
 
     farm_name = random_lower_string()
@@ -181,18 +182,18 @@ def test_create_delete_active_farm():
         url=url,
         active=True,
     )
-    farm = crud.farm.create(db_session, farm_in=farm_in)
+    farm = crud.farm.create(db, farm_in=farm_in)
     assert farm.farm_name == farm_name
     assert farm.url == url
     assert farm.active is True
 
     # Remove farm from DB
-    crud.farm.delete(db_session, farm_id=farm.id)
-    farm = crud.farm.get_by_id(db_session, farm_id=farm.id)
+    crud.farm.delete(db, farm_id=farm.id)
+    farm = crud.farm.get_by_id(db, farm_id=farm.id)
     assert farm is None
 
 
-def test_create_delete_inactive_farm():
+def test_create_delete_inactive_farm(db: Session):
     """settingsure the active flag to False."""
 
     farm_name = random_lower_string()
@@ -202,12 +203,12 @@ def test_create_delete_inactive_farm():
         url=url,
         active=False,
     )
-    farm = crud.farm.create(db_session, farm_in=farm_in)
+    farm = crud.farm.create(db, farm_in=farm_in)
     assert farm.farm_name == farm_name
     assert farm.url == url
     assert farm.active is False
 
     # Remove farm from DB
-    crud.farm.delete(db_session, farm_id=farm.id)
-    farm = crud.farm.get_by_id(db_session, farm_id=farm.id)
+    crud.farm.delete(db, farm_id=farm.id)
+    farm = crud.farm.get_by_id(db, farm_id=farm.id)
     assert farm is None

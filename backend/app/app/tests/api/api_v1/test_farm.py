@@ -1,12 +1,12 @@
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
 
 from app import crud
 from app.main import app
 from app.core.config import Settings, settings
 from app import utils
 from app.core.jwt import create_farm_api_token
-from app.db.session import db_session
 from app.tests.utils.utils import random_lower_string, get_scope_token_headers
 
 
@@ -30,7 +30,7 @@ def farm_delete_headers(client: TestClient):
     return get_scope_token_headers(client=client, scopes="farm:delete")
 
 
-def test_create_delete_farm(client: TestClient, farm_create_headers, farm_delete_headers):
+def test_create_delete_farm(client: TestClient, db: Session, farm_create_headers, farm_delete_headers):
     farm_name = random_lower_string()
     url = 'test.farmos.net'
 
@@ -56,7 +56,7 @@ def test_create_delete_farm(client: TestClient, farm_create_headers, farm_delete
     )
     assert 200 <= r.status_code < 300
     created_farm = r.json()
-    farm = crud.farm.get_by_id(db_session, farm_id=created_farm['id'])
+    farm = crud.farm.get_by_id(db, farm_id=created_farm['id'])
 
     # Check that submitted values match those returned, and in db
     assert farm.farm_name == created_farm["farm_name"] == data['farm_name']
@@ -78,7 +78,7 @@ def test_create_delete_farm(client: TestClient, farm_create_headers, farm_delete
     assert 200 <= r.status_code < 300
 
 
-def test_create_farm_update_token(client: TestClient, farm_create_headers, farm_update_headers, farm_delete_headers):
+def test_create_farm_update_token(client: TestClient, db: Session, farm_create_headers, farm_update_headers, farm_delete_headers):
     farm_name = random_lower_string()
     url = 'test.farmos.net'
 
@@ -95,7 +95,7 @@ def test_create_farm_update_token(client: TestClient, farm_create_headers, farm_
     )
     assert 200 <= r.status_code < 300
     created_farm = r.json()
-    farm = crud.farm.get_by_id(db_session, farm_id=created_farm['id'])
+    farm = crud.farm.get_by_id(db, farm_id=created_farm['id'])
 
     # Check that submitted values match those returned, and in db
     assert farm.farm_name == created_farm["farm_name"] == data['farm_name']
@@ -121,8 +121,8 @@ def test_create_farm_update_token(client: TestClient, farm_create_headers, farm_
     assert 200 <= r.status_code < 300
     updated_farm = r.json()
     # Refresh the object that was loaded previously
-    db_session.refresh(farm)
-    farm = crud.farm.get_by_id(db_session, farm_id=updated_farm['id'])
+    db.refresh(farm)
+    farm = crud.farm.get_by_id(db, farm_id=updated_farm['id'])
 
     assert farm.farm_name == updated_farm["farm_name"]
     assert farm.url == updated_farm["url"]
@@ -143,7 +143,7 @@ def test_create_farm_update_token(client: TestClient, farm_create_headers, farm_
     assert 200 <= r.status_code < 300
 
 
-def test_create_farm_delete_token(client: TestClient, farm_create_headers, farm_update_headers, farm_delete_headers):
+def test_create_farm_delete_token(client: TestClient, db: Session, farm_create_headers, farm_update_headers, farm_delete_headers):
     farm_name = random_lower_string()
     url = 'test.farmos.net'
 
@@ -169,7 +169,7 @@ def test_create_farm_delete_token(client: TestClient, farm_create_headers, farm_
     )
     assert 200 <= r.status_code < 300
     created_farm = r.json()
-    farm = crud.farm.get_by_id(db_session, farm_id=created_farm['id'])
+    farm = crud.farm.get_by_id(db, farm_id=created_farm['id'])
 
     # Check that submitted values match those returned, and in db
     assert farm.farm_name == created_farm["farm_name"] == data['farm_name']
@@ -197,8 +197,8 @@ def test_create_farm_delete_token(client: TestClient, farm_create_headers, farm_
     assert 200 <= r.status_code < 300
     updated_farm = r.json()
     # Refresh the object that was loaded previously
-    db_session.refresh(farm)
-    farm = crud.farm.get_by_id(db_session, farm_id=updated_farm['id'])
+    db.refresh(farm)
+    farm = crud.farm.get_by_id(db, farm_id=updated_farm['id'])
 
     assert farm.farm_name == updated_farm["farm_name"]
     assert farm.url == updated_farm["url"]
@@ -219,7 +219,7 @@ def test_create_farm_delete_token(client: TestClient, farm_create_headers, farm_
     assert 200 <= r.status_code < 300
 
 
-def test_get_all_farms(client: TestClient, test_farm, farm_read_headers):
+def test_get_all_farms(client: TestClient, db: Session, test_farm, farm_read_headers):
     farm_id = test_farm.id
     r = client.get(
         f"{settings.API_V1_STR}/farms/",
@@ -228,11 +228,11 @@ def test_get_all_farms(client: TestClient, test_farm, farm_read_headers):
     assert 200 <= r.status_code < 300
     response = r.json()
     first_id = response[0]['id']
-    farm = crud.farm.get_by_id(db_session, farm_id=first_id)
+    farm = crud.farm.get_by_id(db, farm_id=first_id)
     assert farm.farm_name == response[0]["farm_name"]
 
 
-def test_get_farm_by_id(client: TestClient, test_farm, farm_read_headers):
+def test_get_farm_by_id(client: TestClient, db: Session, test_farm, farm_read_headers):
     farm_id = test_farm.id
     r = client.get(
         f"{settings.API_V1_STR}/farms/{farm_id}",
@@ -240,7 +240,7 @@ def test_get_farm_by_id(client: TestClient, test_farm, farm_read_headers):
     )
     assert 200 <= r.status_code < 300
     response = r.json()
-    farm = crud.farm.get_by_id(db_session, farm_id=response['id'])
+    farm = crud.farm.get_by_id(db, farm_id=response['id'])
     assert farm.farm_name == response["farm_name"]
 
 

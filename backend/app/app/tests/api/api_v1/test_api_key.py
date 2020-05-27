@@ -1,8 +1,8 @@
 from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
 
 from app import crud
 from app.core.config import settings
-from app.db.session import db_session
 from app.tests.utils.utils import random_lower_string, get_api_key_headers
 from app.schemas.api_key import ApiKeyCreate, ApiKeyUpdate
 
@@ -78,7 +78,7 @@ def test_get_api_keys(client: TestClient, superuser_token_headers):
     assert current_user["email"] == settings.FIRST_SUPERUSER
 
 
-def test_read_farms_all_farms_api_key(client: TestClient, test_farm):
+def test_read_farms_all_farms_api_key(client: TestClient, db: Session, test_farm):
     test_api_key = ApiKeyCreate(
         name="Test Key",
         enabled=True,
@@ -93,11 +93,11 @@ def test_read_farms_all_farms_api_key(client: TestClient, test_farm):
     )
     assert 200 <= r.status_code < 300
     response = r.json()
-    farm = crud.farm.get_by_id(db_session, farm_id=response['id'])
+    farm = crud.farm.get_by_id(db, farm_id=response['id'])
     assert farm.farm_name == response["farm_name"]
 
 
-def test_read_farms_one_farm_id_api_key(client: TestClient, test_farm):
+def test_read_farms_one_farm_id_api_key(client: TestClient, db: Session, test_farm):
     test_api_key = ApiKeyCreate(
         name="Test Key",
         enabled=True,
@@ -112,7 +112,7 @@ def test_read_farms_one_farm_id_api_key(client: TestClient, test_farm):
     )
     assert 200 <= r.status_code < 300
     response = r.json()
-    farm = crud.farm.get_by_id(db_session, farm_id=response['id'])
+    farm = crud.farm.get_by_id(db, farm_id=response['id'])
     assert farm.farm_name == response["farm_name"]
 
 
