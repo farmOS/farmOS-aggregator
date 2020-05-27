@@ -1,3 +1,5 @@
+import logging
+
 from app.db.session import SessionLocal
 
 
@@ -7,6 +9,8 @@ from app.db.session import SessionLocal
 def get_db():
     db = SessionLocal()
     try:
+        logging.debug('Creating DB Session.')
         yield db
     finally:
+        logging.debug('Closing DB Session.')
         db.close()
