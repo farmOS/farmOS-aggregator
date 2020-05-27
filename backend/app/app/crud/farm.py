@@ -132,6 +132,9 @@ def update_info(db_session: Session, *, farm: Farm, info: FarmInfo):
 
 def delete(db_session: Session, *, farm_id: int):
     farm = get_by_id(db_session=db_session, farm_id=farm_id)
+    token = crud.farm_token.get_farm_token(db_session, farm.id)
+    if token:
+        db_session.delete(token)
     db_session.delete(farm)
     db_session.commit()
 
