@@ -6,7 +6,6 @@ from starlette.requests import Request
 
 from app.api.api_v1.api import api_router
 from app.core.config import settings
-from app.db.session import Session
 
 # Configure logging. Change INFO to DEBUG for development logging.
 logging.basicConfig(level=logging.INFO)
@@ -29,14 +28,3 @@ if settings.BACKEND_CORS_ORIGINS:
     ),
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
-
-
-@app.middleware("http")
-async def db_session_middleware(request: Request, call_next):
-    response = Response("Internal server error", status_code=500)
-    try:
-        request.state.db = Session()
-        response = await call_next(request)
-    finally:
-        request.state.db.close()
-    return response
