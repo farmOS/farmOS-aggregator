@@ -66,7 +66,7 @@ async def create_farm(
         )
 
     if settings.AGGREGATOR_ALERT_NEW_FARMS:
-        admin_alert_email(db_session=db, message="New farm created: " + farm_in.farm_name + " - " + farm_in.url)
+        admin_alert_email(db=db, message="New farm created: " + farm_in.farm_name + " - " + farm_in.url)
 
     farm = crud.farm.create(db, farm_in=farm_in)
 

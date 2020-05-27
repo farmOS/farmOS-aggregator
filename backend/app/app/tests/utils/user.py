@@ -21,5 +21,5 @@ def create_random_user(db: Session):
     email = random_lower_string()
     password = random_lower_string()
     user_in = UserCreate(username=email, email=email, password=password)
-    user = crud.user.create(db_session=db, user_in=user_in)
+    user = crud.user.create(db=db, user_in=user_in)
     return user

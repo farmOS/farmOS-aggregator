@@ -180,21 +180,21 @@ def get_active_farms_url_or_list(
 
 
 # A helper function to save OAuth Tokens to DB.
-def _save_token(token, db_session=None, farm=None):
+def _save_token(token, db=None, farm=None):
     logging.debug("Saving new token for farm: " + str(farm.id))
     token_in = FarmTokenCreate(farm_id=farm.id, **token)
 
     # Make sure we have a DB session and Farm object.
-    if db_session is not None and farm is not None:
+    if db is not None and farm is not None:
         # Update the farm token if it exists.
         if farm.token is not None:
-            update_farm_token(db_session, farm.token, token_in)
+            update_farm_token(db, farm.token, token_in)
         else:
-            create_farm_token(db_session, token_in)
+            create_farm_token(db, token_in)
 
         # Update the Farm.scope attribute based on what the server returned.
         if 'scope' in token:
-            crud.farm.update_scope(db_session, farm=farm, scope=token['scope'])
+            crud.farm.update_scope(db, farm=farm, scope=token['scope'])
 
 
 # Helper function that pings all active farms.
@@ -204,7 +204,7 @@ def handle_ping_farms(db: Session, settings):
     total_response = 0
     for farm in farm_list:
         try:
-            farm_client = get_farm_client(db_session=db, farm=farm)
+            farm_client = get_farm_client(db=db, farm=farm)
             info = farm_client.info()
             crud.farm.update_info(db, farm=farm, info=info)
             total_response += 1
@@ -213,29 +213,29 @@ def handle_ping_farms(db: Session, settings):
 
     difference = len(farm_list) - total_response
     if difference > 0 and settings.AGGREGATOR_ALERT_PING_FARMS_ERRORS:
-        admin_alert_email(db_session=db,
+        admin_alert_email(db=db,
                           message=f"Pinged {total_response}/{len(farm_list)} active farms. {difference} did not respond. Check the list of farm profiles for authorization status errors.")
 
 
 # Create a farmOS.py client.
-def get_farm_client(db_session, farm):
+def get_farm_client(db, farm):
     client_id = settings.AGGREGATOR_OAUTH_CLIENT_ID
     client_secret = settings.AGGREGATOR_OAUTH_CLIENT_SECRET
 
     if farm.token is None:
         error = "No OAuth token. Farm must be Authorized before making requests."
-        crud.farm.update_is_authorized(db_session, farm_id=farm.id, is_authorized=False, auth_error=error)
+        crud.farm.update_is_authorized(db, farm_id=farm.id, is_authorized=False, auth_error=error)
         raise ClientError(error)
     token = FarmTokenBase.from_orm(farm.token)
 
     if farm.scope is None:
         error = "No Scope. Farm must be Authorized before making requests."
-        crud.farm.update_is_authorized(db_session, farm_id=farm.id, is_authorized=False, auth_error=error)
+        crud.farm.update_is_authorized(db, farm_id=farm.id, is_authorized=False, auth_error=error)
         raise ClientError(error)
     # Use the saved scope.
     scope = farm.scope
 
-    token_updater = partial(_save_token, db_session=db_session, farm=farm)
+    token_updater = partial(_save_token, db=db, farm=farm)
 
     # Allow OAuth over http
     if settings.AGGREGATOR_OAUTH_INSECURE_TRANSPORT:
@@ -250,13 +250,13 @@ def get_farm_client(db_session, farm):
             token=token.dict(),
             token_updater=token_updater
         )
-        crud.farm.update_last_accessed(db_session, farm_id=farm.id)
-        crud.farm.update_is_authorized(db_session, farm_id=farm.id, is_authorized=True)
+        crud.farm.update_last_accessed(db, farm_id=farm.id)
+        crud.farm.update_is_authorized(db, farm_id=farm.id, is_authorized=True)
     except Exception as e:
         if settings.AGGREGATOR_ALERT_ALL_ERRORS:
-            admin_alert_email(db_session=db_session, message="Cannot authenticate client with farmOS server id: " + str(farm.id) + " - " + repr(e) + str(e))
+            admin_alert_email(db=db, message="Cannot authenticate client with farmOS server id: " + str(farm.id) + " - " + repr(e) + str(e))
         logging.error("Cannot authenticate client with farmOS server id: " + str(farm.id) + " - " + repr(e) + str(e))
-        crud.farm.update_is_authorized(db_session, farm_id=farm.id, is_authorized=False, auth_error=str(e))
+        crud.farm.update_is_authorized(db, farm_id=farm.id, is_authorized=False, auth_error=str(e))
         raise ClientError(e)
 
     return client
@@ -338,10 +338,10 @@ def build_farm_url(farm_url):
     return urlunparse(parsed_url)
 
 
-def admin_alert_email(db_session, message: str):
+def admin_alert_email(db, message: str):
     if settings.EMAILS_ENABLED:
         logging.info("Sending admin alert message: " + message)
-        users = crud.user.get_multi(db_session)
+        users = crud.user.get_multi(db)
 
         for user in users:
             if user.is_superuser:

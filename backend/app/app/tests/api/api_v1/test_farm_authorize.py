@@ -36,7 +36,7 @@ def test_authorize_farm(client: TestClient, test_farm, farm_authorize_headers):
     # Values to test if we could write an integration test.
     token = r.json()
 
-    db_token = crud.farm_token.get_by_id(db_session, farm_id=test_farm.id)
+    db_token = crud.farm_token.get_by_id(db, farm_id=test_farm.id)
 
     assert db_token.farm_id == token.farm_id == test_farm.id
     assert db_token.access_token == token.access_token

@@ -204,7 +204,7 @@ def authorize_farm(
 
     # Reconnect to the farmOS server and update farm info.
     try:
-        farm_client = get_farm_client(db_session=db, farm=farm)
+        farm_client = get_farm_client(db=db, farm=farm)
 
         info = farm_client.info()
 
