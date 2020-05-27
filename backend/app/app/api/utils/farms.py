@@ -1,5 +1,6 @@
 import os
 import logging
+import threading
 from typing import List
 import time
 from urllib.parse import urlparse, urlunparse
@@ -217,10 +218,22 @@ def handle_ping_farms(db: Session, settings):
                           message=f"Pinged {total_response}/{len(farm_list)} active farms. {difference} did not respond. Check the list of farm profiles for authorization status errors.")
 
 
+# Dict of threading events associated with farm_ids.
+client_state = {}
+
+
 # Create a farmOS.py client.
 def get_farm_client(db, farm):
     client_id = settings.AGGREGATOR_OAUTH_CLIENT_ID
     client_secret = settings.AGGREGATOR_OAUTH_CLIENT_SECRET
+
+    # Check if another thread has started making requests to this same farm.
+    existing_client = client_state.get(farm.id, None)
+    if existing_client is not None:
+        # Wait for the thread to signal that it is done.
+        existing_client.wait()
+        # Reload farm to get the latest token.
+        db.refresh(farm)
 
     if farm.token is None:
         error = "No OAuth token. Farm must be Authorized before making requests."
@@ -241,6 +254,11 @@ def get_farm_client(db, farm):
     if settings.AGGREGATOR_OAUTH_INSECURE_TRANSPORT:
         os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
+    # Create a new threading event to signal other threads
+    # that we are currently making requests to this farm.
+    refreshing = threading.Event()
+    client_state[farm.id] = refreshing
+
     try:
         client = farmOS(
             hostname=build_farm_url(farm.url),
@@ -258,6 +276,12 @@ def get_farm_client(db, farm):
         logging.error("Cannot authenticate client with farmOS server id: " + str(farm.id) + " - " + repr(e) + str(e))
         crud.farm.update_is_authorized(db, farm_id=farm.id, is_authorized=False, auth_error=str(e))
         raise ClientError(e)
+    finally:
+        # Notify other threads that we are done making requests.
+        # Tokens will have refreshed by now, so other clients can continue.
+        refreshing.set()
+        # Remove the threading object from memory.
+        client_state.pop(farm.id, None)
 
     return client
 
