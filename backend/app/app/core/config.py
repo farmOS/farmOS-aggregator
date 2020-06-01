@@ -31,6 +31,8 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
+    SQLALCHEMY_POOL_SIZE: int = 10
+    SQLALCHEMY_MAX_OVERFLOW: int = 15
     SQLALCHEMY_DATABASE_URI: PostgresDsn = None
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
