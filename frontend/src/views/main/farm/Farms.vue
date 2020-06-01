@@ -5,6 +5,14 @@
         Manage Farms
       </v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        hide-details
+      ></v-text-field>
+      <v-spacer></v-spacer>
         <div class="text-center">
           <v-btn
                   color="secondary"
@@ -32,6 +40,7 @@
       :items-per-page="-1"
       :sort-by="'url'"
       :sort-desc="false"
+      :search="search"
       :loading="loading"
       loading-text="Loading... Please wait"
     >
@@ -98,6 +107,7 @@ import {FarmProfile} from '@/interfaces';
     components: {FarmAuthorizationStatus, FarmRequestRegistrationDialog, FarmTagsChips},
 })
 export default class Farms extends Vue {
+  public search = '';
   public headers = [
     {
         text: 'Active',
