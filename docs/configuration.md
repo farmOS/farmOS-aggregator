@@ -56,6 +56,30 @@ disabled by default and should only be used during development.
   These scopes will appear in the UI form as `disabled` so the user cannot modify their selection value. Note that for 
   an OAuth scope to appear `disabled` *and* `checked`, the oauth scope must also be listed in the
   `AGGREGATOR_OAUTH_DEFAULT_SCOPE` list.
+
+
+### DB Config
+The FastAPI app uses SQLAlchemy to interface with the Postgres DB. Connections to the DB are held in a connection pool 
+to maintain long-running connections in memory for efficient re-use. The size of the pool is configurable with the 
+`pool_size` and `max_overflow` parameters passed to `sqlalchemy.create_engine()`. Before setting these values, the 
+total number of active DB connections should be taken into account. The Postgres default is 100.
+
+[SQLAlchemy Documentation on Pooling](https://docs.sqlalchemy.org/en/13/core/pooling.html)
+
+- `SQLALCHEMY_POOL_SIZE`: (`int`) Number of persistent connections to DB. Defaults to 10.
+
+> The size of the pool to be maintained, defaults to (10). This is the largest number of connections that will be kept persistently in the pool. Note that the pool begins with 
+> no connections; once this number of connections is requested, that number of connections will remain. `pool_size` can 
+> be set to 0 to indicate no size limit.
+
+- `SQLALCHEMY_MAX_OVERFLOW`: (`int`) Maximum number of connections to open with the DB. Defaults to 15.
+
+> The maximum overflow size of the pool. When the number of checked-out connections reaches the size set in pool_size, 
+> additional connections will be returned up to this limit. When those additional connections are returned to the pool, 
+> they are disconnected and discarded. It follows then that the total number of simultaneous connections the pool will 
+> allow is pool_size + max_overflow, and the total number of “sleeping” connections the pool will allow is pool_size. 
+> `max_overflow` can be set to -1 to indicate no overflow limit; no limit will be placed on the total number of 
+> concurrent connections. 
   
 Example configuration:
 ```shell script
