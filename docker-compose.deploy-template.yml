@@ -24,6 +24,9 @@ services:
       - SMTP_PASSWORD
       - EMAILS_FROM_EMAIL
       - USERS_OPEN_REGISTRATION
+      # Configuration for SQLALchemy.
+      - SQLALCHEMY_POOL_SIZE
+      - SQLALCHEMY_MAX_OVERFLOW
       # Configure aggregator admin errors
       - AGGREGATOR_ALERT_NEW_FARMS
       - AGGREGATOR_ALERT_ALL_ERRORS
