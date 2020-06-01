@@ -30,6 +30,8 @@
       :headers="headers"
       :items="farms"
       :items-per-page="-1"
+      :sort-by="'url'"
+      :sort-desc="false"
       :loading="loading"
       loading-text="Loading... Please wait"
     >
