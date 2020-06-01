@@ -26,7 +26,13 @@
           </v-btn>
         </div>
     </v-toolbar>
-    <v-data-table :headers="headers" :items="farms" :loading="loading" loading-text="Loading... Please wait">
+    <v-data-table
+      :headers="headers"
+      :items="farms"
+      :items-per-page="-1"
+      :loading="loading"
+      loading-text="Loading... Please wait"
+    >
       <template v-slot:item.active="{ item } ">
         <v-simple-checkbox v-model="item.active" disabled/>
       </template>
