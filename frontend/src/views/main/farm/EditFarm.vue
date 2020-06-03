@@ -87,7 +87,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { FarmProfileUpdate } from '@/interfaces';
-import { dispatchGetFarms, dispatchUpdateFarm } from '@/store/farm/actions';
+import { dispatchGetOneFarm, dispatchUpdateFarm } from '@/store/farm/actions';
 import { readOneFarm } from '@/store/farm/getters';
 import Farm from '@/views/main/farm/Farm.vue';
 import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
@@ -117,7 +117,7 @@ export default class EditFarm extends Vue {
   public resources: object[] = [];
 
   public async mounted() {
-    await dispatchGetFarms(this.$store);
+    await dispatchGetOneFarm(this.$store, {farmID: +this.$router.currentRoute.params.id});
     this.reset();
   }
 

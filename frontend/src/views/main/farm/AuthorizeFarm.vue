@@ -55,7 +55,7 @@
 <script lang="ts">
 import { env } from '@/env';
 import { Component, Vue } from 'vue-property-decorator';
-import { dispatchGetFarms, dispatchCreateFarmAuthLink, dispatchGetFarmInfo } from '@/store/farm/actions';
+import { dispatchGetOneFarm } from '@/store/farm/actions';
 import { readOneFarm } from '@/store/farm/getters';
 import FarmAuthorizationStatus from '@/components/FarmAuthorizationStatus.vue';
 import FarmAuthorizationForm from '@/components/FarmAuthorizationForm.vue';
@@ -84,7 +84,7 @@ export default class AuthorizeFarm extends Vue {
   public expiresAt: string = '';
 
   public async mounted() {
-    await dispatchGetFarms(this.$store);
+    await dispatchGetOneFarm(this.$store, {farmID: +this.$router.currentRoute.params.id});
     this.reset();
   }
 
