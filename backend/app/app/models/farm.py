@@ -1,6 +1,6 @@
 from sqlalchemy import Boolean, Column, Integer, String, DateTime
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, deferred
 from sqlalchemy.dialects.postgresql import JSONB
 
 from app.db.base_class import Base
@@ -26,7 +26,7 @@ class Farm(Base):
     active = Column(Boolean, default=False)
 
     # Store farm info in a JSONB column
-    info = Column(JSONB, nullable=True)
+    info = deferred(Column(JSONB, nullable=True))
 
     is_authorized = Column(Boolean, default=False)
     token = relationship("FarmToken", uselist=False, back_populates="farm", lazy='joined')
