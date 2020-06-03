@@ -2,6 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+
 # farmOS Server Info to cache
 class FarmInfo(BaseModel):
     name: str
