@@ -39,8 +39,12 @@ class Farm(FarmBaseInDB):
     last_accessed: Optional[datetime] = None
     is_authorized: Optional[bool] = None
     scope: Optional[str] = None
-    info: Optional[FarmInfo] = None
     auth_error: Optional[str] = None
+
+
+# Class that returns farm.json info.
+class AllFarmInfo(Farm):
+    info: Optional[FarmInfo] = None
 
 
 # Additional properties stored in DB

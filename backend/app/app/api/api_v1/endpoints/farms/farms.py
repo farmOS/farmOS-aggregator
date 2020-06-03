@@ -9,7 +9,7 @@ from app.utils import get_settings
 from app.api.utils.db import get_db
 from app.api.utils.farms import get_farms_url_or_list, get_farm_by_id, admin_alert_email
 from app.api.utils.security import get_farm_access, get_farm_access_allow_public
-from app.schemas.farm import Farm, FarmCreate, FarmUpdate
+from app.schemas.farm import Farm, AllFarmInfo, FarmCreate, FarmUpdate
 
 router = APIRouter()
 
@@ -32,7 +32,7 @@ def read_farms(
 
 @router.get(
     "/{farm_id}",
-    response_model=Farm,
+    response_model=AllFarmInfo,
     dependencies=[Security(get_farm_access, scopes=['farm:read'])]
 )
 def read_farm_by_id(
