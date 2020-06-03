@@ -26,6 +26,9 @@ services:
       - SERVER_HOST=http://${DOMAIN}
     ports:
       - '5555:5555'
+  db:
+    ports:
+      - '5432:5432'
   proxy:
     ports:
       - '80:80'
