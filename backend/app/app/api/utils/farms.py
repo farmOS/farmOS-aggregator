@@ -260,6 +260,21 @@ def get_farm_client(db, farm):
     client_state[farm.id] = refreshing
 
     try:
+        # Remember if we need to refresh.
+        trigger_refresh = False
+
+        # Calculate time until expiration.
+        now = time.time()
+        expires_at = token.expires_at
+        expires_in = expires_at - now
+
+        # Trigger refresh if token expires in the next 15 seconds.
+        if expires_in - 15 <= 0:
+            # Mark the token as expired.
+            token.expires_at = time.time()
+            # Trigger refresh.
+            trigger_refresh = True
+
         client = farmOS(
             hostname=build_farm_url(farm.url),
             client_id=client_id,
@@ -268,6 +283,12 @@ def get_farm_client(db, farm):
             token=token.dict(),
             token_updater=token_updater
         )
+
+        # Make an authenticated request to trigger automatic refresh.
+        # It is important the refresh is triggered while the thread still has the lock.
+        if trigger_refresh:
+            client.info()
+
         crud.farm.update_last_accessed(db, farm_id=farm.id)
         crud.farm.update_is_authorized(db, farm_id=farm.id, is_authorized=True)
     except Exception as e:
