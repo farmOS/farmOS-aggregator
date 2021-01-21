@@ -9,7 +9,7 @@ from pydantic import BaseModel, ValidationError
 
 from app import crud
 from app.utils import get_settings
-from app.api.utils.db import get_db
+from app.routers.utils.db import get_db
 from app.core.jwt import ALGORITHM
 from app.models.user import User
 from app.schemas.token import TokenData, FarmAccess

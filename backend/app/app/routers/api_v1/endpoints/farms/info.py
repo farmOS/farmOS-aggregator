@@ -5,9 +5,9 @@ from sqlalchemy.orm import Session
 
 
 from app import crud
-from app.api.utils.db import get_db
-from app.api.utils.farms import get_farm_client, ClientError, get_farms_url_or_list
-from app.api.utils.security import get_farm_access
+from app.routers.utils.db import get_db
+from app.routers.utils.farms import get_farm_client, ClientError, get_farms_url_or_list
+from app.routers.utils.security import get_farm_access
 from app.schemas.farm import Farm
 from app.schemas.farm_info import FarmInfo
 

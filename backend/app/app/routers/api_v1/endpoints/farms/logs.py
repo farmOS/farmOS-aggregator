@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
@@ -5,24 +6,24 @@ from starlette.requests import Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from app.api.utils.db import get_db
-from app.api.utils.farms import get_active_farms_url_or_list, get_farm_client, ClientError
+from app.routers.utils.db import get_db
+from app.routers.utils.farms import get_active_farms_url_or_list, get_farm_client, ClientError
 from app.schemas.farm import Farm
 
 router = APIRouter()
 
-# /farms/terms/ endpoint for accessing farmOS terms
+# /farms/logs/ endpoint for accessing farmOS logs
 
 
-class Term(BaseModel):
+class Log(BaseModel):
     class Config:
         extra = 'allow'
 
     name: str
-    vocabulary: int
+    type: str
 
 
-class TermUpdate(BaseModel):
+class LogUpdate(BaseModel):
     class Config:
         extra = 'allow'
 
@@ -30,7 +31,7 @@ class TermUpdate(BaseModel):
 
 
 @router.get("/")
-def get_all_farm_terms(
+def get_all_farm_logs(
     request: Request,
     farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
@@ -51,7 +52,7 @@ def get_all_farm_terms(
 
         # Make the request.
         try:
-            data[farm.id] = data[farm.id] + farm_client.term.get(filters=query_params)['list']
+            data[farm.id] = data[farm.id] + farm_client.log.get(filters=query_params)['list']
         except:
             continue
 
@@ -59,8 +60,8 @@ def get_all_farm_terms(
 
 
 @router.post("/")
-def create_farm_term(
-    term: Term,
+def create_farm_logs(
+    log: Log,
     farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
 ):
@@ -76,16 +77,17 @@ def create_farm_term(
 
         # Make the request.
         try:
-            data[farm.id].append(farm_client.term.send(payload=term.dict()))
+            data[farm.id].append(farm_client.log.send(payload=log.dict()))
         except:
             continue
+
 
     return data
 
 
 @router.put("/")
-def update_farm_terms(
-    term: TermUpdate,
+def update_farm_logs(
+    log: LogUpdate,
     farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
 ):
@@ -101,7 +103,7 @@ def update_farm_terms(
 
         # Make the request.
         try:
-            data[farm.id].append(farm_client.term.send(payload=term.dict()))
+            data[farm.id].append(farm_client.log.send(payload=log.dict()))
         except:
             continue
 
@@ -109,8 +111,8 @@ def update_farm_terms(
 
 
 @router.delete("/")
-def delete_farm_term(
-    tid: List[int] = Query(None),
+def delete_farm_logs(
+    id: List[int] = Query(None),
     farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
 ):
@@ -125,12 +127,12 @@ def delete_farm_term(
             continue
 
         # Make the request.
-        for id in tid:
+        for single_id in id:
             try:
-                result = farm_client.term.delete(id=id)
-                data[farm.id].append({id: result.json()})
+                result = farm_client.log.delete(id=single_id)
+                data[farm.id].append({single_id: result.json()})
             except:
-                data[farm.id].append({id: "error"})
+                data[farm.id].append({single_id: "error"})
                 continue
 
     return data

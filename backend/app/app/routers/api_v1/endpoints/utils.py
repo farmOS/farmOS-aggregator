@@ -8,12 +8,12 @@ from sqlalchemy.orm import Session
 from farmOS import farmOS
 
 from app import crud
-from app.api.utils.db import get_db
+from app.routers.utils.db import get_db
 from app.schemas.msg import Msg
 from app.schemas.farm import Farm
 from app.schemas.farm_token import FarmTokenCreate, FarmAuthorizationParams
-from app.api.utils.farms import get_farm_by_id, get_oauth_token, get_farm_client, handle_ping_farms
-from app.api.utils.security import get_farm_access, get_farm_access_allow_public
+from app.routers.utils.farms import get_farm_by_id, get_oauth_token, get_farm_client, handle_ping_farms
+from app.routers.utils.security import get_farm_access, get_farm_access_allow_public
 from app.utils import (
     get_settings,
     generate_farm_registration_link,

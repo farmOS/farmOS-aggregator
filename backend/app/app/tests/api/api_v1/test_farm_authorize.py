@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from app.core.config import settings
 from app.schemas.farm_token import FarmAuthorizationParams
 from app.tests.utils.utils import random_lower_string, get_scope_token_headers
-from app.api.utils.security import _validate_token
+from app.routers.utils.security import _validate_token
 
 
 @pytest.fixture

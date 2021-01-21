@@ -6,8 +6,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.api.utils.db import get_db
-from app.api.utils.security import get_current_user
+from app.routers.utils.db import get_db
+from app.routers.utils.security import get_current_user
 from app.core.jwt import create_access_token
 from app.core.security import get_password_hash
 from app.models.user import User as DBUser

@@ -1,5 +1,5 @@
 from app.core.jwt import create_farm_api_token
-from app.api.utils.security import _validate_token
+from app.routers.utils.security import _validate_token
 
 
 def test_create_api_token():

@@ -6,9 +6,9 @@ from sqlalchemy.orm import Session
 
 from app import crud
 from app.utils import get_settings
-from app.api.utils.db import get_db
-from app.api.utils.farms import get_farms_url_or_list, get_farm_by_id, admin_alert_email
-from app.api.utils.security import get_farm_access, get_farm_access_allow_public
+from app.routers.utils.db import get_db
+from app.routers.utils.farms import get_farms_url_or_list, get_farm_by_id, admin_alert_email
+from app.routers.utils.security import get_farm_access, get_farm_access_allow_public
 from app.schemas.farm import Farm, AllFarmInfo, FarmCreate, FarmUpdate
 
 router = APIRouter()

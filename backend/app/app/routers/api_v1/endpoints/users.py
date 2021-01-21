@@ -6,8 +6,8 @@ from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.api.utils.db import get_db
-from app.api.utils.security import get_current_active_superuser, get_current_active_user
+from app.routers.utils.db import get_db
+from app.routers.utils.security import get_current_active_superuser, get_current_active_user
 from app.models.user import User as DBUser
 from app.schemas.user import User, UserCreate, UserInDB, UserUpdate
 from app.utils import get_settings, send_new_account_email

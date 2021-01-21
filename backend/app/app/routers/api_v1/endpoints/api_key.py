@@ -6,7 +6,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.api.utils.db import get_db
+from app.routers.utils.db import get_db
 from app.schemas.api_key import ApiKey, ApiKeyCreate, ApiKeyUpdate
 
 logger = logging.getLogger(__name__)

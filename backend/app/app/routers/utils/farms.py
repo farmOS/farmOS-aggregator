@@ -14,12 +14,12 @@ from farmOS import farmOS
 from farmOS.config import ClientConfig
 
 from app import crud
-from app.api.utils.db import get_db
+from app.routers.utils.db import get_db
 from app.schemas.farm_token import FarmTokenBase, FarmTokenCreate
 from app.crud.farm_token import create_farm_token, update_farm_token
 from app.schemas.farm import Farm, FarmUpdate
 from app.schemas.token import FarmAccess
-from app.api.utils.security import get_farm_access
+from app.routers.utils.security import get_farm_access
 from app.utils import get_settings, send_admin_alert_email
 
 

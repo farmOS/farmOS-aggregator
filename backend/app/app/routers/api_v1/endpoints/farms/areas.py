@@ -5,24 +5,25 @@ from starlette.requests import Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from app.api.utils.db import get_db
-from app.api.utils.farms import get_active_farms_url_or_list, get_farm_client, ClientError
+from app.routers.utils.db import get_db
+from app.routers.utils.farms import get_active_farms_url_or_list, get_farm_client, ClientError
 from app.schemas.farm import Farm
 
 router = APIRouter()
 
-# /farms/assets/ endpoint for accessing farmOS assets
+# /farms/areas/ endpoint for accessing farmOS areas
 
 
-class Asset(BaseModel):
+class Area(BaseModel):
     class Config:
         extra = 'allow'
 
     name: str
-    type: str
+    vocabulary: int
+    area_type: str
 
 
-class AssetUpdate(BaseModel):
+class AreaUpdate(BaseModel):
     class Config:
         extra = 'allow'
 
@@ -30,7 +31,7 @@ class AssetUpdate(BaseModel):
 
 
 @router.get("/")
-def get_all_farm_assets(
+def get_all_farm_areas(
     request: Request,
     farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
@@ -51,7 +52,7 @@ def get_all_farm_assets(
 
         # Make the request.
         try:
-            data[farm.id] = data[farm.id] + farm_client.asset.get(filters=query_params)['list']
+            data[farm.id] = data[farm.id] + farm_client.area.get(filters=query_params)['list']
         except:
             continue
 
@@ -59,8 +60,8 @@ def get_all_farm_assets(
 
 
 @router.post("/")
-def create_farm_assets(
-    asset: Asset,
+def create_farm_area(
+    area: Area,
     farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
 ):
@@ -74,9 +75,10 @@ def create_farm_assets(
         except ClientError:
             continue
 
+
         # Make the request.
         try:
-            data[farm.id].append(farm_client.asset.send(payload=asset.dict()))
+            data[farm.id].append(farm_client.area.send(payload=area.dict()))
         except:
             continue
 
@@ -84,8 +86,8 @@ def create_farm_assets(
 
 
 @router.put("/")
-def update_farm_assets(
-    asset: AssetUpdate,
+def update_farm_area(
+    area: AreaUpdate,
     farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
 ):
@@ -99,9 +101,10 @@ def update_farm_assets(
         except ClientError:
             continue
 
+
         # Make the request.
         try:
-            data[farm.id].append(farm_client.asset.send(payload=asset.dict()))
+            data[farm.id].append(farm_client.area.send(payload=area.dict()))
         except:
             continue
 
@@ -109,7 +112,7 @@ def update_farm_assets(
 
 
 @router.delete("/")
-def delete_farm_assets(
+def delete_farm_area(
     id: List[int] = Query(None),
     farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
     db: Session = Depends(get_db),
@@ -127,7 +130,7 @@ def delete_farm_assets(
         # Make the request.
         for single_id in id:
             try:
-                result = farm_client.asset.delete(id=single_id)
+                result = farm_client.area.delete(id=single_id)
                 data[farm.id].append({single_id: result.json()})
             except:
                 data[farm.id].append({single_id: "error"})
