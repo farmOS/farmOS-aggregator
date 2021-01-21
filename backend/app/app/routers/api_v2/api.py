@@ -3,7 +3,8 @@ import logging
 from fastapi import APIRouter, Security
 
 from app.routers.api_v2.endpoints import login, users, utils, api_key, farms
-from app.routers.utils.security import get_current_active_superuser
+from app.routers.api_v2.endpoints.resources import resources
+from app.routers.utils.security import get_farm_access, get_current_active_superuser
 
 logger = logging.getLogger(__name__)
 
@@ -25,4 +26,12 @@ router.include_router(
     farms.router,
     prefix="/farms",
     tags=["farms"],
+)
+
+# Include /farms/logs endpoints.
+router.include_router(
+    resources.router,
+    prefix="/farms/resources",
+    tags=["Resources"],
+    dependencies=[Security(get_farm_access, scopes=['farm:read', 'farm.logs'])]
 )
