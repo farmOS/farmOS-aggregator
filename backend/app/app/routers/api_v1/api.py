@@ -27,6 +27,7 @@ router.include_router(
     farms.router,
     prefix="/farms",
     tags=["farms"],
+    deprecated=True
 )
 
 # Include /farms/info endpoint.
