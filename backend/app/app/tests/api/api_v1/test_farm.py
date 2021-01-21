@@ -50,7 +50,7 @@ def test_create_delete_farm(client: TestClient, db: Session, farm_create_headers
         "token": token,
     }
     r = client.post(
-        f"{settings.API_V1_STR}/farms/",
+        f"{settings.API_V1_PREFIX}/farms/",
         headers=farm_create_headers,
         json=data,
     )
@@ -72,7 +72,7 @@ def test_create_delete_farm(client: TestClient, db: Session, farm_create_headers
 
     # Delete the farm
     r = client.delete(
-        f"{settings.API_V1_STR}/farms/{farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/{farm.id}",
         headers=farm_delete_headers,
     )
     assert 200 <= r.status_code < 300
@@ -89,7 +89,7 @@ def test_create_farm_update_token(client: TestClient, db: Session, farm_create_h
         "scope": 'user_access',
     }
     r = client.post(
-        f"{settings.API_V1_STR}/farms/",
+        f"{settings.API_V1_PREFIX}/farms/",
         headers=farm_create_headers,
         json=data,
     )
@@ -114,7 +114,7 @@ def test_create_farm_update_token(client: TestClient, db: Session, farm_create_h
         "token": token,
     }
     r = client.put(
-        f"{settings.API_V1_STR}/farms/{farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/{farm.id}",
         headers=farm_update_headers,
         json=data,
     )
@@ -137,7 +137,7 @@ def test_create_farm_update_token(client: TestClient, db: Session, farm_create_h
 
     # Delete the farm
     r = client.delete(
-        f"{settings.API_V1_STR}/farms/{farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/{farm.id}",
         headers=farm_delete_headers,
     )
     assert 200 <= r.status_code < 300
@@ -163,7 +163,7 @@ def test_create_farm_delete_token(client: TestClient, db: Session, farm_create_h
         "token": token,
     }
     r = client.post(
-        f"{settings.API_V1_STR}/farms/",
+        f"{settings.API_V1_PREFIX}/farms/",
         headers=farm_create_headers,
         json=data,
     )
@@ -190,7 +190,7 @@ def test_create_farm_delete_token(client: TestClient, db: Session, farm_create_h
         "token": new_token,
     }
     r = client.put(
-        f"{settings.API_V1_STR}/farms/{farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/{farm.id}",
         headers=farm_update_headers,
         json=data,
     )
@@ -213,7 +213,7 @@ def test_create_farm_delete_token(client: TestClient, db: Session, farm_create_h
 
     # Delete the farm
     r = client.delete(
-        f"{settings.API_V1_STR}/farms/{farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/{farm.id}",
         headers=farm_delete_headers,
     )
     assert 200 <= r.status_code < 300
@@ -222,7 +222,7 @@ def test_create_farm_delete_token(client: TestClient, db: Session, farm_create_h
 def test_get_all_farms(client: TestClient, db: Session, test_farm, farm_read_headers):
     farm_id = test_farm.id
     r = client.get(
-        f"{settings.API_V1_STR}/farms/",
+        f"{settings.API_V1_PREFIX}/farms/",
         headers=farm_read_headers,
     )
     assert 200 <= r.status_code < 300
@@ -235,7 +235,7 @@ def test_get_all_farms(client: TestClient, db: Session, test_farm, farm_read_hea
 def test_get_farm_by_id(client: TestClient, db: Session, test_farm, farm_read_headers):
     farm_id = test_farm.id
     r = client.get(
-        f"{settings.API_V1_STR}/farms/{farm_id}",
+        f"{settings.API_V1_PREFIX}/farms/{farm_id}",
         headers=farm_read_headers,
     )
     assert 200 <= r.status_code < 300
@@ -258,53 +258,53 @@ def test_farm_create_oauth_scope():
 
     # Disable Open Farm Registration, assert the endpoint is not publicly accessible.
     app.dependency_overrides[utils.get_settings] = settings_closed_registration
-    r = client.post(f"{settings.API_V1_STR}/farms/")
+    r = client.post(f"{settings.API_V1_PREFIX}/farms/")
     assert r.status_code == 401
 
     # Disable Invite Farm Registration, assert the endpoint is not accessible with access token.
     token = create_farm_api_token(farm_id=[], scopes=["farm:create", "farm:info"])
     app.dependency_overrides[utils.get_settings] = settings_closed_registration
     r = client.post(
-        f"{settings.API_V1_STR}/farms/",
+        f"{settings.API_V1_PREFIX}/farms/",
         headers={"api-token": token.decode("utf-8")}
     )
     assert r.status_code == 401
 
     # Enable Invite Farm Registration, assert the endpoint is not publicly accessible.
     app.dependency_overrides[utils.get_settings] = settings_invite_registration
-    r = client.post(f"{settings.API_V1_STR}/farms/")
+    r = client.post(f"{settings.API_V1_PREFIX}/farms/")
     assert r.status_code == 401
 
     # Enable Invite Farm Registration, assert the endpoint is accessible with access token.
     token = create_farm_api_token(farm_id=[], scopes=["farm:create", "farm:info"])
     app.dependency_overrides[utils.get_settings] = settings_invite_registration
     r = client.post(
-        f"{settings.API_V1_STR}/farms/",
+        f"{settings.API_V1_PREFIX}/farms/",
         headers={"api-token": token.decode("utf-8")}
     )
     assert r.status_code == 422
 
     # Enable Open Farm Registration, assert the endpoint is publicly accessible.
     app.dependency_overrides[utils.get_settings] = settings_open_registration
-    r = client.post(f"{settings.API_V1_STR}/farms/")
+    r = client.post(f"{settings.API_V1_PREFIX}/farms/")
     assert r.status_code == 422
 
 
 def test_farm_read_oauth_scope(client: TestClient):
-    r = client.get(f"{settings.API_V1_STR}/farms/")
+    r = client.get(f"{settings.API_V1_PREFIX}/farms/")
     assert r.status_code == 401
 
 
 def test_farm_read_by_id_oauth_scope(client: TestClient):
-    r = client.get(f"{settings.API_V1_STR}/farms/1")
+    r = client.get(f"{settings.API_V1_PREFIX}/farms/1")
     assert r.status_code == 401
 
 
 def test_farm_update_oauth_scope(client: TestClient):
-    r = client.put(f"{settings.API_V1_STR}/farms/1")
+    r = client.put(f"{settings.API_V1_PREFIX}/farms/1")
     assert r.status_code == 401
 
 
 def test_farm_delete_oauth_scope(client: TestClient):
-    r = client.get(f"{settings.API_V1_STR}/farms/1")
+    r = client.get(f"{settings.API_V1_PREFIX}/farms/1")
     assert r.status_code == 401

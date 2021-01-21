@@ -33,12 +33,12 @@ oauth_scopes = {
 }
 
 optional_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/login/access-token",
+    tokenUrl=f"{settings.API_V2_PREFIX}/login/access-token",
     scopes=oauth_scopes,
     auto_error=False
 )
 reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/login/access-token",
+    tokenUrl=f"{settings.API_V2_PREFIX}login/access-token",
     scopes=oauth_scopes,
     auto_error=True
 )

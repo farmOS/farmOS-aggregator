@@ -13,7 +13,7 @@ def farm_logs_headers(client: TestClient):
 @farmOS_testing_server
 def test_get_logs(client: TestClient, test_farm, farm_logs_headers):
     r = client.get(
-        f"{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/logs/?farm_id={test_farm.id}",
         headers=farm_logs_headers,
     )
     # Check response
@@ -42,7 +42,7 @@ def test_create_log(client: TestClient, test_farm, test_log, farm_logs_headers):
     data = test_log
 
     response = client.post(
-        f"{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/logs/?farm_id={test_farm.id}",
         headers=farm_logs_headers,
         json=data,
     )
@@ -62,7 +62,7 @@ def test_create_log(client: TestClient, test_farm, test_log, farm_logs_headers):
 
     # Check that the created log has correct attributes
     response = client.get(
-        f"{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
+        f"{settings.API_V1_PREFIX}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
         headers=farm_logs_headers,
         json=data,
     )
@@ -86,7 +86,7 @@ def test_update_log(client: TestClient, test_farm, test_log, farm_logs_headers):
     data = test_log
 
     response = client.put(
-        f"{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/logs/?farm_id={test_farm.id}",
         headers=farm_logs_headers,
         json=data,
     )
@@ -103,7 +103,7 @@ def test_update_log(client: TestClient, test_farm, test_log, farm_logs_headers):
 
     # Check that the updated log has correct attributes
     response = client.get(
-        f"{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
+        f"{settings.API_V1_PREFIX}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
         headers=farm_logs_headers,
     )
     # Check response
@@ -121,7 +121,7 @@ def test_update_log(client: TestClient, test_farm, test_log, farm_logs_headers):
 @farmOS_testing_server
 def test_delete_log(client: TestClient, test_farm, test_log, farm_logs_headers):
     response = client.delete(
-        f"{settings.API_V1_STR}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
+        f"{settings.API_V1_PREFIX}/farms/logs/?farm_id={test_farm.id}&id={test_log['id']}",
         headers=farm_logs_headers,
     )
 
@@ -132,5 +132,5 @@ def test_delete_log(client: TestClient, test_farm, test_log, farm_logs_headers):
 
 @farmOS_testing_server
 def test_farm_logs_oauth_scope(client: TestClient):
-    r = client.get(f"{settings.API_V1_STR}/farms/logs")
+    r = client.get(f"{settings.API_V1_PREFIX}/farms/logs")
     assert r.status_code == 401

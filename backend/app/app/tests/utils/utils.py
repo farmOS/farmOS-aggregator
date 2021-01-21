@@ -24,7 +24,7 @@ def get_superuser_token_headers(client: TestClient):
         "password": settings.FIRST_SUPERUSER_PASSWORD,
     }
     r = client.post(
-        f"{settings.API_V1_STR}/login/access-token", data=login_data
+        f"{settings.API_V2_PREFIX}/login/access-token", data=login_data
     )
     tokens = r.json()
     a_token = tokens["access_token"]
@@ -48,7 +48,7 @@ def _create_headers_with_scopes(client: TestClient, scopes):
         "scope": scopes,
     }
     r = client.post(
-        f"{settings.API_V1_STR}/login/access-token", data=login_data
+        f"{settings.API_V2_PREFIX}/login/access-token", data=login_data
     )
     tokens = r.json()
     a_token = tokens["access_token"]
@@ -58,7 +58,7 @@ def _create_headers_with_scopes(client: TestClient, scopes):
 
 def get_api_key_headers(client: TestClient, api_key_params: ApiKeyCreate):
     r = client.post(
-        f"{settings.API_V1_STR}/api-keys/",
+        f"{settings.API_V2_PREFIX}/api-keys/",
         headers=get_superuser_token_headers(client=client),
         data=api_key_params.json()
     )

@@ -15,7 +15,7 @@ def test_create_asset(client: TestClient, test_farm, test_asset, farm_assets_hea
     data = test_asset
 
     response = client.post(
-        f"{settings.API_V1_STR}/farms/assets/?farm_id={test_farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/assets/?farm_id={test_farm.id}",
         headers=farm_assets_headers,
         json=data,
     )
@@ -35,7 +35,7 @@ def test_create_asset(client: TestClient, test_farm, test_asset, farm_assets_hea
 
     # Check that the creats asset has correct attributes
     response = client.get(
-        f"{settings.API_V1_STR}/farms/assets/?farm_id={test_farm.id}&id={test_asset['id']}",
+        f"{settings.API_V1_PREFIX}/farms/assets/?farm_id={test_farm.id}&id={test_asset['id']}",
         headers=farm_assets_headers,
         json=data,
     )
@@ -54,7 +54,7 @@ def test_create_asset(client: TestClient, test_farm, test_asset, farm_assets_hea
 @farmOS_testing_server
 def test_get_assets(client: TestClient, test_farm, farm_assets_headers):
     r = client.get(
-        f"{settings.API_V1_STR}/farms/assets/?farm_id={test_farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/assets/?farm_id={test_farm.id}",
         headers=farm_assets_headers,
     )
     # Check response
@@ -86,7 +86,7 @@ def test_update_asset(client: TestClient, test_farm, test_asset, farm_assets_hea
     data = test_asset
 
     response = client.put(
-        f"{settings.API_V1_STR}/farms/assets/?farm_id={test_farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/assets/?farm_id={test_farm.id}",
         headers=farm_assets_headers,
         json=data,
     )
@@ -103,7 +103,7 @@ def test_update_asset(client: TestClient, test_farm, test_asset, farm_assets_hea
 
     # Check that the updated asset has correct attributes
     response = client.get(
-        f"{settings.API_V1_STR}/farms/assets/?farm_id={test_farm.id}&id={test_asset['id']}",
+        f"{settings.API_V1_PREFIX}/farms/assets/?farm_id={test_farm.id}&id={test_asset['id']}",
         headers=farm_assets_headers,
     )
     # Check response
@@ -121,7 +121,7 @@ def test_update_asset(client: TestClient, test_farm, test_asset, farm_assets_hea
 @farmOS_testing_server
 def test_delete_asset(client: TestClient, test_farm, test_asset, farm_assets_headers):
     response = client.delete(
-        f"{settings.API_V1_STR}/farms/assets/?farm_id={test_farm.id}&id={test_asset['id']}",
+        f"{settings.API_V1_PREFIX}/farms/assets/?farm_id={test_farm.id}&id={test_asset['id']}",
         headers=farm_assets_headers,
     )
 
@@ -132,5 +132,5 @@ def test_delete_asset(client: TestClient, test_farm, test_asset, farm_assets_hea
 
 @farmOS_testing_server
 def test_farm_assets_oauth_scope(client: TestClient):
-    r = client.get(f"{settings.API_V1_STR}/farms/assets")
+    r = client.get(f"{settings.API_V1_PREFIX}/farms/assets")
     assert r.status_code == 401

@@ -10,7 +10,7 @@ from app.tests.utils.utils import random_lower_string
 
 def test_get_users_superuser_me(client: TestClient, superuser_token_headers):
     r = client.get(
-        f"{settings.API_V1_STR}/users/me", headers=superuser_token_headers
+        f"{settings.API_V1_PREFIX}/users/me", headers=superuser_token_headers
     )
     current_user = r.json()
     assert current_user
@@ -24,7 +24,7 @@ def test_create_user_new_email(client: TestClient, db: Session, superuser_token_
     password = random_lower_string()
     data = {"email": username, "password": password}
     r = client.post(
-        f"{settings.API_V1_STR}/users/",
+        f"{settings.API_V1_PREFIX}/users/",
         headers=superuser_token_headers,
         json=data,
     )
@@ -41,7 +41,7 @@ def test_get_existing_user(client: TestClient, db: Session, superuser_token_head
     user = crud.user.create(db, user_in=user_in)
     user_id = user.id
     r = client.get(
-        f"{settings.API_V1_STR}/users/{user_id}",
+        f"{settings.API_V1_PREFIX}/users/{user_id}",
         headers=superuser_token_headers,
     )
     assert 200 <= r.status_code < 300
@@ -58,7 +58,7 @@ def test_create_user_existing_username(client: TestClient, db: Session, superuse
     user = crud.user.create(db, user_in=user_in)
     data = {"email": username, "password": password}
     r = client.post(
-        f"{settings.API_V1_STR}/users/",
+        f"{settings.API_V1_PREFIX}/users/",
         headers=superuser_token_headers,
         json=data,
     )
@@ -75,7 +75,7 @@ def test_create_user_by_normal_user(client: TestClient, db: Session):
     user_token_headers = user_authentication_headers(client, username, password)
     data = {"email": username, "password": password}
     r = client.post(
-        f"{settings.API_V1_STR}/users/", headers=user_token_headers, json=data
+        f"{settings.API_V1_PREFIX}/users/", headers=user_token_headers, json=data
     )
     assert r.status_code == 400
 
@@ -92,7 +92,7 @@ def test_retrieve_users(client: TestClient, db: Session, superuser_token_headers
     user2 = crud.user.create(db, user_in=user_in2)
 
     r = client.get(
-        f"{settings.API_V1_STR}/users/", headers=superuser_token_headers
+        f"{settings.API_V1_PREFIX}/users/", headers=superuser_token_headers
     )
     all_users = r.json()
 

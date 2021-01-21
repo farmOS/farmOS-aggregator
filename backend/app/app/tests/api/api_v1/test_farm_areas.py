@@ -13,7 +13,7 @@ def farm_areas_headers(client: TestClient):
 @pytest.fixture(autouse=True)
 def areas_vid(client: TestClient, test_farm, all_scopes_token_headers):
     response = client.get(
-        f"{settings.API_V1_STR}/farms/info/?farm_id={test_farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/info/?farm_id={test_farm.id}",
         headers=all_scopes_token_headers,
     )
     # Check response
@@ -44,7 +44,7 @@ def test_create_area(client: TestClient, test_farm, test_area, areas_vid, farm_a
     print(areas_vid)
 
     response = client.post(
-        f"{settings.API_V1_STR}/farms/areas/?farm_id={test_farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/areas/?farm_id={test_farm.id}",
         headers=farm_areas_headers,
         json=data,
     )
@@ -64,7 +64,7 @@ def test_create_area(client: TestClient, test_farm, test_area, areas_vid, farm_a
 
     # Check that the created area has correct attributes
     response = client.get(
-        f"{settings.API_V1_STR}/farms/areas/?farm_id={test_farm.id}&tid={test_area['id']}",
+        f"{settings.API_V1_PREFIX}/farms/areas/?farm_id={test_farm.id}&tid={test_area['id']}",
         headers=farm_areas_headers,
         json=data,
     )
@@ -83,7 +83,7 @@ def test_create_area(client: TestClient, test_farm, test_area, areas_vid, farm_a
 @farmOS_testing_server
 def test_get_areas(client: TestClient, test_farm, farm_areas_headers):
     r = client.get(
-        f"{settings.API_V1_STR}/farms/areas/?farm_id={test_farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/areas/?farm_id={test_farm.id}",
         headers=farm_areas_headers,
     )
     # Check response
@@ -118,7 +118,7 @@ def test_update_area(client: TestClient, test_farm, test_area, areas_vid, farm_a
     data['vocabulary'] = areas_vid
 
     response = client.put(
-        f"{settings.API_V1_STR}/farms/areas/?farm_id={test_farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/areas/?farm_id={test_farm.id}",
         headers=farm_areas_headers,
         json=data,
     )
@@ -135,7 +135,7 @@ def test_update_area(client: TestClient, test_farm, test_area, areas_vid, farm_a
 
     # Check that the updated area has correct attributes
     response = client.get(
-        f"{settings.API_V1_STR}/farms/areas/?farm_id={test_farm.id}&tid={test_area['id']}",
+        f"{settings.API_V1_PREFIX}/farms/areas/?farm_id={test_farm.id}&tid={test_area['id']}",
         headers=farm_areas_headers,
     )
     # Check response
@@ -153,7 +153,7 @@ def test_update_area(client: TestClient, test_farm, test_area, areas_vid, farm_a
 @farmOS_testing_server
 def test_delete_area(client: TestClient, test_farm, test_area, farm_areas_headers):
     response = client.delete(
-        f"{settings.API_V1_STR}/farms/areas/?farm_id={test_farm.id}&id={test_area['id']}",
+        f"{settings.API_V1_PREFIX}/farms/areas/?farm_id={test_farm.id}&id={test_area['id']}",
         headers=farm_areas_headers,
     )
 
@@ -164,5 +164,5 @@ def test_delete_area(client: TestClient, test_farm, test_area, farm_areas_header
 
 @farmOS_testing_server
 def test_farm_areas_oauth_scope(client: TestClient):
-    r = client.get(f"{settings.API_V1_STR}/farms/areas")
+    r = client.get(f"{settings.API_V1_PREFIX}/farms/areas")
     assert r.status_code == 401

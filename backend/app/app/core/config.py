@@ -6,8 +6,25 @@ from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, v
 
 
 class Settings(BaseSettings):
-    API_V1_STR: str = "/api/v1"
-    API_V2_STR: str = "/api/v2"
+    API_PREFIX: str = "/api"
+
+    API_V1_PREFIX: str = None
+    @validator("API_V1_PREFIX", pre=True, always=True)
+    def build_api_v1_prefix(cls, v, values):
+        base = values.get("API_PREFIX")
+        prefix = "/v1"
+        if isinstance(v, str):
+            prefix = v
+        return base + prefix
+
+    API_V2_PREFIX: str = None
+    @validator("API_V2_PREFIX", pre=True, always=True)
+    def build_api_v2_prefix(cls, v, values):
+        base = values.get("API_PREFIX")
+        prefix = "/v2"
+        if isinstance(v, str):
+            prefix = v
+        return base + prefix
 
     SECRET_KEY: str = secrets.token_urlsafe(32)
 

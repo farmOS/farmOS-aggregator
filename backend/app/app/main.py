@@ -14,7 +14,7 @@ app = FastAPI(
     title=settings.AGGREGATOR_NAME,
     description="farmOS Aggregator Backend",
     version="v0.9.5",
-    openapi_url=f"{settings.API_V1_STR}/openapi.json"
+    openapi_url=f"{settings.API_PREFIX}/openapi.json"
 )
 
 # Set all CORS enabled origins
@@ -27,5 +27,5 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_headers=["*"],
     ),
 
-app.include_router(api_v1.router, prefix=settings.API_V1_STR)
-app.include_router(api_v2.router, prefix=settings.API_V2_STR)
+app.include_router(api_v1.router, prefix=settings.API_V1_PREFIX)
+app.include_router(api_v2.router, prefix=settings.API_V2_PREFIX)

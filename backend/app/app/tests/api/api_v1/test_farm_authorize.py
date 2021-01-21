@@ -24,7 +24,7 @@ def test_authorize_farm(client: TestClient, test_farm, farm_authorize_headers):
     )
 
     r = client.post(
-        f"{settings.API_V1_STR}/utils/authorize-farm/{test_farm.id}",
+        f"{settings.API_V1_PREFIX}/utils/authorize-farm/{test_farm.id}",
         headers=farm_authorize_headers,
         json=data.dict(),
     )
@@ -47,13 +47,13 @@ def test_authorize_farm(client: TestClient, test_farm, farm_authorize_headers):
 
 
 def test_farm_authorize_oauth_scope(client: TestClient, test_farm):
-    r = client.post(f"{settings.API_V1_STR}/utils/authorize-farm/{test_farm.id}")
+    r = client.post(f"{settings.API_V1_PREFIX}/utils/authorize-farm/{test_farm.id}")
     assert r.status_code == 401
 
 
 def test_get_farm_auth_link(client: TestClient, test_farm, superuser_token_headers):
     r = client.post(
-        f"{settings.API_V1_STR}/utils/farm-auth-link/{test_farm.id}",
+        f"{settings.API_V1_PREFIX}/utils/farm-auth-link/{test_farm.id}",
         headers=superuser_token_headers,
     )
     assert 200 <= r.status_code < 300
@@ -88,7 +88,7 @@ def test_get_farm_auth_link(client: TestClient, test_farm, superuser_token_heade
 
     # Test that the api_token has access to read /api/v1/farms/{id}
     r = client.get(
-        f"{settings.API_V1_STR}/farms/{test_farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/{test_farm.id}",
         headers={'api-token': token},
     )
     assert 200 <= r.status_code < 300
@@ -106,7 +106,7 @@ def test_get_farm_auth_link(client: TestClient, test_farm, superuser_token_heade
     )
 
     r = client.post(
-        f"{settings.API_V1_STR}/utils/authorize-farm/{test_farm.id}",
+        f"{settings.API_V1_PREFIX}/utils/authorize-farm/{test_farm.id}",
         headers={'api-token': token},
         json=data.dict(),
     )

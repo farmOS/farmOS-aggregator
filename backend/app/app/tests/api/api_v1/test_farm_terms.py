@@ -15,7 +15,7 @@ def test_create_term(client: TestClient, test_farm, test_term, farm_terms_header
     data = test_term
 
     response = client.post(
-        f"{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/terms/?farm_id={test_farm.id}",
         headers=farm_terms_headers,
         json=data,
     )
@@ -35,7 +35,7 @@ def test_create_term(client: TestClient, test_farm, test_term, farm_terms_header
 
     # Check that the creats term has correct attributes
     response = client.get(
-        f"{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
+        f"{settings.API_V1_PREFIX}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
         headers=farm_terms_headers,
         json=data,
     )
@@ -54,7 +54,7 @@ def test_create_term(client: TestClient, test_farm, test_term, farm_terms_header
 @farmOS_testing_server
 def test_get_terms(client: TestClient, test_farm, farm_terms_headers):
     r = client.get(
-        f"{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/terms/?farm_id={test_farm.id}",
         headers=farm_terms_headers,
     )
     # Check response
@@ -86,7 +86,7 @@ def test_update_term(client: TestClient, test_farm, test_term, farm_terms_header
     data = test_term
 
     response = client.put(
-        f"{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}",
+        f"{settings.API_V1_PREFIX}/farms/terms/?farm_id={test_farm.id}",
         headers=farm_terms_headers,
         json=data,
     )
@@ -103,7 +103,7 @@ def test_update_term(client: TestClient, test_farm, test_term, farm_terms_header
 
     # Check that the updated term has correct attributes
     response = client.get(
-        f"{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
+        f"{settings.API_V1_PREFIX}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
         headers=farm_terms_headers,
     )
     # Check response
@@ -121,7 +121,7 @@ def test_update_term(client: TestClient, test_farm, test_term, farm_terms_header
 @farmOS_testing_server
 def test_delete_term(client: TestClient, test_farm, test_term, farm_terms_headers):
     response = client.delete(
-        f"{settings.API_V1_STR}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
+        f"{settings.API_V1_PREFIX}/farms/terms/?farm_id={test_farm.id}&tid={test_term['id']}",
         headers=farm_terms_headers,
     )
 
@@ -132,5 +132,5 @@ def test_delete_term(client: TestClient, test_farm, test_term, farm_terms_header
 
 @farmOS_testing_server
 def test_farm_terms_oauth_scope(client: TestClient):
-    r = client.get(f"{settings.API_V1_STR}/farms/terms")
+    r = client.get(f"{settings.API_V1_PREFIX}/farms/terms")
     assert r.status_code == 401
