@@ -206,7 +206,13 @@ def authorize_farm(
     try:
         farm_client = get_farm_client(db=db, farm=farm)
 
-        info = farm_client.info()
+        response = farm_client.info()
+        # Set the info depending on v1 or v2.
+        # v2 provides info under the meta.farm key.
+        if "meta" in response:
+            info = response["meta"]["farm"]
+        else:
+            info = response
 
         crud.farm.update_info(db, farm=farm, info=info)
     except Exception as e:
