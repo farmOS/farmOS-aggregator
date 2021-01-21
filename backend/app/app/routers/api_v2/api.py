@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, Security
 
-from app.routers.api_v1.endpoints import login, users, utils, api_key
+from app.routers.api_v2.endpoints import login, users, utils, api_key
 from app.routers.utils.security import get_current_active_superuser
 
 logger = logging.getLogger(__name__)
