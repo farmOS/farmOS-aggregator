@@ -46,7 +46,7 @@ def get_all_farm_areas(
 
         # Get a farmOS client.
         try:
-            farm_client = get_farm_client(db=db, farm=farm)
+            farm_client = get_farm_client(db=db, farm=farm, version=1)
         except ClientError:
             continue
 
@@ -71,7 +71,7 @@ def create_farm_area(
 
         # Get a farmOS client.
         try:
-            farm_client = get_farm_client(db=db, farm=farm)
+            farm_client = get_farm_client(db=db, farm=farm, version=1)
         except ClientError:
             continue
 
@@ -97,7 +97,7 @@ def update_farm_area(
 
         # Get a farmOS client.
         try:
-            farm_client = get_farm_client(db=db, farm=farm)
+            farm_client = get_farm_client(db=db, farm=farm, version=1)
         except ClientError:
             continue
 
@@ -123,7 +123,7 @@ def delete_farm_area(
 
         # Get a farmOS client.
         try:
-            farm_client = get_farm_client(db=db, farm=farm)
+            farm_client = get_farm_client(db=db, farm=farm, version=1)
         except ClientError:
             continue
 

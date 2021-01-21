@@ -223,7 +223,7 @@ client_state = {}
 
 
 # Create a farmOS.py client.
-def get_farm_client(db, farm):
+def get_farm_client(db, farm, version=2):
     client_id = settings.AGGREGATOR_OAUTH_CLIENT_ID
     client_secret = settings.AGGREGATOR_OAUTH_CLIENT_SECRET
 
@@ -281,7 +281,8 @@ def get_farm_client(db, farm):
             client_secret=client_secret,
             scope=scope,
             token=token.dict(),
-            token_updater=token_updater
+            token_updater=token_updater,
+            version=version
         )
 
         # Make an authenticated request to trigger automatic refresh.

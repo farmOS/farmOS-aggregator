@@ -32,7 +32,7 @@ def get_all_farm_info(
             data[farm.id] = farm.info
         else:
             try:
-                farm_client = get_farm_client(db=db, farm=farm)
+                farm_client = get_farm_client(db=db, farm=farm, version=1)
             except ClientError:
                 continue
 
