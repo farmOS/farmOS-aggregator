@@ -9,16 +9,17 @@ from app.routers.utils.security import get_farm_access, get_current_active_super
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-router.include_router(login.router, tags=["login"])
-router.include_router(users.router, prefix="/users", tags=["users"])
-router.include_router(utils.router, prefix="/utils", tags=["utils"])
+router.include_router(login.router, tags=["login"], deprecated=True)
+router.include_router(users.router, prefix="/users", tags=["users"], deprecated=True)
+router.include_router(utils.router, prefix="/utils", tags=["utils"], deprecated=True)
 
 # Include /api-keys endpoint, require superuser to access.
 router.include_router(
     api_key.router,
     prefix="/api-keys",
     tags=["api keys"],
-    dependencies=[Security(get_current_active_superuser)]
+    dependencies=[Security(get_current_active_superuser)],
+    deprecated=True
 )
 
 # Include /farms endpoints.
