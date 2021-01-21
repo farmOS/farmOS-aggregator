@@ -116,7 +116,7 @@
                 queryParams = `?response_type=${responseType}&client_id=${clientID}&scope=${scopes}&redirect_uri=${redirectURI}&state=${state}`;
             }
 
-            const oauthPath = '/oauth2/authorize';
+            const oauthPath = '/oauth/authorize';
 
             commitSetFarmAuthorizationNonce(this.$store, nonce);
 

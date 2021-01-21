@@ -324,7 +324,7 @@ def get_oauth_token(farm_url, auth_params):
         data['redirect_uri'] = auth_params.redirect_uri
 
     # Build the OAuth2 token URL
-    token_url = build_farm_url(farm_url) + "/oauth2/token"
+    token_url = build_farm_url(farm_url) + "/oauth/token"
 
     response = requests.post(token_url, data)
 
