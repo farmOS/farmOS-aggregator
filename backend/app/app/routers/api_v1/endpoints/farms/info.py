@@ -33,8 +33,8 @@ def get_all_farm_info(
         else:
             try:
                 farm_client = get_farm_client(db=db, farm=farm, version=1)
-            except ClientError:
-                continue
+            except ClientError as e:
+                data[farm.id] = str(e)
 
             try:
                 info = farm_client.info()

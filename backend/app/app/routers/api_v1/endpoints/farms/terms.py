@@ -46,8 +46,8 @@ def get_all_farm_terms(
         # Get a farmOS client.
         try:
             farm_client = get_farm_client(db=db, farm=farm, version=1)
-        except ClientError:
-            continue
+        except ClientError as e:
+            data[farm.id] = str(e)
 
         # Make the request.
         try:
@@ -71,8 +71,8 @@ def create_farm_term(
         # Get a farmOS client.
         try:
             farm_client = get_farm_client(db=db, farm=farm, version=1)
-        except ClientError:
-            continue
+        except ClientError as e:
+            data[farm.id] = str(e)
 
         # Make the request.
         try:
@@ -96,8 +96,8 @@ def update_farm_terms(
         # Get a farmOS client.
         try:
             farm_client = get_farm_client(db=db, farm=farm, version=1)
-        except ClientError:
-            continue
+        except ClientError as e:
+            data[farm.id] = str(e)
 
         # Make the request.
         try:
@@ -121,8 +121,8 @@ def delete_farm_term(
         # Get a farmOS client.
         try:
             farm_client = get_farm_client(db=db, farm=farm, version=1)
-        except ClientError:
-            continue
+        except ClientError as e:
+            data[farm.id] = str(e)
 
         # Make the request.
         for id in tid:

@@ -47,8 +47,8 @@ def get_all_farm_areas(
         # Get a farmOS client.
         try:
             farm_client = get_farm_client(db=db, farm=farm, version=1)
-        except ClientError:
-            continue
+        except ClientError as e:
+            data[farm.id] = str(e)
 
         # Make the request.
         try:
@@ -72,8 +72,8 @@ def create_farm_area(
         # Get a farmOS client.
         try:
             farm_client = get_farm_client(db=db, farm=farm, version=1)
-        except ClientError:
-            continue
+        except ClientError as e:
+            data[farm.id] = str(e)
 
 
         # Make the request.
@@ -98,8 +98,8 @@ def update_farm_area(
         # Get a farmOS client.
         try:
             farm_client = get_farm_client(db=db, farm=farm, version=1)
-        except ClientError:
-            continue
+        except ClientError as e:
+            data[farm.id] = str(e)
 
 
         # Make the request.
@@ -124,8 +124,8 @@ def delete_farm_area(
         # Get a farmOS client.
         try:
             farm_client = get_farm_client(db=db, farm=farm, version=1)
-        except ClientError:
-            continue
+        except ClientError as e:
+            data[farm.id] = str(e)
 
         # Make the request.
         for single_id in id:
