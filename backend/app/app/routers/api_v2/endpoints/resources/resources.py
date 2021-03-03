@@ -68,6 +68,41 @@ def get_resource(
     return data
 
 
+@router.get("/{entity_type}/{bundle}/{uuid}")
+def get_resource_id(
+    request: Request,
+    entity_type: str,
+    bundle: str,
+    uuid: str,
+    farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
+    db: Session = Depends(get_db),
+):
+    query_params = {**request.query_params}
+    query_params.pop('farm_id', None)
+    query_params.pop('farm_url', None)
+
+    data = {}
+    for farm in farm_list:
+        data[farm.id] = None
+
+        # Get a farmOS client.
+        try:
+            farm_client = get_farm_client(db=db, farm=farm)
+        except ClientError as e:
+            data[farm.id] = str(e)
+            continue
+
+        # Make the request.
+        try:
+            response = farm_client.resource.get_id(entity_type, bundle, uuid, query_params)
+            data[farm.id] = response
+        except Exception as e:
+            data[farm.id] = str(e)
+            continue
+
+    return data
+
+
 @router.post("/{entity_type}/{bundle}")
 def create_resource(
     resource: Resource,
