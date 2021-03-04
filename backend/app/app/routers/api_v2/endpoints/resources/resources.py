@@ -40,11 +40,13 @@ def get_resource(
     entity_type: str,
     bundle: str,
     farm_list: List[Farm] = Depends(get_active_farms_url_or_list),
+    all: Optional[bool] = False,
     db: Session = Depends(get_db),
 ):
     query_params = {**request.query_params}
     query_params.pop('farm_id', None)
     query_params.pop('farm_url', None)
+    query_params.pop('all', None)
 
     data = {}
     for farm in farm_list:
@@ -59,7 +61,10 @@ def get_resource(
 
         # Make the request.
         try:
-            response = farm_client.resource.get(entity_type, bundle, query_params)
+            if all:
+                response = list(farm_client.resource.iterate(entity_type, bundle, query_params))
+            else:
+                response = farm_client.resource.get(entity_type, bundle, query_params)
             data[farm.id] = response
         except Exception as e:
             data[farm.id] = str(e)
