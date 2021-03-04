@@ -1,13 +1,14 @@
 from typing import List
 
 from fastapi import APIRouter, Body, Depends, Security, HTTPException, Query
+from pydantic.typing import Optional
 from sqlalchemy.orm import Session
 
 
 from app import crud
 from app.utils import get_settings
 from app.routers.utils.db import get_db
-from app.routers.utils.farms import get_farms_url_or_list, get_farm_by_id, admin_alert_email
+from app.routers.utils.farms import ClientError, get_farm_client, get_farms_url_or_list, get_farm_by_id, admin_alert_email
 from app.routers.utils.security import get_farm_access, get_farm_access_allow_public
 from app.schemas.farm import Farm, AllFarmInfo, FarmCreate, FarmUpdate
 
@@ -28,6 +29,49 @@ def read_farms(
     Retrieve farms
     """
     return farms
+
+
+# /farms/info/ endpoint for accessing farmOS info
+@router.get(
+    "/info",
+    dependencies=[Security(get_farm_access, scopes=['farm:read', 'farm.info'])],
+    tags=["farm info"]
+)
+def get_all_farm_info(
+        db: Session = Depends(get_db),
+        farm_list: List[Farm] = Depends(get_farms_url_or_list),
+        use_cached: Optional[bool] = True,
+):
+    data = {}
+    for farm in farm_list:
+        data[farm.id] = {}
+
+        if use_cached:
+            data[farm.id] = farm.info
+        else:
+
+            # Determine the correct version
+            version = (2 if len(farm.token.access_token) > 60 else 1)
+            try:
+                farm_client = get_farm_client(db=db, farm=farm, version=version)
+            except ClientError as e:
+                data[farm.id] = str(e)
+
+            try:
+                response = farm_client.info()
+                # Set the info depending on v1 or v2.
+                # v2 provides info under the meta.farm key.
+                if "meta" in response:
+                    info = response["meta"]["farm"]
+                else:
+                    info = response
+                data[farm.id]['info'] = info
+
+                crud.farm.update_info(db, farm=farm, info=info)
+            except:
+                continue
+
+    return data
 
 
 @router.get(
