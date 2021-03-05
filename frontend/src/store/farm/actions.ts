@@ -218,14 +218,13 @@ export const actions = {
                 return response.data;
             }
         } catch (error) {
-            if (error.response!.status === 409) {
-                commitRemoveNotification(context, loadingNotification);
-                commitAddNotification(context, {content: 'A farm with that URL already exists.', color: 'error' });
-            } else if (error.response!.status === 406) {
+            if (error.response!.status === 406) {
                 commitRemoveNotification(context, loadingNotification);
                 commitAddNotification(context, {content: 'Could not reach the farmOS Server. Check that the hostname is correct.', color: 'error' });
             } else {
-                await dispatchCheckApiError(context, error);
+                const msg = error.response!.data.detail ? error.response!.data.detail : 'Invalid url.';
+                commitRemoveNotification(context, loadingNotification);
+                commitAddNotification(context, {content: msg, color: 'error' });
             }
         }
     },

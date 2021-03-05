@@ -12,7 +12,7 @@ from app.routers.utils.db import get_db
 from app.schemas.msg import Msg
 from app.schemas.farm import Farm
 from app.schemas.farm_token import FarmTokenCreate, FarmAuthorizationParams
-from app.routers.utils.farms import get_farm_by_id, get_oauth_token, get_farm_client, handle_ping_farms
+from app.routers.utils.farms import get_farm_by_id, get_oauth_token, get_farm_client, handle_ping_farms, build_farm_url
 from app.routers.utils.security import get_farm_access, get_farm_access_allow_public
 from app.utils import (
     get_settings,
@@ -21,6 +21,7 @@ from app.utils import (
     generate_farm_authorization_link,
     send_farm_authorization_email
 )
+from app.core.jwt import create_farm_api_token
 
 logger = logging.getLogger(__name__)
 
@@ -149,14 +150,23 @@ def authorize_farm(
     try:
         logging.debug("Testing OAuth token with farmOS client.")
         logging.debug(token.dict())
+        version = (2 if len(token.access_token) > 60 else 1)
         client = farmOS(
             hostname=farm_url,
             client_id=client_id,
             client_secret=client_secret,
             scope=auth_params.scope,
             token=token.dict(),
+            version=version,
         )
-        info = client.info()
+
+        # Set the info depending on v1 or v2.
+        # v2 provides info under the meta.farm key.
+        response = client.info()
+        if "meta" in response:
+            info = response["meta"]["farm"]
+        else:
+            info = response
 
         return {
             'token': token,
@@ -170,7 +180,7 @@ def authorize_farm(
 
 @router.post(
     "/authorize-farm/{farm_id}",
-    dependencies=[Security(get_farm_access, scopes=['farm:authorize'])]
+    dependencies=[Security(get_farm_access_allow_public, scopes=['farm:authorize'])]
 )
 def authorize_farm(
         farm: Farm = Depends(get_farm_by_id),
@@ -224,7 +234,7 @@ def authorize_farm(
             detail=error,
         )
 
-    return token
+    return {'token': token, 'info': info}
 
 
 @router.post(
@@ -235,22 +245,22 @@ def validate_farm_url(
         *,
         db: Session = Depends(get_db),
         farm_url: str = Body(..., embed=True),
+        settings=Depends(get_settings),
 ):
     """
     Validate the farm_url when registering a new farm.
     Check to make sure the url is not already in use, and check that
     the url points to a valid farmOS server.
     """
-    existing_farm = crud.farm.get_by_url(db, farm_url=farm_url)
-    if existing_farm:
+    try:
+        clean_url = build_farm_url(farm_url)
+    except Exception as e:
         raise HTTPException(
-            status_code=409,
-            detail="A farm with this URL already exists.",
+            status_code=400,
+            detail=f"Invalid url: {e}",
         )
-
     # Check that the `farm.json` endpoint returns 200
     # TODO: Use farmOS.py helper function to validate server hostname.
-    response = {}
     success = True
     if not success:
         raise HTTPException(
@@ -258,5 +268,14 @@ def validate_farm_url(
             detail="Invalid farmOS hostname. Make sure this is a valid hostname for your farmOS Server.",
         )
 
-    return response
+    farm_id = None
+    api_token = None
+    existing_farm = crud.farm.get_by_url(db, farm_url=clean_url)
+    if existing_farm is not None:
+        farm_id = existing_farm.id
+        api_token = create_farm_api_token(farm_id=[farm_id], scopes=["farm:authorize"])
+    elif settings.AGGREGATOR_OPEN_FARM_REGISTRATION is True:
+        api_token = create_farm_api_token(farm_id=[], scopes=["farm:create"])
+
+    return {"id": farm_id, "api_token": api_token}
 

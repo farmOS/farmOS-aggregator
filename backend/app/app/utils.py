@@ -190,6 +190,6 @@ def generate_farm_registration_link():
     token = create_farm_api_token(farm_id=[], scopes=["farm:create", "farm:info"])
 
     server_host = settings.SERVER_HOST
-    link = f"{server_host}/register-farm?api_token={token.decode()}"
+    link = f"{server_host}/authorize-farm?api_token={token.decode()}"
 
     return link

@@ -1,26 +1,5 @@
 <template>
   <div>
-    <!-- Dialog for presenting successful Authorization -->
-    <v-dialog v-model="authSuccessDialog" persistent max-width="450">
-      <v-card>
-        <v-card-title class="headline">Farm Authorized!</v-card-title>
-        <v-card-text>
-          <p>
-            Your farm was successfully authorized with the {{ appName }}!
-          </p>
-
-          <p class="font-weight-black">
-            Your farm has ID={{ farmId }}
-          </p>
-
-          <p>
-            No further action is required. You may close this window.
-          </p>
-
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-
     <form>
       <div class="headline text--primary">
         farmOS Server Authorization
@@ -63,17 +42,16 @@
     export default class FarmAuthorizationForm extends Vue {
         @Prop({default: false}) public appName!: string;
         @Prop({default: false}) public redirectUri!: string;
+        @Prop({default: false}) public registerNewFarm!: boolean;
         @Prop({default: null}) public apiToken!: string;
         @Prop({default: false}) public farmUrl!: string;
-        @Prop({default: false}) public authCode!: string;
-        @Prop({default: null}) public farmName!: string;
         @Prop({default: null}) public farmId!: number;
 
         // Load environment config
         public apiUrl = env('apiUrl');
 
-        // Success Dialog
-        public authSuccessDialog: boolean = false;
+        // Variables.
+        public authCode: string = '';
 
         // Load the the configured oauth settings for this aggregator.
         public oauthClientId = env('oauthClientId');
@@ -96,6 +74,7 @@
             const nonce: FarmAuthorizationNonce = {
                 apiToken: this.apiToken,
                 state: this.authState,
+                registerNewFarm: this.registerNewFarm,
                 farmId: this.farmId,
                 farmUrl: this.farmUrl,
                 scopes: this.oauthSelectedScopes,
@@ -139,19 +118,21 @@
             this.oauthSelectedScopes = nonce.scopes!;
             const scope = this.cleanOAuthStrings();
             const savedState = nonce.state!;
+            this.$emit('update:registerNewFarm', nonce.registerNewFarm!);
             const farmUrl = nonce.farmUrl!;
-            this.farmUrl = farmUrl;
+            this.$emit('update:farmUrl', farmUrl);
             const farmId = +nonce.farmId!;
-            this.farmId = farmId;
+            this.$emit('update:farmId', farmId);
             const apiToken = nonce.apiToken;
+            this.$emit('update:apiToken', apiToken);
 
             if (savedState !== authState) {
-                commitAddNotification(this.$store, {
-                    content: 'Authorization error: State parameters do not match.',
-                    color: 'error',
-                });
-                this.$router.push(this.$route.path);
-                return;
+              commitAddNotification(this.$store, {
+                  content: 'Authorization error: State parameters do not match.',
+                  color: 'error',
+              });
+              this.$router.push(this.$route.path);
+              return;
             }
 
             // Remove the nonce once retrieved.
@@ -174,18 +155,18 @@
                     this.$store,
                     {id: farmId, authValues, apiToken},
                 ).then( (response) => {
-                    this.$emit('update:apiToken', response);
-                    this.$emit('update:authFinished', true);
-                    this.authSuccessDialog = true;
+                  this.$emit('update:apiToken', apiToken);
+                  this.$emit('update:authFinished', true);
+                  this.$emit('authorization-complete', response);
                 });
             } else {
                 await dispatchAuthorizeNewFarm(
                     this.$store,
                     {farmUrl, authValues, apiToken},
                 ).then((response) => {
-                    this.$emit('update:apiToken', response);
-                    this.$emit('update:authFinished', true);
-                    this.authSuccessDialog = true;
+                  this.$emit('update:apiToken', apiToken);
+                  this.$emit('update:authFinished', true);
+                  this.$emit('authorization-complete', response);
                 });
             }
 

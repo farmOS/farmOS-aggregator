@@ -75,9 +75,9 @@ export interface FarmProfile {
 }
 
 export interface FarmInfo {
-    name?: string;
-    url?: string;
-    api_version?: string;
+    name: string;
+    url: string;
+    api_version: string;
 }
 
 export interface FarmProfileUpdate {
@@ -111,6 +111,7 @@ export interface FarmProfileAuthorize {
 export interface FarmAuthorizationNonce {
     apiToken?: string;
     state?: string;
+    registerNewFarm?: boolean;
     farmId?: number;
     farmUrl?: string;
     scopes?: string[];
