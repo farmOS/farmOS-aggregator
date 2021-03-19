@@ -2,13 +2,22 @@ import os
 import secrets
 from typing import List
 
-from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, validator, Json
+from pydantic import (
+    AnyHttpUrl,
+    BaseSettings,
+    EmailStr,
+    HttpUrl,
+    PostgresDsn,
+    validator,
+    Json,
+)
 
 
 class Settings(BaseSettings):
     API_PREFIX: str = "/api"
 
     API_V1_PREFIX: str = None
+
     @validator("API_V1_PREFIX", pre=True, always=True)
     def build_api_v1_prefix(cls, v, values):
         base = values.get("API_PREFIX")
@@ -18,6 +27,7 @@ class Settings(BaseSettings):
         return base + prefix
 
     API_V2_PREFIX: str = None
+
     @validator("API_V2_PREFIX", pre=True, always=True)
     def build_api_v2_prefix(cls, v, values):
         base = values.get("API_PREFIX")

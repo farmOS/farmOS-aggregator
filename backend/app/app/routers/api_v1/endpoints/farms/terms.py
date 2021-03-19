@@ -6,7 +6,11 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.routers.utils.db import get_db
-from app.routers.utils.farms import get_active_farms_url_or_list, get_farm_client, ClientError
+from app.routers.utils.farms import (
+    get_active_farms_url_or_list,
+    get_farm_client,
+    ClientError,
+)
 from app.schemas.farm import Farm
 
 router = APIRouter()
@@ -16,7 +20,7 @@ router = APIRouter()
 
 class Term(BaseModel):
     class Config:
-        extra = 'allow'
+        extra = "allow"
 
     name: str
     vocabulary: int
@@ -24,7 +28,7 @@ class Term(BaseModel):
 
 class TermUpdate(BaseModel):
     class Config:
-        extra = 'allow'
+        extra = "allow"
 
     id: int
 
@@ -36,8 +40,8 @@ def get_all_farm_terms(
     db: Session = Depends(get_db),
 ):
     query_params = {**request.query_params}
-    query_params.pop('farm_id', None)
-    query_params.pop('farm_url', None)
+    query_params.pop("farm_id", None)
+    query_params.pop("farm_url", None)
 
     data = {}
     for farm in farm_list:
@@ -51,7 +55,9 @@ def get_all_farm_terms(
 
         # Make the request.
         try:
-            data[farm.id] = data[farm.id] + farm_client.term.get(filters=query_params)['list']
+            data[farm.id] = (
+                data[farm.id] + farm_client.term.get(filters=query_params)["list"]
+            )
         except:
             continue
 

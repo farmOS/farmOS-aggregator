@@ -29,9 +29,9 @@ def test_create_term(client: TestClient, test_farm, test_term, farm_terms_header
     # Check term was created
     test_farm_terms = content[str(test_farm.id)]
     assert len(test_farm_terms) == 1
-    assert 'id' in test_farm_terms[0]
-    created_term_id = test_farm_terms[0]['id']
-    test_term['id'] = created_term_id
+    assert "id" in test_farm_terms[0]
+    created_term_id = test_farm_terms[0]["id"]
+    test_term["id"] = created_term_id
 
     # Check that the creats term has correct attributes
     response = client.get(
@@ -46,9 +46,9 @@ def test_create_term(client: TestClient, test_farm, test_term, farm_terms_header
     assert len(content[str(test_farm.id)]) == 1
     created_term = content[str(test_farm.id)][0]
     # Check attributes
-    assert created_term['name'] == data['name']
+    assert created_term["name"] == data["name"]
     # Check that an optional attribute was populated
-    assert data['description'] in created_term['description']
+    assert data["description"] in created_term["description"]
 
 
 @farmOS_testing_server
@@ -81,8 +81,8 @@ def test_get_terms(client: TestClient, test_farm, farm_terms_headers):
 @farmOS_testing_server
 def test_update_term(client: TestClient, test_farm, test_term, farm_terms_headers):
     # Change term attributes
-    test_term['name'] = "Updated name from farmOS-aggregator"
-    test_term['description'] = "Updated description from farmOS-aggregator"
+    test_term["name"] = "Updated name from farmOS-aggregator"
+    test_term["description"] = "Updated description from farmOS-aggregator"
     data = test_term
 
     response = client.put(
@@ -98,8 +98,8 @@ def test_update_term(client: TestClient, test_farm, test_term, farm_terms_header
     assert str(test_farm.id) in content
     assert len(content[str(test_farm.id)]) == 1
     response_term = content[str(test_farm.id)][0]
-    assert 'id' in response_term
-    assert test_term['id'] == str(response_term['id'])
+    assert "id" in response_term
+    assert test_term["id"] == str(response_term["id"])
 
     # Check that the updated term has correct attributes
     response = client.get(
@@ -113,9 +113,9 @@ def test_update_term(client: TestClient, test_farm, test_term, farm_terms_header
     assert len(content[str(test_farm.id)]) == 1
     updated_term = content[str(test_farm.id)][0]
     # Check attributes
-    assert updated_term['name'] == data['name']
+    assert updated_term["name"] == data["name"]
     # Check that an optional attribute was updated
-    assert data['description'] in updated_term['description']
+    assert data["description"] in updated_term["description"]
 
 
 @farmOS_testing_server

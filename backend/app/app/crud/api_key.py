@@ -27,7 +27,7 @@ def create(db: Session, api_key_in: ApiKeyCreate):
     key = create_api_key(
         farm_id=api_key_in.farm_id,
         all_farms=api_key_in.all_farms,
-        scopes=api_key_in.scopes
+        scopes=api_key_in.scopes,
     )
     db_item = ApiKey(key=key, **api_key_in.dict())
     db.add(db_item)

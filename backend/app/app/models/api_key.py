@@ -6,7 +6,7 @@ from app.db.base_class import Base
 
 
 class ApiKey(Base):
-    __tablename__ = 'apikey'
+    __tablename__ = "apikey"
 
     id = Column(Integer, primary_key=True)
     time_created = Column(DateTime(timezone=True), server_default=func.now())

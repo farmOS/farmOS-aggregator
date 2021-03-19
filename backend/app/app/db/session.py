@@ -8,6 +8,6 @@ engine = create_engine(
     pool_size=settings.SQLALCHEMY_POOL_SIZE,
     max_overflow=settings.SQLALCHEMY_MAX_OVERFLOW,
     pool_pre_ping=True,
-    echo_pool=True
+    echo_pool=True,
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

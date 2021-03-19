@@ -1,7 +1,12 @@
 import logging
 import jwt
 from fastapi import Depends, HTTPException, Security, Query
-from fastapi.security import OAuth2PasswordBearer, APIKeyQuery, APIKeyHeader, SecurityScopes
+from fastapi.security import (
+    OAuth2PasswordBearer,
+    APIKeyQuery,
+    APIKeyHeader,
+    SecurityScopes,
+)
 from jwt import PyJWTError
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_403_FORBIDDEN, HTTP_401_UNAUTHORIZED
@@ -31,12 +36,12 @@ oauth_scopes = {
 optional_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V2_PREFIX}/login/access-token",
     scopes=oauth_scopes,
-    auto_error=False
+    auto_error=False,
 )
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V2_PREFIX}login/access-token",
     scopes=oauth_scopes,
-    auto_error=True
+    auto_error=True,
 )
 
 # Define a header to check for API Tokens.
@@ -55,7 +60,7 @@ api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 def get_current_user(
     security_scopes: SecurityScopes,
     db: Session = Depends(get_db),
-    token: str = Security(reusable_oauth2)
+    token: str = Security(reusable_oauth2),
 ):
     if security_scopes.scopes:
         authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
@@ -80,8 +85,7 @@ def get_current_user(
     for scope in security_scopes.scopes:
         if scope not in token_data.scopes:
             raise HTTPException(
-                status_code=HTTP_401_UNAUTHORIZED,
-                detail="Not enough permissions."
+                status_code=HTTP_401_UNAUTHORIZED, detail="Not enough permissions."
             )
 
     return user
@@ -104,7 +108,7 @@ def get_current_active_superuser(current_user: User = Security(get_current_user)
 def get_current_user_farm_access(
     security_scopes: SecurityScopes,
     db: Session = Depends(get_db),
-    token: str = Security(optional_oauth2)
+    token: str = Security(optional_oauth2),
 ):
     if security_scopes.scopes:
         authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
@@ -133,15 +137,16 @@ def get_current_user_farm_access(
         for scope in security_scopes.scopes:
             if scope not in token_data.scopes:
                 raise HTTPException(
-                    status_code=HTTP_401_UNAUTHORIZED,
-                    detail="Not enough permissions."
+                    status_code=HTTP_401_UNAUTHORIZED, detail="Not enough permissions."
                 )
 
         all_farms = False
         if crud.user.is_superuser(user):
             all_farms = True
 
-        return FarmAccess(scopes=token_data.scopes, user_id=token_data.user_id, all_farms=all_farms)
+        return FarmAccess(
+            scopes=token_data.scopes, user_id=token_data.user_id, all_farms=all_farms
+        )
 
 
 def get_api_key_farm_access(
@@ -156,32 +161,32 @@ def get_api_key_farm_access(
             token_data = _validate_token(api_key)
         except (PyJWTError, ValidationError) as e:
             raise HTTPException(
-                status_code=HTTP_401_UNAUTHORIZED,
-                detail="Could not validate api key.",
+                status_code=HTTP_401_UNAUTHORIZED, detail="Could not validate api key.",
             )
 
         for scope in security_scopes.scopes:
             if scope not in token_data.scopes:
                 raise HTTPException(
-                    status_code=HTTP_401_UNAUTHORIZED,
-                    detail="Not enough permissions.",
+                    status_code=HTTP_401_UNAUTHORIZED, detail="Not enough permissions.",
                 )
 
         key_in_db = crud.api_key.get_by_key(db, key=api_key.encode())
 
         if key_in_db is None:
             raise HTTPException(
-                status_code=HTTP_401_UNAUTHORIZED,
-                detail="API Key doesn't exist.",
+                status_code=HTTP_401_UNAUTHORIZED, detail="API Key doesn't exist.",
             )
 
         if not key_in_db.enabled:
             raise HTTPException(
-                status_code=HTTP_401_UNAUTHORIZED,
-                detail="API Key is not enabled."
+                status_code=HTTP_401_UNAUTHORIZED, detail="API Key is not enabled."
             )
 
-        return FarmAccess(scopes=token_data.scopes, farm_id_list=token_data.farm_id, all_farms=token_data.all_farms)
+        return FarmAccess(
+            scopes=token_data.scopes,
+            farm_id_list=token_data.farm_id,
+            all_farms=token_data.all_farms,
+        )
 
 
 def get_api_token_farm_access(
@@ -203,11 +208,12 @@ def get_api_token_farm_access(
         for scope in security_scopes.scopes:
             if scope not in token_data.scopes:
                 raise HTTPException(
-                    status_code=HTTP_401_UNAUTHORIZED,
-                    detail="Not enough permissions."
+                    status_code=HTTP_401_UNAUTHORIZED, detail="Not enough permissions."
                 )
 
-        return FarmAccess(scopes=token_data.scopes, farm_id_list=token_data.farm_id, all_farms=False)
+        return FarmAccess(
+            scopes=token_data.scopes, farm_id_list=token_data.farm_id, all_farms=False
+        )
 
     return None
 
@@ -215,7 +221,7 @@ def get_api_token_farm_access(
 def get_farm_access(
     user_access: dict = Depends(get_current_user_farm_access),
     api_token_access: dict = Depends(get_api_token_farm_access),
-    api_key_access: dict = Depends(get_api_key_farm_access)
+    api_key_access: dict = Depends(get_api_key_farm_access),
 ):
     farm_access = None
 
@@ -234,8 +240,7 @@ def get_farm_access(
     if farm_access is None:
         logger.debug(f"Request has no farm access.")
         raise HTTPException(
-            status_code=HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials"
+            status_code=HTTP_401_UNAUTHORIZED, detail="Could not validate credentials"
         )
 
     return farm_access
@@ -245,7 +250,7 @@ def get_farm_access_allow_public(
     settings=Depends(get_settings),
     user_access: dict = Depends(get_current_user_farm_access),
     api_token_access: dict = Depends(get_api_token_farm_access),
-    api_key_access: dict = Depends(get_api_key_farm_access)
+    api_key_access: dict = Depends(get_api_key_farm_access),
 ):
     farm_access = None
 
@@ -270,8 +275,7 @@ def get_farm_access_allow_public(
     if farm_access is None:
         logger.debug(f"Request has no farm access.")
         raise HTTPException(
-            status_code=HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials"
+            status_code=HTTP_401_UNAUTHORIZED, detail="Could not validate credentials"
         )
 
     return farm_access
@@ -283,5 +287,7 @@ def _validate_token(token):
     farm_id = payload.get("farm_id", [])
     all_farms = payload.get("all_farms", False)
     token_scopes = payload.get("scopes", [])
-    token_data = TokenData(scopes=token_scopes, user_id=user_id, farm_id=farm_id, all_farms=all_farms)
+    token_data = TokenData(
+        scopes=token_scopes, user_id=user_id, farm_id=farm_id, all_farms=all_farms
+    )
     return token_data

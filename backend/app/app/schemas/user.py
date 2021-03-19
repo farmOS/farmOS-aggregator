@@ -10,6 +10,7 @@ class UserBase(APIModel):
     is_superuser: Optional[bool] = False
     full_name: Optional[str] = None
 
+
 class UserBaseInDB(UserBase):
     id: int = None
 

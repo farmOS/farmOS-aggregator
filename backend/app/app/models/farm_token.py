@@ -5,7 +5,7 @@ from app.db.base_class import Base
 
 
 class FarmToken(Base):
-    __tablename__ = 'farmtoken'
+    __tablename__ = "farmtoken"
 
     id = Column(Integer, primary_key=True, index=True)
     access_token = Column(String)

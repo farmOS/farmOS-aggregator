@@ -28,20 +28,17 @@ logger = logging.getLogger(__name__)
 settings = get_settings()
 
 unauthorized_exception = HTTPException(
-    status_code = HTTP_401_UNAUTHORIZED,
-    detail="Not enough permissions to access this farm."
+    status_code=HTTP_401_UNAUTHORIZED,
+    detail="Not enough permissions to access this farm.",
 )
 
-farm_not_found_exception = HTTPException(
-    status_code = 404,
-    detail="Farm does not exist."
-)
+farm_not_found_exception = HTTPException(status_code=404, detail="Farm does not exist.")
 
 
 def get_farm_by_url(
     db: Session = Depends(get_db),
     farm_url: str = Query(None),
-    farm_access: FarmAccess = Depends(get_farm_access)
+    farm_access: FarmAccess = Depends(get_farm_access),
 ):
     farm = None
     if farm_url is not None:
@@ -59,7 +56,7 @@ def get_farm_by_url(
 def get_active_farm_by_url(
     db: Session = Depends(get_db),
     farm_url: str = Query(None),
-    farm_access: FarmAccess = Depends(get_farm_access)
+    farm_access: FarmAccess = Depends(get_farm_access),
 ):
     farm = None
     if farm_url is not None:
@@ -77,7 +74,7 @@ def get_active_farm_by_url(
 def get_farms_by_id_list(
     db: Session = Depends(get_db),
     farm_id: List[int] = Query(None),
-    farm_access: FarmAccess = Depends(get_farm_access)
+    farm_access: FarmAccess = Depends(get_farm_access),
 ):
     # Load all farms if the user can access all farms.
     if farm_id is None and farm_access.all_farms:
@@ -115,7 +112,9 @@ def get_active_farms_by_id_list(
 
     # Load all the farms the user has access to if none are provided.
     if farm_id is None and farm_access.farm_id_list is not None:
-        farms = crud.farm.get_by_multi_id(db, farm_id_list=farm_access.farm_id_list, active=True)
+        farms = crud.farm.get_by_multi_id(
+            db, farm_id_list=farm_access.farm_id_list, active=True
+        )
         return farms
 
     # Load the requested farm(s) if the user has access.
@@ -135,7 +134,7 @@ def get_active_farms_by_id_list(
 def get_farm_by_id(
     farm_id: int,
     db: Session = Depends(get_db),
-    farm_access: FarmAccess = Depends(get_farm_access)
+    farm_access: FarmAccess = Depends(get_farm_access),
 ):
     if not farm_access.can_access_farm(farm_id):
         raise unauthorized_exception
@@ -194,8 +193,8 @@ def _save_token(token, db=None, farm=None):
             create_farm_token(db, token_in)
 
         # Update the Farm.scope attribute based on what the server returned.
-        if 'scope' in token:
-            crud.farm.update_scope(db, farm=farm, scope=token['scope'])
+        if "scope" in token:
+            crud.farm.update_scope(db, farm=farm, scope=token["scope"])
 
 
 # Helper function that pings all active farms.
@@ -214,8 +213,10 @@ def handle_ping_farms(db: Session, settings):
 
     difference = len(farm_list) - total_response
     if difference > 0 and settings.AGGREGATOR_ALERT_PING_FARMS_ERRORS:
-        admin_alert_email(db=db,
-                          message=f"Pinged {total_response}/{len(farm_list)} active farms. {difference} did not respond. Check the list of farm profiles for authorization status errors.")
+        admin_alert_email(
+            db=db,
+            message=f"Pinged {total_response}/{len(farm_list)} active farms. {difference} did not respond. Check the list of farm profiles for authorization status errors.",
+        )
 
 
 # Dict of threading events associated with farm_ids.
@@ -237,13 +238,17 @@ def get_farm_client(db, farm, version=2):
 
     if farm.token is None:
         error = "No OAuth token. Farm must be Authorized before making requests."
-        crud.farm.update_is_authorized(db, farm_id=farm.id, is_authorized=False, auth_error=error)
+        crud.farm.update_is_authorized(
+            db, farm_id=farm.id, is_authorized=False, auth_error=error
+        )
         raise ClientError(error)
     token = FarmTokenBase.from_orm(farm.token)
 
     if farm.scope is None:
         error = "No Scope. Farm must be Authorized before making requests."
-        crud.farm.update_is_authorized(db, farm_id=farm.id, is_authorized=False, auth_error=error)
+        crud.farm.update_is_authorized(
+            db, farm_id=farm.id, is_authorized=False, auth_error=error
+        )
         raise ClientError(error)
     # Use the saved scope.
     scope = farm.scope
@@ -261,7 +266,7 @@ def get_farm_client(db, farm, version=2):
 
     # Allow OAuth over http
     if settings.AGGREGATOR_OAUTH_INSECURE_TRANSPORT:
-        os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+        os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
     # Create a new threading event to signal other threads
     # that we are currently making requests to this farm.
@@ -291,7 +296,7 @@ def get_farm_client(db, farm, version=2):
             scope=scope,
             token=token.dict(),
             token_updater=token_updater,
-            version=version
+            version=version,
         )
 
         # Make an authenticated request to trigger automatic refresh.
@@ -303,9 +308,24 @@ def get_farm_client(db, farm, version=2):
         crud.farm.update_is_authorized(db, farm_id=farm.id, is_authorized=True)
     except Exception as e:
         if settings.AGGREGATOR_ALERT_ALL_ERRORS:
-            admin_alert_email(db=db, message="Cannot authenticate client with farmOS server id: " + str(farm.id) + " - " + repr(e) + str(e))
-        logging.error("Cannot authenticate client with farmOS server id: " + str(farm.id) + " - " + repr(e) + str(e))
-        crud.farm.update_is_authorized(db, farm_id=farm.id, is_authorized=False, auth_error=str(e))
+            admin_alert_email(
+                db=db,
+                message="Cannot authenticate client with farmOS server id: "
+                + str(farm.id)
+                + " - "
+                + repr(e)
+                + str(e),
+            )
+        logging.error(
+            "Cannot authenticate client with farmOS server id: "
+            + str(farm.id)
+            + " - "
+            + repr(e)
+            + str(e)
+        )
+        crud.farm.update_is_authorized(
+            db, farm_id=farm.id, is_authorized=False, auth_error=str(e)
+        )
         raise ClientError(e)
     finally:
         # Notify other threads that we are done making requests.
@@ -320,17 +340,17 @@ def get_farm_client(db, farm, version=2):
 def get_oauth_token(farm_url, auth_params):
     logging.debug("Completing Authorization Code flow for: " + farm_url)
     data = {}
-    data['code'] = auth_params.code
-    data['state'] = auth_params.state
-    data['grant_type'] = auth_params.grant_type
-    data['client_id'] = auth_params.client_id
-    data['redirect_uri'] = farm_url + "/api/authorized"
+    data["code"] = auth_params.code
+    data["state"] = auth_params.state
+    data["grant_type"] = auth_params.grant_type
+    data["client_id"] = auth_params.client_id
+    data["redirect_uri"] = farm_url + "/api/authorized"
 
     if auth_params.client_secret is not None:
-        data['client_secret'] = auth_params.client_secret
+        data["client_secret"] = auth_params.client_secret
 
     if auth_params.redirect_uri is not None:
-        data['redirect_uri'] = auth_params.redirect_uri
+        data["redirect_uri"] = auth_params.redirect_uri
 
     # Build the OAuth2 token URL
     token_url = build_farm_url(farm_url) + "/oauth/token"
@@ -342,13 +362,17 @@ def get_oauth_token(farm_url, auth_params):
         logging.debug("Successfully retrieved access token")
 
         if "expires_at" not in response_token:
-            response_token['expires_at'] = str(time.time() + int(response_token['expires_in']))
+            response_token["expires_at"] = str(
+                time.time() + int(response_token["expires_in"])
+            )
 
         new_token = FarmTokenBase(**response_token)
         return new_token
     else:
-        logging.error("Could not complete OAuth Authorization Flow: " )
-        raise HTTPException(status_code=400, detail="Could not retrieve an access token.")
+        logging.error("Could not complete OAuth Authorization Flow: ")
+        raise HTTPException(
+            status_code=400, detail="Could not retrieve an access token."
+        )
 
 
 def build_farm_url(farm_url):
@@ -379,7 +403,7 @@ def build_farm_url(farm_url):
     # If no netloc was provided, it was probably parsed as the path.
     if not parsed_url.netloc and parsed_url.path:
         parsed_url = parsed_url._replace(netloc=parsed_url.path)
-        parsed_url = parsed_url._replace(path='')
+        parsed_url = parsed_url._replace(path="")
 
     # Check for netloc.
     if not parsed_url.netloc:

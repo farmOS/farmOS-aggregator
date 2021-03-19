@@ -7,6 +7,7 @@ from app.schemas.user import UserCreate
 # for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
 from app.db import base
 
+
 def init_db(db):
     # Tables should be created with Alembic migrations
     # But if you don't want to use migrations, create

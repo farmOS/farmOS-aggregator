@@ -18,14 +18,12 @@ router.include_router(
     api_key.router,
     prefix="/api-keys",
     tags=["api keys"],
-    dependencies=[Security(get_current_active_superuser)]
+    dependencies=[Security(get_current_active_superuser)],
 )
 
 # Include /farms endpoints.
 router.include_router(
-    farms.router,
-    prefix="/farms",
-    tags=["farms"],
+    farms.router, prefix="/farms", tags=["farms"],
 )
 
 # Include /farms/logs endpoints.
@@ -33,7 +31,7 @@ router.include_router(
     resources.router,
     prefix="/farms/resources",
     tags=["Resources"],
-    dependencies=[Security(get_farm_access, scopes=['farm:read'])]
+    dependencies=[Security(get_farm_access, scopes=["farm:read"])],
 )
 
 # Include /farms/resources/subrequests endpoint.
@@ -41,5 +39,5 @@ router.include_router(
     subrequests.router,
     prefix="/farms/resources/subrequests",
     tags=["Resources"],
-    dependencies=[Security(get_farm_access, scopes=['farm:read'])]
+    dependencies=[Security(get_farm_access, scopes=["farm:read"])],
 )

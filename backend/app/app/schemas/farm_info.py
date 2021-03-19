@@ -14,4 +14,3 @@ class FarmInfo(BaseModel):
     user: Optional[dict]
     system_of_measurement: Optional[str]
     resources: Optional[dict]
-

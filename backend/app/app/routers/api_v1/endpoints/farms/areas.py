@@ -6,7 +6,11 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.routers.utils.db import get_db
-from app.routers.utils.farms import get_active_farms_url_or_list, get_farm_client, ClientError
+from app.routers.utils.farms import (
+    get_active_farms_url_or_list,
+    get_farm_client,
+    ClientError,
+)
 from app.schemas.farm import Farm
 
 router = APIRouter()
@@ -16,7 +20,7 @@ router = APIRouter()
 
 class Area(BaseModel):
     class Config:
-        extra = 'allow'
+        extra = "allow"
 
     name: str
     vocabulary: int
@@ -25,7 +29,7 @@ class Area(BaseModel):
 
 class AreaUpdate(BaseModel):
     class Config:
-        extra = 'allow'
+        extra = "allow"
 
     id: int
 
@@ -37,8 +41,8 @@ def get_all_farm_areas(
     db: Session = Depends(get_db),
 ):
     query_params = {**request.query_params}
-    query_params.pop('farm_id', None)
-    query_params.pop('farm_url', None)
+    query_params.pop("farm_id", None)
+    query_params.pop("farm_url", None)
 
     data = {}
     for farm in farm_list:
@@ -52,7 +56,9 @@ def get_all_farm_areas(
 
         # Make the request.
         try:
-            data[farm.id] = data[farm.id] + farm_client.area.get(filters=query_params)['list']
+            data[farm.id] = (
+                data[farm.id] + farm_client.area.get(filters=query_params)["list"]
+            )
         except:
             continue
 
@@ -74,7 +80,6 @@ def create_farm_area(
             farm_client = get_farm_client(db=db, farm=farm, version=1)
         except ClientError as e:
             data[farm.id] = str(e)
-
 
         # Make the request.
         try:
@@ -100,7 +105,6 @@ def update_farm_area(
             farm_client = get_farm_client(db=db, farm=farm, version=1)
         except ClientError as e:
             data[farm.id] = str(e)
-
 
         # Make the request.
         try:

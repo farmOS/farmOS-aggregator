@@ -33,8 +33,7 @@ def send_email(email_to: str, subject_template="", html_template="", environment
             return
 
         raise HTTPException(
-            status_code=HTTP_403_FORBIDDEN,
-            detail="Emails not enabled."
+            status_code=HTTP_403_FORBIDDEN, detail="Emails not enabled."
         )
 
     message = emails.Message(
@@ -151,10 +150,7 @@ def send_farm_registration_email(email_to: str, link: str):
         email_to=email_to,
         subject_template=subject,
         html_template=template_str,
-        environment={
-            "aggregator_name": settings.AGGREGATOR_NAME,
-            "link": link,
-        },
+        environment={"aggregator_name": settings.AGGREGATOR_NAME, "link": link,},
     )
 
 
@@ -178,7 +174,9 @@ def send_farm_authorization_email(email_to: str, link: str, farm: FarmBase):
 
 
 def generate_farm_authorization_link(farm_id):
-    token = create_farm_api_token(farm_id=[farm_id], scopes=["farm:read", "farm:authorize", "farm.info"])
+    token = create_farm_api_token(
+        farm_id=[farm_id], scopes=["farm:read", "farm:authorize", "farm.info"]
+    )
 
     server_host = settings.SERVER_HOST
     link = f"{server_host}/authorize-farm/?farm_id={farm_id}&api_token={token.decode()}"

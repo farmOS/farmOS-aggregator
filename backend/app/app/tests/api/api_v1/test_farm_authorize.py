@@ -32,7 +32,7 @@ def test_authorize_farm(client: TestClient, test_farm, farm_authorize_headers):
     # This is because we cannot write an integration test for the OAuth Auth code flow at this time.
     assert r.status_code == 400
 
-    '''
+    """
     # Values to test if we could write an integration test.
     token = r.json()
 
@@ -43,7 +43,7 @@ def test_authorize_farm(client: TestClient, test_farm, farm_authorize_headers):
     assert db_token.expires_in == token.expires_in
     assert db_token.refresh_token == token.refresh_token
     assert db_token.expires_at == token.expires_at
-    '''
+    """
 
 
 def test_farm_authorize_oauth_scope(client: TestClient, test_farm):
@@ -66,7 +66,7 @@ def test_get_farm_auth_link(client: TestClient, test_farm, superuser_token_heade
     # Cannot assert netloc == server_host because it is defined in an environment variable
     # that is not set in the backend-tests container
     # assert link.netloc == server_host
-    assert link.netloc is not ''
+    assert link.netloc is not ""
 
     # Check that the path includes the correct farm ID
     assert link.path == f"/authorize-farm/"
@@ -74,10 +74,10 @@ def test_get_farm_auth_link(client: TestClient, test_farm, superuser_token_heade
     # Check that an api_token query param is included
     assert link.query is not None
     params = parse_qs(link.query)
-    assert 'farm_id' in params
-    assert int(params['farm_id'][0]) == test_farm.id
-    assert 'api_token' in params
-    token = params['api_token'][0]
+    assert "farm_id" in params
+    assert int(params["farm_id"][0]) == test_farm.id
+    assert "api_token" in params
+    token = params["api_token"][0]
 
     # Validate the api_token
     token_data = _validate_token(token)
@@ -88,13 +88,12 @@ def test_get_farm_auth_link(client: TestClient, test_farm, superuser_token_heade
 
     # Test that the api_token has access to read /api/v1/farms/{id}
     r = client.get(
-        f"{settings.API_V1_PREFIX}/farms/{test_farm.id}",
-        headers={'api-token': token},
+        f"{settings.API_V1_PREFIX}/farms/{test_farm.id}", headers={"api-token": token},
     )
     assert 200 <= r.status_code < 300
     farm_info = r.json()
-    assert farm_info['id'] == test_farm.id
-    assert farm_info['farm_name'] == test_farm.farm_name
+    assert farm_info["id"] == test_farm.id
+    assert farm_info["farm_name"] == test_farm.farm_name
 
     # Test that the returned link has access to the utils/authorize-farm endpoint
     data = FarmAuthorizationParams(
@@ -107,7 +106,7 @@ def test_get_farm_auth_link(client: TestClient, test_farm, superuser_token_heade
 
     r = client.post(
         f"{settings.API_V1_PREFIX}/utils/authorize-farm/{test_farm.id}",
-        headers={'api-token': token},
+        headers={"api-token": token},
         json=data.dict(),
     )
     # This request should return 400, but no token will be created.

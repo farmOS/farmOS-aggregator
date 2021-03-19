@@ -23,9 +23,7 @@ def get_superuser_token_headers(client: TestClient):
         "username": settings.FIRST_SUPERUSER,
         "password": settings.FIRST_SUPERUSER_PASSWORD,
     }
-    r = client.post(
-        f"{settings.API_V2_PREFIX}/login/access-token", data=login_data
-    )
+    r = client.post(f"{settings.API_V2_PREFIX}/login/access-token", data=login_data)
     tokens = r.json()
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}
@@ -34,7 +32,10 @@ def get_superuser_token_headers(client: TestClient):
 
 
 def get_all_scopes_token_headers(client: TestClient):
-    return _create_headers_with_scopes(client=client, scopes="farm:create farm:read farm:update farm:delete farm:authorize farm.info")
+    return _create_headers_with_scopes(
+        client=client,
+        scopes="farm:create farm:read farm:update farm:delete farm:authorize farm.info",
+    )
 
 
 def get_scope_token_headers(client: TestClient, scopes):
@@ -47,9 +48,7 @@ def _create_headers_with_scopes(client: TestClient, scopes):
         "password": settings.FIRST_SUPERUSER_PASSWORD,
         "scope": scopes,
     }
-    r = client.post(
-        f"{settings.API_V2_PREFIX}/login/access-token", data=login_data
-    )
+    r = client.post(f"{settings.API_V2_PREFIX}/login/access-token", data=login_data)
     tokens = r.json()
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}
@@ -60,7 +59,7 @@ def get_api_key_headers(client: TestClient, api_key_params: ApiKeyCreate):
     r = client.post(
         f"{settings.API_V2_PREFIX}/api-keys/",
         headers=get_superuser_token_headers(client=client),
-        data=api_key_params.json()
+        data=api_key_params.json(),
     )
     api_key = r.json()
     key = api_key["key"]

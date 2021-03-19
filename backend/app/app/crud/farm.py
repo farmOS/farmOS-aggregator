@@ -19,21 +19,36 @@ logger = logging.getLogger(__name__)
 
 def get_by_id(db: Session, *, farm_id: int, active: bool = None):
     if active is not None:
-        return db.query(Farm).filter(Farm.active.is_(active)).filter(Farm.id == farm_id).first()
+        return (
+            db.query(Farm)
+            .filter(Farm.active.is_(active))
+            .filter(Farm.id == farm_id)
+            .first()
+        )
     else:
         return db.query(Farm).filter(Farm.id == farm_id).first()
 
 
 def get_by_multi_id(db: Session, *, farm_id_list: List[int], active: bool = None):
     if active is not None:
-        return db.query(Farm).filter(Farm.active.is_(active)).filter(Farm.id.in_(farm_id_list)).all()
+        return (
+            db.query(Farm)
+            .filter(Farm.active.is_(active))
+            .filter(Farm.id.in_(farm_id_list))
+            .all()
+        )
     else:
         return db.query(Farm).filter(Farm.id.in_(farm_id_list)).all()
 
 
 def get_by_url(db: Session, *, farm_url: str, active: bool = None):
     if active is not None:
-        return db.query(Farm).filter(Farm.active.is_(active)).filter(Farm.url == farm_url).first()
+        return (
+            db.query(Farm)
+            .filter(Farm.active.is_(active))
+            .filter(Farm.url == farm_url)
+            .first()
+        )
     else:
         return db.query(Farm).filter(Farm.url == farm_url).first()
 
@@ -56,7 +71,9 @@ def create(db: Session, *, farm_in: FarmCreate) -> Farm:
         active = farm_in.active
     # Enable farm profile if configured and not overridden above.
     elif settings.FARM_ACTIVE_AFTER_REGISTRATION:
-        logging.debug(f"FARM_ACTIVE_AFTER_REGISTRATION is enabled. New farm will be active.")
+        logging.debug(
+            f"FARM_ACTIVE_AFTER_REGISTRATION is enabled. New farm will be active."
+        )
         active = True
 
     farm = Farm(
@@ -94,7 +111,9 @@ def update(db: Session, *, farm: Farm, farm_in: FarmUpdate):
             token = crud.farm_token.create_farm_token(db, token=new_token)
         # Update existing token.
         else:
-            token = crud.farm_token.update_farm_token(db, token=old_token, token_in=farm_in.token)
+            token = crud.farm_token.update_farm_token(
+                db, token=old_token, token_in=farm_in.token
+            )
 
     # Prevent deleting token
     del farm_in.token
@@ -113,9 +132,9 @@ def update(db: Session, *, farm: Farm, farm_in: FarmUpdate):
 def update_scope(db: Session, *, farm: Farm, scope: str):
     # Save scopes as a space separated list of strings.
     if type(scope) == list:
-        scope = ' '.join(scope)
+        scope = " ".join(scope)
 
-    setattr(farm, 'scope', scope)
+    setattr(farm, "scope", scope)
     db.add(farm)
     db.commit()
     db.refresh(farm)
@@ -123,7 +142,7 @@ def update_scope(db: Session, *, farm: Farm, scope: str):
 
 
 def update_info(db: Session, *, farm: Farm, info: FarmInfo):
-    setattr(farm, 'info', info)
+    setattr(farm, "info", info)
     db.add(farm)
     db.commit()
     db.refresh(farm)
@@ -148,7 +167,9 @@ def update_last_accessed(db: Session, *, farm_id: int):
     return farm
 
 
-def update_is_authorized(db: Session, *, farm_id: int, is_authorized: bool, auth_error: str = None):
+def update_is_authorized(
+    db: Session, *, farm_id: int, is_authorized: bool, auth_error: str = None
+):
     farm = get_by_id(db=db, farm_id=farm_id)
     setattr(farm, "is_authorized", is_authorized)
     setattr(farm, "auth_error", auth_error)

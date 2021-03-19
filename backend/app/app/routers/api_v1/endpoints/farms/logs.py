@@ -7,7 +7,11 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.routers.utils.db import get_db
-from app.routers.utils.farms import get_active_farms_url_or_list, get_farm_client, ClientError
+from app.routers.utils.farms import (
+    get_active_farms_url_or_list,
+    get_farm_client,
+    ClientError,
+)
 from app.schemas.farm import Farm
 
 router = APIRouter()
@@ -17,7 +21,7 @@ router = APIRouter()
 
 class Log(BaseModel):
     class Config:
-        extra = 'allow'
+        extra = "allow"
 
     name: str
     type: str
@@ -25,7 +29,7 @@ class Log(BaseModel):
 
 class LogUpdate(BaseModel):
     class Config:
-        extra = 'allow'
+        extra = "allow"
 
     id: int
 
@@ -37,8 +41,8 @@ def get_all_farm_logs(
     db: Session = Depends(get_db),
 ):
     query_params = {**request.query_params}
-    query_params.pop('farm_id', None)
-    query_params.pop('farm_url', None)
+    query_params.pop("farm_id", None)
+    query_params.pop("farm_url", None)
 
     data = {}
     for farm in farm_list:
@@ -52,7 +56,9 @@ def get_all_farm_logs(
 
         # Make the request.
         try:
-            data[farm.id] = data[farm.id] + farm_client.log.get(filters=query_params)['list']
+            data[farm.id] = (
+                data[farm.id] + farm_client.log.get(filters=query_params)["list"]
+            )
         except:
             continue
 
@@ -80,7 +86,6 @@ def create_farm_logs(
             data[farm.id].append(farm_client.log.send(payload=log.dict()))
         except:
             continue
-
 
     return data
 

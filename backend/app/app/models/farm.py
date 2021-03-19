@@ -8,7 +8,7 @@ from app.models.farm_token import FarmToken
 
 
 class Farm(Base):
-    __tablename__ = 'farm'
+    __tablename__ = "farm"
 
     id = Column(Integer, primary_key=True, index=True)
     time_created = Column(DateTime(timezone=True), server_default=func.now())
@@ -29,6 +29,7 @@ class Farm(Base):
     info = deferred(Column(JSONB, nullable=True))
 
     is_authorized = Column(Boolean, default=False)
-    token = relationship("FarmToken", uselist=False, back_populates="farm", lazy='joined')
+    token = relationship(
+        "FarmToken", uselist=False, back_populates="farm", lazy="joined"
+    )
     auth_error = Column(String, nullable=True)
-

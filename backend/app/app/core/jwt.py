@@ -23,10 +23,10 @@ def create_api_key(farm_id: List[int], scopes: List[str], all_farms=False):
     now = datetime.utcnow()
     encoded_jwt = jwt.encode(
         {
-            'nbf': now.timestamp(),
-            'farm_id': farm_id,
-            'all_farms': all_farms,
-            'scopes': scopes,
+            "nbf": now.timestamp(),
+            "farm_id": farm_id,
+            "all_farms": all_farms,
+            "scopes": scopes,
         },
         settings.SECRET_KEY,
         algorithm=ALGORITHM,
@@ -40,8 +40,8 @@ def create_farm_api_token(farm_id: List[int], scopes: List[str]):
     expires = now + delta
     encoded_jwt = jwt.encode(
         {
-            'exp': expires.timestamp(),
-            'nbf': now.timestamp(),
+            "exp": expires.timestamp(),
+            "nbf": now.timestamp(),
             "farm_id": farm_id,
             "scopes": scopes,
         },

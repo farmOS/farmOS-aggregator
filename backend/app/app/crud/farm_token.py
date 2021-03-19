@@ -29,7 +29,3 @@ def update_farm_token(db: Session, token: FarmToken, token_in: FarmTokenBase):
     db.commit()
     db.refresh(token)
     return token
-
-
-
-

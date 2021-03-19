@@ -5,7 +5,11 @@ from pydantic.typing import Dict, List, Optional, Union, Any
 from sqlalchemy.orm import Session
 
 from app.routers.utils.db import get_db
-from app.routers.utils.farms import get_active_farms_url_or_list, get_farm_client, ClientError
+from app.routers.utils.farms import (
+    get_active_farms_url_or_list,
+    get_farm_client,
+    ClientError,
+)
 from app.schemas.farm import Farm
 
 router = APIRouter()
@@ -44,9 +48,9 @@ def get_resource(
     db: Session = Depends(get_db),
 ):
     query_params = {**request.query_params}
-    query_params.pop('farm_id', None)
-    query_params.pop('farm_url', None)
-    query_params.pop('all', None)
+    query_params.pop("farm_id", None)
+    query_params.pop("farm_url", None)
+    query_params.pop("all", None)
 
     data = {}
     for farm in farm_list:
@@ -62,7 +66,9 @@ def get_resource(
         # Make the request.
         try:
             if all:
-                response = list(farm_client.resource.iterate(entity_type, bundle, query_params))
+                response = list(
+                    farm_client.resource.iterate(entity_type, bundle, query_params)
+                )
             else:
                 response = farm_client.resource.get(entity_type, bundle, query_params)
             data[farm.id] = response
@@ -83,8 +89,8 @@ def get_resource_id(
     db: Session = Depends(get_db),
 ):
     query_params = {**request.query_params}
-    query_params.pop('farm_id', None)
-    query_params.pop('farm_url', None)
+    query_params.pop("farm_id", None)
+    query_params.pop("farm_url", None)
 
     data = {}
     for farm in farm_list:
@@ -99,7 +105,9 @@ def get_resource_id(
 
         # Make the request.
         try:
-            response = farm_client.resource.get_id(entity_type, bundle, uuid, query_params)
+            response = farm_client.resource.get_id(
+                entity_type, bundle, uuid, query_params
+            )
             data[farm.id] = response
         except Exception as e:
             data[farm.id] = str(e)
@@ -129,7 +137,9 @@ def create_resource(
 
         # Make the request.
         try:
-            data[farm.id] = farm_client.resource.send(entity_type, bundle, payload=resource.dict(exclude_unset=True))
+            data[farm.id] = farm_client.resource.send(
+                entity_type, bundle, payload=resource.dict(exclude_unset=True)
+            )
         except Exception as e:
             data[farm.id] = str(e)
             continue
@@ -158,7 +168,9 @@ def update_resource(
 
         # Make the request.
         try:
-            data[farm.id] = farm_client.resource.send(entity_type, bundle, payload=resource.dict(exclude_unset=True))
+            data[farm.id] = farm_client.resource.send(
+                entity_type, bundle, payload=resource.dict(exclude_unset=True)
+            )
         except Exception as e:
             data[farm.id] = str(e)
             continue
@@ -188,7 +200,9 @@ def delete_farm_assets(
         # Make the request.
         for single_id in id:
             try:
-                response = farm_client.resource.delete(entity_type, bundle, id=single_id)
+                response = farm_client.resource.delete(
+                    entity_type, bundle, id=single_id
+                )
                 data[farm.id].append({single_id: response})
             except Exception as e:
                 data[farm.id].append({single_id: str(e)})

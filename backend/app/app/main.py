@@ -14,7 +14,7 @@ app = FastAPI(
     title=settings.AGGREGATOR_NAME,
     description="farmOS Aggregator Backend",
     version="v0.9.5",
-    openapi_url=f"{settings.API_PREFIX}/openapi.json"
+    openapi_url=f"{settings.API_PREFIX}/openapi.json",
 )
 
 # Set all CORS enabled origins

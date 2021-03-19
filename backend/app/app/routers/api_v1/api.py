@@ -19,23 +19,18 @@ router.include_router(
     prefix="/api-keys",
     tags=["api keys"],
     dependencies=[Security(get_current_active_superuser)],
-    deprecated=True
+    deprecated=True,
 )
 
 # Include /farms endpoints.
-router.include_router(
-    farms.router,
-    prefix="/farms",
-    tags=["farms"],
-    deprecated=True
-)
+router.include_router(farms.router, prefix="/farms", tags=["farms"], deprecated=True)
 
 # Include /farms/logs endpoints.
 router.include_router(
     logs.router,
     prefix="/farms/logs",
     tags=["farm logs"],
-    dependencies=[Security(get_farm_access, scopes=['farm:read'])]
+    dependencies=[Security(get_farm_access, scopes=["farm:read"])],
 )
 
 # Include /farms/assets endpoints.
@@ -43,7 +38,7 @@ router.include_router(
     assets.router,
     prefix="/farms/assets",
     tags=["farm assets"],
-    dependencies=[Security(get_farm_access, scopes=['farm:read'])]
+    dependencies=[Security(get_farm_access, scopes=["farm:read"])],
 )
 
 # Include /farms/terms endpoints.
@@ -51,7 +46,7 @@ router.include_router(
     terms.router,
     prefix="/farms/terms",
     tags=["farm terms"],
-    dependencies=[Security(get_farm_access, scopes=['farm:read'])]
+    dependencies=[Security(get_farm_access, scopes=["farm:read"])],
 )
 
 # Include /farms/areas endpoints.
@@ -59,5 +54,5 @@ router.include_router(
     areas.router,
     prefix="/farms/areas",
     tags=["farm areas"],
-    dependencies=[Security(get_farm_access, scopes=['farm:read'])]
+    dependencies=[Security(get_farm_access, scopes=["farm:read"])],
 )

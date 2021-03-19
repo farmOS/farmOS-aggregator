@@ -11,7 +11,7 @@ def test_create_farm_token(db: Session, test_farm):
         access_token=random_lower_string(),
         expires_in=random_lower_string(),
         refresh_token=random_lower_string(),
-        expires_at=1581363344.0651991
+        expires_at=1581363344.0651991,
     )
 
     # Check for existing token
@@ -41,7 +41,7 @@ def test_update_farm_token(db: Session, test_farm):
         access_token=None,
         expires_in=None,
         refresh_token=None,
-        expires_at=None
+        expires_at=None,
     )
     new_token = farm_token.update_farm_token(db, token=db_token, token_in=token_changes)
     assert new_token.id == db_token.id

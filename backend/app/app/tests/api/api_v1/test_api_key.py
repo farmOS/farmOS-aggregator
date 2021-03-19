@@ -11,15 +11,15 @@ def test_create_update_delete_api_key(client: TestClient, superuser_token_header
     api_key = ApiKeyCreate(
         name="Test Key",
         all_farms=True,
-        farm_id=[0,1,2],
+        farm_id=[0, 1, 2],
         notes="Some notes",
-        enabled=True
+        enabled=True,
     )
 
     r = client.post(
         f"{settings.API_V1_PREFIX}/api-keys/",
         headers=superuser_token_headers,
-        data=api_key.json()
+        data=api_key.json(),
     )
     assert 200 <= r.status_code < 300
 
@@ -39,12 +39,12 @@ def test_create_update_delete_api_key(client: TestClient, superuser_token_header
         enabled=False,
         notes="Updated notes",
         all_farms=False,
-        farm_id=[]
+        farm_id=[],
     )
     r = client.put(
         f"{settings.API_V1_PREFIX}/api-keys/{key['id']}",
         headers=superuser_token_headers,
-        data=key_update.json()
+        data=key_update.json(),
     )
     assert 200 <= r.status_code < 300
     updated_key = r.json()
@@ -80,10 +80,7 @@ def test_get_api_keys(client: TestClient, superuser_token_headers):
 
 def test_read_farms_all_farms_api_key(client: TestClient, db: Session, test_farm):
     test_api_key = ApiKeyCreate(
-        name="Test Key",
-        enabled=True,
-        all_farms=True,
-        scopes=["farm:read"]
+        name="Test Key", enabled=True, all_farms=True, scopes=["farm:read"]
     )
 
     farm_id = test_farm.id
@@ -93,16 +90,13 @@ def test_read_farms_all_farms_api_key(client: TestClient, db: Session, test_farm
     )
     assert 200 <= r.status_code < 300
     response = r.json()
-    farm = crud.farm.get_by_id(db, farm_id=response['id'])
+    farm = crud.farm.get_by_id(db, farm_id=response["id"])
     assert farm.farm_name == response["farm_name"]
 
 
 def test_read_farms_one_farm_id_api_key(client: TestClient, db: Session, test_farm):
     test_api_key = ApiKeyCreate(
-        name="Test Key",
-        enabled=True,
-        farm_id=[test_farm.id],
-        scopes=["farm:read"]
+        name="Test Key", enabled=True, farm_id=[test_farm.id], scopes=["farm:read"]
     )
 
     farm_id = test_farm.id
@@ -112,16 +106,13 @@ def test_read_farms_one_farm_id_api_key(client: TestClient, db: Session, test_fa
     )
     assert 200 <= r.status_code < 300
     response = r.json()
-    farm = crud.farm.get_by_id(db, farm_id=response['id'])
+    farm = crud.farm.get_by_id(db, farm_id=response["id"])
     assert farm.farm_name == response["farm_name"]
 
 
 def test_read_farms_wrong_farm_id_api_key(client: TestClient, test_farm):
     test_api_key = ApiKeyCreate(
-        name="Test Key",
-        enabled=True,
-        farm_id=[99],
-        scopes=["farm:read"]
+        name="Test Key", enabled=True, farm_id=[99], scopes=["farm:read"]
     )
 
     farm_id = test_farm.id
@@ -134,10 +125,7 @@ def test_read_farms_wrong_farm_id_api_key(client: TestClient, test_farm):
 
 def test_read_farms_no_farms_api_key(client: TestClient, test_farm):
     test_api_key = ApiKeyCreate(
-        name="Test Key",
-        enabled=True,
-        all_farms=False,
-        scopes=["farm:read"]
+        name="Test Key", enabled=True, all_farms=False, scopes=["farm:read"]
     )
 
     farm_id = test_farm.id
@@ -150,10 +138,7 @@ def test_read_farms_no_farms_api_key(client: TestClient, test_farm):
 
 def test_read_farms_disabled_api_key(client: TestClient, test_farm):
     test_api_key = ApiKeyCreate(
-        name="Test Key",
-        enabled=False,
-        all_farms=True,
-        scopes=["farm:read"]
+        name="Test Key", enabled=False, all_farms=True, scopes=["farm:read"]
     )
 
     farm_id = test_farm.id
@@ -166,10 +151,7 @@ def test_read_farms_disabled_api_key(client: TestClient, test_farm):
 
 def test_read_farms_no_scope_api_key(client: TestClient, test_farm):
     test_api_key = ApiKeyCreate(
-        name="Test Key",
-        enabled=True,
-        all_farms=True,
-        scopes=[]
+        name="Test Key", enabled=True, all_farms=True, scopes=[]
     )
 
     farm_id = test_farm.id

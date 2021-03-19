@@ -4,7 +4,11 @@ from sqlalchemy.orm import Session
 from farmOS.subrequests import Subrequest, Format
 
 from app.routers.utils.db import get_db
-from app.routers.utils.farms import get_active_farms_url_or_list, get_farm_client, ClientError
+from app.routers.utils.farms import (
+    get_active_farms_url_or_list,
+    get_farm_client,
+    ClientError,
+)
 from app.schemas.farm import Farm
 
 router = APIRouter()

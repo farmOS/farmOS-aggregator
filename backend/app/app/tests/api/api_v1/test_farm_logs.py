@@ -56,9 +56,9 @@ def test_create_log(client: TestClient, test_farm, test_log, farm_logs_headers):
     # Check log was created
     test_farm_logs = content[str(test_farm.id)]
     assert len(test_farm_logs) == 1
-    assert 'id' in test_farm_logs[0]
-    created_log_id = test_farm_logs[0]['id']
-    test_log['id'] = created_log_id
+    assert "id" in test_farm_logs[0]
+    created_log_id = test_farm_logs[0]["id"]
+    test_log["id"] = created_log_id
 
     # Check that the created log has correct attributes
     response = client.get(
@@ -73,16 +73,16 @@ def test_create_log(client: TestClient, test_farm, test_log, farm_logs_headers):
     assert len(content[str(test_farm.id)]) == 1
     created_log = content[str(test_farm.id)][0]
     # Check attributes
-    assert created_log['type'] == data['type']
+    assert created_log["type"] == data["type"]
     # Check that an optional attribute was populated
-    assert bool(int(created_log['done'])) == data['done']
+    assert bool(int(created_log["done"])) == data["done"]
 
 
 @farmOS_testing_server
 def test_update_log(client: TestClient, test_farm, test_log, farm_logs_headers):
     # Change log attributes
-    test_log['name'] = "Updated name from farmOS-aggregator"
-    test_log['done'] = False
+    test_log["name"] = "Updated name from farmOS-aggregator"
+    test_log["done"] = False
     data = test_log
 
     response = client.put(
@@ -98,8 +98,8 @@ def test_update_log(client: TestClient, test_farm, test_log, farm_logs_headers):
     assert str(test_farm.id) in content
     assert len(content[str(test_farm.id)]) == 1
     response_log = content[str(test_farm.id)][0]
-    assert 'id' in response_log
-    assert test_log['id'] == str(response_log['id'])
+    assert "id" in response_log
+    assert test_log["id"] == str(response_log["id"])
 
     # Check that the updated log has correct attributes
     response = client.get(
@@ -113,9 +113,9 @@ def test_update_log(client: TestClient, test_farm, test_log, farm_logs_headers):
     assert len(content[str(test_farm.id)]) == 1
     updated_log = content[str(test_farm.id)][0]
     # Check attributes
-    assert updated_log['name'] == data['name']
+    assert updated_log["name"] == data["name"]
     # Check that an optional attribute was updated
-    assert bool(int(updated_log['done'])) == data['done']
+    assert bool(int(updated_log["done"])) == data["done"]
 
 
 @farmOS_testing_server
