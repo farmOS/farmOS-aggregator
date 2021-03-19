@@ -10,7 +10,7 @@ from app.tests.utils.utils import random_lower_string
 
 def test_get_users_superuser_me(client: TestClient, superuser_token_headers):
     r = client.get(
-        f"{settings.API_V1_PREFIX}/users/me", headers=superuser_token_headers
+        f"{settings.API_V2_PREFIX}/users/me", headers=superuser_token_headers
     )
     current_user = r.json()
     assert current_user
@@ -26,7 +26,7 @@ def test_create_user_new_email(
     password = random_lower_string()
     data = {"email": username, "password": password}
     r = client.post(
-        f"{settings.API_V1_PREFIX}/users/", headers=superuser_token_headers, json=data,
+        f"{settings.API_V2_PREFIX}/users/", headers=superuser_token_headers, json=data,
     )
     assert 200 <= r.status_code < 300
     created_user = r.json()
@@ -41,7 +41,7 @@ def test_get_existing_user(client: TestClient, db: Session, superuser_token_head
     user = crud.user.create(db, user_in=user_in)
     user_id = user.id
     r = client.get(
-        f"{settings.API_V1_PREFIX}/users/{user_id}", headers=superuser_token_headers,
+        f"{settings.API_V2_PREFIX}/users/{user_id}", headers=superuser_token_headers,
     )
     assert 200 <= r.status_code < 300
     api_user = r.json()
@@ -59,7 +59,7 @@ def test_create_user_existing_username(
     user = crud.user.create(db, user_in=user_in)
     data = {"email": username, "password": password}
     r = client.post(
-        f"{settings.API_V1_PREFIX}/users/", headers=superuser_token_headers, json=data,
+        f"{settings.API_V2_PREFIX}/users/", headers=superuser_token_headers, json=data,
     )
     created_user = r.json()
     assert r.status_code == 400
@@ -74,7 +74,7 @@ def test_create_user_by_normal_user(client: TestClient, db: Session):
     user_token_headers = user_authentication_headers(client, username, password)
     data = {"email": username, "password": password}
     r = client.post(
-        f"{settings.API_V1_PREFIX}/users/", headers=user_token_headers, json=data
+        f"{settings.API_V2_PREFIX}/users/", headers=user_token_headers, json=data
     )
     assert r.status_code == 400
 
@@ -90,7 +90,7 @@ def test_retrieve_users(client: TestClient, db: Session, superuser_token_headers
     user_in2 = UserCreate(email=username2, password=password2)
     user2 = crud.user.create(db, user_in=user_in2)
 
-    r = client.get(f"{settings.API_V1_PREFIX}/users/", headers=superuser_token_headers)
+    r = client.get(f"{settings.API_V2_PREFIX}/users/", headers=superuser_token_headers)
     all_users = r.json()
 
     assert len(all_users) > 1

@@ -1,0 +1,10 @@
+version: '3.3'
+services:
+  farmos_www:
+    depends_on:
+      - db
+    image: farmos/farmos:2.x-dev
+    volumes:
+      - './www:/opt/drupal'
+    ports:
+      - '8080:80'

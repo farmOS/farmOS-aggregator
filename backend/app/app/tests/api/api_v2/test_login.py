@@ -8,7 +8,7 @@ def test_get_access_token(client: TestClient):
         "username": settings.FIRST_SUPERUSER,
         "password": settings.FIRST_SUPERUSER_PASSWORD,
     }
-    r = client.post(f"{settings.API_V1_PREFIX}/login/access-token", data=login_data)
+    r = client.post(f"{settings.API_V2_PREFIX}/login/access-token", data=login_data)
     tokens = r.json()
     assert r.status_code == 200
     assert "access_token" in tokens
@@ -17,7 +17,7 @@ def test_get_access_token(client: TestClient):
 
 def test_use_access_token(client: TestClient, superuser_token_headers):
     r = client.post(
-        f"{settings.API_V1_PREFIX}/login/test-token", headers=superuser_token_headers,
+        f"{settings.API_V2_PREFIX}/login/test-token", headers=superuser_token_headers,
     )
     result = r.json()
     assert r.status_code == 200

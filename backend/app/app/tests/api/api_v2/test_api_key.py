@@ -17,7 +17,7 @@ def test_create_update_delete_api_key(client: TestClient, superuser_token_header
     )
 
     r = client.post(
-        f"{settings.API_V1_PREFIX}/api-keys/",
+        f"{settings.API_V2_PREFIX}/api-keys/",
         headers=superuser_token_headers,
         data=api_key.json(),
     )
@@ -42,7 +42,7 @@ def test_create_update_delete_api_key(client: TestClient, superuser_token_header
         farm_id=[],
     )
     r = client.put(
-        f"{settings.API_V1_PREFIX}/api-keys/{key['id']}",
+        f"{settings.API_V2_PREFIX}/api-keys/{key['id']}",
         headers=superuser_token_headers,
         data=key_update.json(),
     )
@@ -61,7 +61,7 @@ def test_create_update_delete_api_key(client: TestClient, superuser_token_header
 
     # Delete API Key.
     r = client.delete(
-        f"{settings.API_V1_PREFIX}/api-keys/{key['id']}",
+        f"{settings.API_V2_PREFIX}/api-keys/{key['id']}",
         headers=superuser_token_headers,
     )
     assert 200 <= r.status_code < 300
@@ -69,7 +69,7 @@ def test_create_update_delete_api_key(client: TestClient, superuser_token_header
 
 def test_get_api_keys(client: TestClient, superuser_token_headers):
     r = client.get(
-        f"{settings.API_V1_PREFIX}/users/me", headers=superuser_token_headers
+        f"{settings.API_V2_PREFIX}/users/me", headers=superuser_token_headers
     )
     current_user = r.json()
     assert current_user
@@ -85,7 +85,7 @@ def test_read_farms_all_farms_api_key(client: TestClient, db: Session, test_farm
 
     farm_id = test_farm.id
     r = client.get(
-        f"{settings.API_V1_PREFIX}/farms/{farm_id}",
+        f"{settings.API_V2_PREFIX}/farms/{farm_id}",
         headers=get_api_key_headers(client=client, api_key_params=test_api_key),
     )
     assert 200 <= r.status_code < 300
@@ -101,7 +101,7 @@ def test_read_farms_one_farm_id_api_key(client: TestClient, db: Session, test_fa
 
     farm_id = test_farm.id
     r = client.get(
-        f"{settings.API_V1_PREFIX}/farms/{farm_id}",
+        f"{settings.API_V2_PREFIX}/farms/{farm_id}",
         headers=get_api_key_headers(client=client, api_key_params=test_api_key),
     )
     assert 200 <= r.status_code < 300
@@ -117,7 +117,7 @@ def test_read_farms_wrong_farm_id_api_key(client: TestClient, test_farm):
 
     farm_id = test_farm.id
     r = client.get(
-        f"{settings.API_V1_PREFIX}/farms/{farm_id}",
+        f"{settings.API_V2_PREFIX}/farms/{farm_id}",
         headers=get_api_key_headers(client=client, api_key_params=test_api_key),
     )
     assert r.status_code == 401
@@ -130,7 +130,7 @@ def test_read_farms_no_farms_api_key(client: TestClient, test_farm):
 
     farm_id = test_farm.id
     r = client.get(
-        f"{settings.API_V1_PREFIX}/farms/{farm_id}",
+        f"{settings.API_V2_PREFIX}/farms/{farm_id}",
         headers=get_api_key_headers(client=client, api_key_params=test_api_key),
     )
     assert r.status_code == 401
@@ -143,7 +143,7 @@ def test_read_farms_disabled_api_key(client: TestClient, test_farm):
 
     farm_id = test_farm.id
     r = client.get(
-        f"{settings.API_V1_PREFIX}/farms/{farm_id}",
+        f"{settings.API_V2_PREFIX}/farms/{farm_id}",
         headers=get_api_key_headers(client=client, api_key_params=test_api_key),
     )
     assert r.status_code == 401
@@ -156,7 +156,7 @@ def test_read_farms_no_scope_api_key(client: TestClient, test_farm):
 
     farm_id = test_farm.id
     r = client.get(
-        f"{settings.API_V1_PREFIX}/farms/{farm_id}",
+        f"{settings.API_V2_PREFIX}/farms/{farm_id}",
         headers=get_api_key_headers(client=client, api_key_params=test_api_key),
     )
     assert r.status_code == 401
@@ -165,7 +165,7 @@ def test_read_farms_no_scope_api_key(client: TestClient, test_farm):
 def test_read_farms_random_api_key(client: TestClient, test_farm):
     farm_id = test_farm.id
     r = client.get(
-        f"{settings.API_V1_PREFIX}/farms/{farm_id}",
+        f"{settings.API_V2_PREFIX}/farms/{farm_id}",
         headers={"api-key": f"{random_lower_string()}"},
     )
     assert r.status_code == 401
