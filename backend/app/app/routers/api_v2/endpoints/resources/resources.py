@@ -179,7 +179,7 @@ def update_resource(
 
 
 @router.delete("/{entity_type}/{bundle}")
-def delete_farm_assets(
+def delete_resources(
     entity_type: str,
     bundle: str,
     id: List[str] = Query(None),
