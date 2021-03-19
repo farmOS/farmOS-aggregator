@@ -7,7 +7,7 @@ from app.tests.utils.utils import farmOS_testing_server, get_scope_token_headers
 
 @pytest.fixture
 def farm_logs_headers(client: TestClient):
-    return get_scope_token_headers(client=client, scopes="farm:read farm.logs")
+    return get_scope_token_headers(client=client, scopes="farm:read")
 
 
 @farmOS_testing_server

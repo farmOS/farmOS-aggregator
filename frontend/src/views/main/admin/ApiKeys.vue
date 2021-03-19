@@ -212,22 +212,6 @@
             id: 'farm.info',
             label: 'Read farmOS server info',
           },
-          {
-            id: 'farm.logs',
-            label: 'Access farmOS server logs.',
-          },
-          {
-            id: 'farm.assets',
-            label: 'Access farmOS server assets.',
-          },
-          {
-            id: 'farm.terms',
-            label: 'Access farmOS server terms.',
-          },
-          {
-            id: 'farm.areas',
-            label: 'Access farmOS server areas.',
-          },
         ];
 
         public headers = [

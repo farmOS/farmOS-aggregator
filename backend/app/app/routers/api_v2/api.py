@@ -33,7 +33,7 @@ router.include_router(
     resources.router,
     prefix="/farms/resources",
     tags=["Resources"],
-    dependencies=[Security(get_farm_access, scopes=['farm:read', 'farm.logs'])]
+    dependencies=[Security(get_farm_access, scopes=['farm:read'])]
 )
 
 # Include /farms/resources/subrequests endpoint.
@@ -41,5 +41,5 @@ router.include_router(
     subrequests.router,
     prefix="/farms/resources/subrequests",
     tags=["Resources"],
-    dependencies=[Security(get_farm_access, scopes=['farm:read', 'farm.logs'])]
+    dependencies=[Security(get_farm_access, scopes=['farm:read'])]
 )

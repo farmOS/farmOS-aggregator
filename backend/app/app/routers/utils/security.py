@@ -26,10 +26,6 @@ oauth_scopes = {
     "farm:delete": "Delete farm profiles",
     "farm:authorize": "Complete the OAuth Authorization Code cycle for farm profiles",
     "farm.info": "Read farmOS server info",
-    "farm.logs": "Access logs",
-    "farm.assets": "Access assets",
-    "farm.terms": "Access terms",
-    "farm.areas": "Access areas",
 }
 
 optional_oauth2 = OAuth2PasswordBearer(

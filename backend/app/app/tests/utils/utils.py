@@ -34,7 +34,7 @@ def get_superuser_token_headers(client: TestClient):
 
 
 def get_all_scopes_token_headers(client: TestClient):
-    return _create_headers_with_scopes(client=client, scopes="farm:create farm:read farm:update farm:delete farm:authorize farm.info farm.logs farm.assets farm.terms farm.areas")
+    return _create_headers_with_scopes(client=client, scopes="farm:create farm:read farm:update farm:delete farm:authorize farm.info")
 
 
 def get_scope_token_headers(client: TestClient, scopes):
