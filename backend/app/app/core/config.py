@@ -110,7 +110,7 @@ class Settings(BaseSettings):
     USERS_OPEN_REGISTRATION: bool = False
 
     TEST_FARM_NAME: str = "farmOS-test-instance"
-    TEST_FARM_URL: HttpUrl = None
+    TEST_FARM_URL: AnyHttpUrl = None
     TEST_FARM_USERNAME: str = None
     TEST_FARM_PASSWORD: str = None
 
