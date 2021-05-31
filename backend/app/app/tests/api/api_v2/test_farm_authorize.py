@@ -66,7 +66,7 @@ def test_get_farm_auth_link(client: TestClient, test_farm, superuser_token_heade
     # Cannot assert netloc == server_host because it is defined in an environment variable
     # that is not set in the backend-tests container
     # assert link.netloc == server_host
-    assert link.netloc is not ""
+    assert link.netloc != ""
 
     # Check that the path includes the correct farm ID
     assert link.path == f"/authorize-farm/"
