@@ -262,10 +262,10 @@ def get_farm_client(db, farm, version=2):
 
     # Raise an error if the API endpoint doesn't match the server version.
     # The length of the access tokens differs between 1.x and 2.x
-    if len(token.access_token) < 60 and version is 2:
+    if len(token.access_token) < 60 and version == 2:
         error = "Server is running farmOS 1.x. Use the /api/v1/farms endpoint."
         raise ClientError(error)
-    elif len(token.access_token) > 60 and version is 1:
+    elif len(token.access_token) > 60 and version == 1:
         error = "Server is running farmOS 2.x. Use the /api/v2/farms endpoint."
         raise ClientError(error)
 
