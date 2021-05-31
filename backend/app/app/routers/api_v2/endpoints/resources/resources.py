@@ -193,7 +193,7 @@ def delete_resources(
         # Get a farmOS client.
         try:
             farm_client = get_farm_client(db=db, farm=farm)
-        except ClientError:
+        except ClientError as e:
             data[farm.id] = str(e)
             continue
 
