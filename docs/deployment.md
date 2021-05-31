@@ -21,7 +21,7 @@ Deployment requires a few steps:
     - Configure the domain:
       - Set the `DOMAIN` variable to the domain with Aggregator will be deployed to. (Without HTTP)
     - Configure db:
-      - Generate a unique password for the databse. Set the `POSTGRES_PASSWORD` variable to the output of the following:
+      - Generate a unique password for the database. Set the `POSTGRES_PASSWORD` variable to the output of the following:
         ```shell script
           openssl rand -hex 32
           # Outputs something like: 99d3b1f01aa639e4a76f4fc281fc834747a543720ba4c8a8648ba755aef9be7f
