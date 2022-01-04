@@ -11,7 +11,6 @@ from starlette.status import HTTP_403_FORBIDDEN, HTTP_401_UNAUTHORIZED
 from sqlalchemy.orm import Session
 from functools import partial
 from farmOS import farmOS
-from farmOS.config import ClientConfig
 
 from app import crud
 from app.routers.utils.db import get_db
