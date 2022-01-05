@@ -26,7 +26,7 @@ router.include_router(
     farms.router, prefix="/farms", tags=["farms"],
 )
 
-# Include /farms/logs endpoints.
+# Include /farms/resources endpoints.
 router.include_router(
     resources.router,
     prefix="/farms/resources",
