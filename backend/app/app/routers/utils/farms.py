@@ -178,6 +178,14 @@ def get_active_farms_url_or_list(
     return farms
 
 
+def get_first_active_farm_url_or_list(
+    farms: List[Farm] = Depends(get_active_farms_url_or_list),
+):
+    if not len(farms):
+        raise farm_not_found_exception
+    return farms.pop()
+
+
 # A helper function to save OAuth Tokens to DB.
 def _save_token(token, db=None, farm=None):
     logging.debug("Saving new token for farm: " + str(farm.id))

@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, Security
 
-from app.routers.api_v2.endpoints import login, users, utils, api_key, farms
+from app.routers.api_v2.endpoints import login, users, utils, api_key, farms, relay
 from app.routers.api_v2.endpoints.resources import resources, subrequests
 from app.routers.utils.security import get_farm_access, get_current_active_superuser
 
@@ -24,6 +24,13 @@ router.include_router(
 # Include /farms endpoints.
 router.include_router(
     farms.router, prefix="/farms", tags=["farms"],
+)
+
+# Include /farms/relay endpoints.
+router.include_router(
+    relay.router, prefix="/farms/relay",
+    tags=["Relay"],
+    dependencies=[Security(get_farm_access, scopes=["farm:read"])],
 )
 
 # Include /farms/resources endpoints.
