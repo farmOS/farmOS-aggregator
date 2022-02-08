@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from app.core.config import settings
 from app import crud
+from app.core.config import settings
 from app.schemas.farm import FarmCreate, FarmUpdate
 from app.tests.utils.utils import random_lower_string
 

@@ -4,8 +4,8 @@ from fastapi import FastAPI, Response
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 
-from app.routers import api_v2
 from app.core.config import settings
+from app.routers import api_v2
 
 # Configure logging. Change INFO to DEBUG for development logging.
 logging.basicConfig(level=logging.INFO)

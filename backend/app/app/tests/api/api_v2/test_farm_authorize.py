@@ -1,12 +1,12 @@
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import parse_qs, urlparse
 
 import pytest
 from fastapi.testclient import TestClient
 
 from app.core.config import settings
-from app.schemas.farm_token import FarmAuthorizationParams
-from app.tests.utils.utils import random_lower_string, get_scope_token_headers
 from app.routers.utils.security import _validate_token
+from app.schemas.farm_token import FarmAuthorizationParams
+from app.tests.utils.utils import get_scope_token_headers, random_lower_string
 
 
 @pytest.fixture

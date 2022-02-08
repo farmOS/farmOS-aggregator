@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 
 from app import crud
 from app.core.config import settings
-from app.tests.utils.utils import random_lower_string, get_api_key_headers
 from app.schemas.api_key import ApiKeyCreate, ApiKeyUpdate
+from app.tests.utils.utils import get_api_key_headers, random_lower_string
 
 
 def test_create_update_delete_api_key(client: TestClient, superuser_token_headers):

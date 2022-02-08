@@ -1,5 +1,6 @@
 from pydantic import BaseConfig, BaseModel
 
+
 # Shared properties
 class APIModel(BaseModel):
     class Config(BaseConfig):

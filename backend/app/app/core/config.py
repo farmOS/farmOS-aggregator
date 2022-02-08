@@ -7,9 +7,9 @@ from pydantic import (
     BaseSettings,
     EmailStr,
     HttpUrl,
+    Json,
     PostgresDsn,
     validator,
-    Json,
 )
 
 

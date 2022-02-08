@@ -1,22 +1,21 @@
 from typing import List
 
-from fastapi import APIRouter, Body, Depends, Security, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, Security
 from pydantic.typing import Optional
 from sqlalchemy.orm import Session
 
-
 from app import crud
-from app.utils import get_settings
 from app.routers.utils.db import get_db
 from app.routers.utils.farms import (
     ClientError,
+    admin_alert_email,
+    get_farm_by_id,
     get_farm_client,
     get_farms_url_or_list,
-    get_farm_by_id,
-    admin_alert_email,
 )
 from app.routers.utils.security import get_farm_access, get_farm_access_allow_public
-from app.schemas.farm import Farm, AllFarmInfo, FarmCreate, FarmUpdate
+from app.schemas.farm import AllFarmInfo, Farm, FarmCreate, FarmUpdate
+from app.utils import get_settings
 
 router = APIRouter()
 

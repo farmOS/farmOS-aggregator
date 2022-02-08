@@ -1,24 +1,24 @@
 import logging
+
 import jwt
-from fastapi import Depends, HTTPException, Security, Query
+from fastapi import Depends, HTTPException, Query, Security
 from fastapi.security import (
-    OAuth2PasswordBearer,
-    APIKeyQuery,
     APIKeyHeader,
+    APIKeyQuery,
+    OAuth2PasswordBearer,
     SecurityScopes,
 )
 from jwt import PyJWTError
-from sqlalchemy.orm import Session
-from starlette.status import HTTP_403_FORBIDDEN, HTTP_401_UNAUTHORIZED
 from pydantic import BaseModel, ValidationError
+from sqlalchemy.orm import Session
+from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN
 
 from app import crud
-from app.utils import get_settings
-from app.routers.utils.db import get_db
 from app.core.jwt import ALGORITHM
 from app.models.user import User
-from app.schemas.token import TokenData, FarmAccess
-
+from app.routers.utils.db import get_db
+from app.schemas.token import FarmAccess, TokenData
+from app.utils import get_settings
 
 logger = logging.getLogger(__name__)
 

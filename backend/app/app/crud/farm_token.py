@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from app.models.farm_token import FarmToken
-from app.schemas.farm_token import FarmTokenCreate, FarmTokenBase
+from app.schemas.farm_token import FarmTokenBase, FarmTokenCreate
 
 
 def get_farm_token(db: Session, farm_id: int):

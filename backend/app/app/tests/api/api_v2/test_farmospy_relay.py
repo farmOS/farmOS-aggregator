@@ -1,10 +1,10 @@
 import pytest
-from fastapi.testclient import TestClient
 from farmOS.client_2 import ResourceBase
+from fastapi.testclient import TestClient
 from requests.sessions import Session
 
-from app.tests.utils.utils import farmOS_testing_server, get_api_key_headers
 from app.schemas.api_key import ApiKeyCreate
+from app.tests.utils.utils import farmOS_testing_server, get_api_key_headers
 
 
 class AggregatorSession(Session):

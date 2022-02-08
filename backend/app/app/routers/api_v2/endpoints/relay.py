@@ -1,15 +1,15 @@
 from fastapi import APIRouter, Body, Depends, HTTPException
+from pydantic.typing import List, Optional
 from requests import HTTPError
+from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette.responses import Response
-from pydantic.typing import List, Optional
-from sqlalchemy.orm import Session
 
 from app.routers.utils.db import get_db
 from app.routers.utils.farms import (
-    get_first_active_farm_url_or_list,
-    get_farm_client,
     ClientError,
+    get_farm_client,
+    get_first_active_farm_url_or_list,
 )
 from app.schemas.farm import Farm
 

@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, Query
-from starlette.requests import Request
 from pydantic import BaseModel
-from pydantic.typing import Dict, List, Optional, Union, Any
+from pydantic.typing import Any, Dict, List, Optional, Union
 from sqlalchemy.orm import Session
+from starlette.requests import Request
 
 from app.routers.utils.db import get_db
 from app.routers.utils.farms import (
+    ClientError,
     get_active_farms_url_or_list,
     get_farm_client,
-    ClientError,
 )
 from app.schemas.farm import Farm
 

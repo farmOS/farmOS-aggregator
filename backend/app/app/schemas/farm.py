@@ -1,9 +1,10 @@
-from typing import Optional
 from datetime import datetime
+from typing import Optional
 
 from app.schemas.api_model import APIModel
-from app.schemas.farm_token import FarmToken, FarmTokenBase
 from app.schemas.farm_info import FarmInfo
+from app.schemas.farm_token import FarmToken, FarmTokenBase
+
 
 # Shared properties
 class FarmBase(APIModel):

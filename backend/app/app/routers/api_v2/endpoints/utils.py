@@ -1,33 +1,33 @@
-import os
 import logging
+import os
 from datetime import datetime
 
-from fastapi import APIRouter, BackgroundTasks, Depends, Security, HTTPException, Body
+from farmOS import farmOS
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, Security
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
-from farmOS import farmOS
 
 from app import crud
+from app.core.jwt import create_farm_api_token
 from app.routers.utils.db import get_db
-from app.schemas.msg import Msg
-from app.schemas.farm import Farm
-from app.schemas.farm_token import FarmTokenCreate, FarmAuthorizationParams
 from app.routers.utils.farms import (
-    get_farm_by_id,
-    get_oauth_token,
-    get_farm_client,
-    handle_ping_farms,
     build_farm_url,
+    get_farm_by_id,
+    get_farm_client,
+    get_oauth_token,
+    handle_ping_farms,
 )
 from app.routers.utils.security import get_farm_access, get_farm_access_allow_public
+from app.schemas.farm import Farm
+from app.schemas.farm_token import FarmAuthorizationParams, FarmTokenCreate
+from app.schemas.msg import Msg
 from app.utils import (
-    get_settings,
-    generate_farm_registration_link,
-    send_farm_registration_email,
     generate_farm_authorization_link,
+    generate_farm_registration_link,
+    get_settings,
     send_farm_authorization_email,
+    send_farm_registration_email,
 )
-from app.core.jwt import create_farm_api_token
 
 logger = logging.getLogger(__name__)
 

@@ -7,7 +7,6 @@ from fastapi.testclient import TestClient
 from app.core.config import settings
 from app.schemas.api_key import ApiKeyCreate
 
-
 farmOS_testing_server = pytest.mark.skipif(
     settings.TEST_FARM_URL is None,
     reason="farmOS Testing Server not configured. Skipping farmOS test server integration tests.",

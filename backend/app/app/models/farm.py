@@ -1,7 +1,7 @@
-from sqlalchemy import Boolean, Column, Integer, String, DateTime
-from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship, deferred
+from sqlalchemy import Boolean, Column, DateTime, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import deferred, relationship
+from sqlalchemy.sql import func
 
 from app.db.base_class import Base
 from app.models.farm_token import FarmToken

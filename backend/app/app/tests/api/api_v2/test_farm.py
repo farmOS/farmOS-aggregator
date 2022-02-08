@@ -2,12 +2,11 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app import crud
-from app.main import app
+from app import crud, utils
 from app.core.config import Settings, settings
-from app import utils
 from app.core.jwt import create_farm_api_token
-from app.tests.utils.utils import random_lower_string, get_scope_token_headers
+from app.main import app
+from app.tests.utils.utils import get_scope_token_headers, random_lower_string
 
 
 @pytest.fixture

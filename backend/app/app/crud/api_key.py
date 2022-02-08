@@ -1,11 +1,11 @@
 import logging
 
-from sqlalchemy.orm import Session
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy.orm import Session
 
+from app.core.jwt import create_api_key
 from app.models.api_key import ApiKey
 from app.schemas.api_key import ApiKeyCreate, ApiKeyUpdate
-from app.core.jwt import create_api_key
 
 logger = logging.getLogger(__name__)
 

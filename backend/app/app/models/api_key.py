@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Boolean, Integer, String, DateTime, LargeBinary
-from sqlalchemy.sql import func
+from sqlalchemy import Boolean, Column, DateTime, Integer, LargeBinary, String
 from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.sql import func
 
 from app.db.base_class import Base
 

@@ -3,13 +3,13 @@ from typing import Generator
 import pytest
 from fastapi.testclient import TestClient
 
-from app.main import app
 from app.db.session import SessionLocal
+from app.main import app
+from app.tests.utils.farm import delete_test_farm_instance, get_test_farm_instance
 from app.tests.utils.utils import (
-    get_superuser_token_headers,
     get_all_scopes_token_headers,
+    get_superuser_token_headers,
 )
-from app.tests.utils.farm import get_test_farm_instance, delete_test_farm_instance
 
 
 @pytest.fixture(scope="session")

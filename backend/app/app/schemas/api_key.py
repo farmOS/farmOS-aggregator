@@ -1,5 +1,5 @@
-from typing import Optional, List
 from datetime import datetime
+from typing import List, Optional
 
 from app.schemas.api_model import APIModel
 
