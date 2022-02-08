@@ -76,9 +76,11 @@ def create(db: Session, *, farm_in: FarmCreate) -> Farm:
         )
         active = True
 
+    # Remove trailing parens from url.
+    farm_url = farm_in.url.strip('/')
     farm = Farm(
         farm_name=farm_in.farm_name,
-        url=farm_in.url,
+        url=farm_url,
         notes=farm_in.notes,
         tags=farm_in.tags,
         scope=farm_in.scope,
