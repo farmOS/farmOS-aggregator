@@ -8,13 +8,12 @@ from app.schemas.api_key import ApiKeyCreate
 
 
 class AggregatorSession(Session):
-
     def __init__(self, hostname, api_key, farm_id):
         super().__init__()
         self.hostname = hostname
         self.farm_id = farm_id
         self._content_type = "application/vnd.api+json"
-        self.headers.update({'api-key': api_key})
+        self.headers.update({"api-key": api_key})
 
     def http_request(self, path, method="GET", options=None, params=None, headers=None):
         # Strip protocol, hostname, leading/trailing slashes, and whitespace from the path.
@@ -109,7 +108,7 @@ def test_relay_crud_activity_logs(resources_api):
     test_log = {
         "attributes": {"name": "Test Log from farmOS-aggregator", "status": "done"},
     }
-    response = resources_api.send('log', 'activity', test_log)
+    response = resources_api.send("log", "activity", test_log)
 
     # Check log was created
     assert "data" in response
@@ -119,7 +118,7 @@ def test_relay_crud_activity_logs(resources_api):
     test_log["id"] = created_log_id
 
     # Test a GET with the log ID.
-    response = resources_api.get_id('log', 'activity', test_log['id'])
+    response = resources_api.get_id("log", "activity", test_log["id"])
 
     # Check attributes
     assert "data" in response
@@ -131,7 +130,7 @@ def test_relay_crud_activity_logs(resources_api):
     test_log["attributes"]["name"] = "Updated name from farmOS-aggregator"
     test_log["attributes"]["status"] = "pending"
     test_log = test_log
-    response = resources_api.send('log', 'activity', test_log)
+    response = resources_api.send("log", "activity", test_log)
 
     # Check response
     assert "data" in response
@@ -139,5 +138,5 @@ def test_relay_crud_activity_logs(resources_api):
     assert updated_log["attributes"]["name"] == test_log["attributes"]["name"]
 
     # Delete log
-    response = resources_api.delete('log', 'activity', updated_log['id'])
+    response = resources_api.delete("log", "activity", updated_log["id"])
     assert response.status_code == 204

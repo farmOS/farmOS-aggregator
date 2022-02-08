@@ -37,7 +37,8 @@ def relay(
         farm_client = get_farm_client(db=db, farm=farm)
     except ClientError as e:
         raise HTTPException(
-            status_code=500, detail="Client error",
+            status_code=500,
+            detail="Client error",
         )
 
     try:
@@ -77,5 +78,6 @@ def relay(
 
     except HTTPError as e:
         raise HTTPException(
-            status_code=e.response.status_code, detail=str(e),
+            status_code=e.response.status_code,
+            detail=str(e),
         )

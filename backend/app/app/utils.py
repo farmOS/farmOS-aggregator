@@ -150,7 +150,10 @@ def send_farm_registration_email(email_to: str, link: str):
         email_to=email_to,
         subject_template=subject,
         html_template=template_str,
-        environment={"aggregator_name": settings.AGGREGATOR_NAME, "link": link,},
+        environment={
+            "aggregator_name": settings.AGGREGATOR_NAME,
+            "link": link,
+        },
     )
 
 

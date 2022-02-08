@@ -161,20 +161,23 @@ def get_api_key_farm_access(
             token_data = _validate_token(api_key)
         except (PyJWTError, ValidationError) as e:
             raise HTTPException(
-                status_code=HTTP_401_UNAUTHORIZED, detail="Could not validate api key.",
+                status_code=HTTP_401_UNAUTHORIZED,
+                detail="Could not validate api key.",
             )
 
         for scope in security_scopes.scopes:
             if scope not in token_data.scopes:
                 raise HTTPException(
-                    status_code=HTTP_401_UNAUTHORIZED, detail="Not enough permissions.",
+                    status_code=HTTP_401_UNAUTHORIZED,
+                    detail="Not enough permissions.",
                 )
 
         key_in_db = crud.api_key.get_by_key(db, key=api_key.encode())
 
         if key_in_db is None:
             raise HTTPException(
-                status_code=HTTP_401_UNAUTHORIZED, detail="API Key doesn't exist.",
+                status_code=HTTP_401_UNAUTHORIZED,
+                detail="API Key doesn't exist.",
             )
 
         if not key_in_db.enabled:

@@ -28,7 +28,9 @@ router = APIRouter()
     response_model=List[Farm],
     dependencies=[Security(get_farm_access, scopes=["farm:read"])],
 )
-def read_farms(farms: List[Farm] = Depends(get_farms_url_or_list),):
+def read_farms(
+    farms: List[Farm] = Depends(get_farms_url_or_list),
+):
     """
     Retrieve farms
     """
@@ -107,7 +109,8 @@ async def create_farm(
     existing_farm = crud.farm.get_by_url(db, farm_url=farm_in.url)
     if existing_farm:
         raise HTTPException(
-            status_code=409, detail="A farm with this URL already exists.",
+            status_code=409,
+            detail="A farm with this URL already exists.",
         )
 
     if settings.AGGREGATOR_ALERT_NEW_FARMS:
@@ -139,7 +142,8 @@ async def update_farm(
         existing_farm = crud.farm.get_by_url(db, farm_url=farm_in.url)
         if existing_farm:
             raise HTTPException(
-                status_code=409, detail="A farm with this URL already exists.",
+                status_code=409,
+                detail="A farm with this URL already exists.",
             )
 
     farm = crud.farm.update(db, farm=farm, farm_in=farm_in)

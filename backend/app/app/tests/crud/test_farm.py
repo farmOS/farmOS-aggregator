@@ -20,7 +20,11 @@ def test_create_delete_default_farm_with_token(db: Session):
         "expires_at": 1581363344.0651991,
     }
 
-    farm_in = FarmCreate(farm_name=farm_name, url=url, token=token,)
+    farm_in = FarmCreate(
+        farm_name=farm_name,
+        url=url,
+        token=token,
+    )
     farm = crud.farm.create(db, farm_in=farm_in)
     assert farm.farm_name == farm_name
     assert farm.url == url
@@ -49,7 +53,10 @@ def test_create_farm_update_token(db: Session):
     farm_name = random_lower_string()
     url = random_lower_string()
 
-    farm_in = FarmCreate(farm_name=farm_name, url=url,)
+    farm_in = FarmCreate(
+        farm_name=farm_name,
+        url=url,
+    )
     farm = crud.farm.create(db, farm_in=farm_in)
     assert farm.farm_name == farm_name
     assert farm.url == url
@@ -68,7 +75,9 @@ def test_create_farm_update_token(db: Session):
         "expires_at": 1581363344.0651991,
     }
 
-    farm_update = FarmUpdate(token=new_token,)
+    farm_update = FarmUpdate(
+        token=new_token,
+    )
     farm = crud.farm.update(db, farm=farm, farm_in=farm_update)
     assert farm.farm_name == farm_name
     assert farm.url == url
@@ -88,7 +97,9 @@ def test_create_farm_update_token(db: Session):
         "expires_at": None,
     }
 
-    farm_update = FarmUpdate(token=new_token,)
+    farm_update = FarmUpdate(
+        token=new_token,
+    )
     farm = crud.farm.update(db, farm=farm, farm_in=farm_update)
     assert farm.farm_name == farm_name
     assert farm.url == url
@@ -120,7 +131,11 @@ def test_create_farm_cant_delete_token(db: Session):
         "expires_at": 1581363344.0651991,
     }
 
-    farm_in = FarmCreate(farm_name=farm_name, url=url, token=token,)
+    farm_in = FarmCreate(
+        farm_name=farm_name,
+        url=url,
+        token=token,
+    )
     farm = crud.farm.create(db, farm_in=farm_in)
     assert farm.farm_name == farm_name
     assert farm.url == url
@@ -137,7 +152,9 @@ def test_create_farm_cant_delete_token(db: Session):
     assert farm.token.refresh_token == token["refresh_token"]
     assert farm.token.expires_in == token["expires_in"]
 
-    farm_update = FarmUpdate(token=None,)
+    farm_update = FarmUpdate(
+        token=None,
+    )
     farm = crud.farm.update(db, farm=farm, farm_in=farm_update)
     assert farm.farm_name == farm_name
     assert farm.url == url
@@ -160,7 +177,11 @@ def test_create_delete_active_farm(db: Session):
 
     farm_name = random_lower_string()
     url = random_lower_string()
-    farm_in = FarmCreate(farm_name=farm_name, url=url, active=True,)
+    farm_in = FarmCreate(
+        farm_name=farm_name,
+        url=url,
+        active=True,
+    )
     farm = crud.farm.create(db, farm_in=farm_in)
     assert farm.farm_name == farm_name
     assert farm.url == url
@@ -177,7 +198,11 @@ def test_create_delete_inactive_farm(db: Session):
 
     farm_name = random_lower_string()
     url = random_lower_string()
-    farm_in = FarmCreate(farm_name=farm_name, url=url, active=False,)
+    farm_in = FarmCreate(
+        farm_name=farm_name,
+        url=url,
+        active=False,
+    )
     farm = crud.farm.create(db, farm_in=farm_in)
     assert farm.farm_name == farm_name
     assert farm.url == url

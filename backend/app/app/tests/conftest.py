@@ -47,7 +47,10 @@ def test_farm():
 def test_log():
     data = {
         "type": "activity",
-        "attributes": {"name": "Test Log from farmOS-aggregator", "status": "done",},
+        "attributes": {
+            "name": "Test Log from farmOS-aggregator",
+            "status": "done",
+        },
     }
 
     return data

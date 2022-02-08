@@ -67,7 +67,9 @@ def farm_registration_link():
     response_model=Msg,
     status_code=201,
 )
-def send_registration_email(email_to: EmailStr,):
+def send_registration_email(
+    email_to: EmailStr,
+):
     """
     Test emails.
     """
@@ -77,7 +79,9 @@ def send_registration_email(email_to: EmailStr,):
 
 
 @router.post("/farm-auth-link/{farm_id}")
-def farm_auth_link(farm: Farm = Depends(get_farm_by_id),):
+def farm_auth_link(
+    farm: Farm = Depends(get_farm_by_id),
+):
     link = generate_farm_authorization_link(farm.id)
     return link
 
@@ -121,7 +125,8 @@ def authorize_farm(
     except Exception as e:
         error = f"Authorization flow failed: {e}"
         raise HTTPException(
-            status_code=400, detail=error,
+            status_code=400,
+            detail=error,
         )
 
     # Check the token expiration time.
@@ -195,7 +200,8 @@ def authorize_farm(
             db, farm_id=farm.id, is_authorized=False, auth_error=error
         )
         raise HTTPException(
-            status_code=400, detail=error,
+            status_code=400,
+            detail=error,
         )
 
     new_token = FarmTokenCreate(farm_id=farm.id, **token.dict())
@@ -231,7 +237,8 @@ def authorize_farm(
             db, farm_id=farm.id, is_authorized=False, auth_error=error
         )
         raise HTTPException(
-            status_code=400, detail=error,
+            status_code=400,
+            detail=error,
         )
 
     return {"token": token, "info": info}
@@ -255,7 +262,8 @@ def validate_farm_url(
         clean_url = build_farm_url(farm_url)
     except Exception as e:
         raise HTTPException(
-            status_code=400, detail=f"Invalid url: {e}",
+            status_code=400,
+            detail=f"Invalid url: {e}",
         )
     # Check that the `farm.json` endpoint returns 200
     # TODO: Use farmOS.py helper function to validate server hostname.

@@ -23,12 +23,15 @@ router.include_router(
 
 # Include /farms endpoints.
 router.include_router(
-    farms.router, prefix="/farms", tags=["farms"],
+    farms.router,
+    prefix="/farms",
+    tags=["farms"],
 )
 
 # Include /farms/relay endpoints.
 router.include_router(
-    relay.router, prefix="/farms/relay",
+    relay.router,
+    prefix="/farms/relay",
     tags=["Relay"],
     dependencies=[Security(get_farm_access, scopes=["farm:read"])],
 )

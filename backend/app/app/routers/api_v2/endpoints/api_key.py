@@ -24,7 +24,9 @@ def get_api_keys(db: Session = Depends(get_db)):
 
 @router.post("/", response_model=ApiKey)
 def create_api_key(
-    *, db: Session = Depends(get_db), key_in: ApiKeyCreate,
+    *,
+    db: Session = Depends(get_db),
+    key_in: ApiKeyCreate,
 ):
     """
     Create a new API Key.
@@ -36,7 +38,10 @@ def create_api_key(
 
 @router.put("/{key_id}", response_model=ApiKey)
 def update_api_key(
-    *, db: Session = Depends(get_db), key_id: int, key_in: ApiKeyUpdate,
+    *,
+    db: Session = Depends(get_db),
+    key_id: int,
+    key_in: ApiKeyUpdate,
 ):
     """
     Update an existing API Key.
@@ -46,7 +51,8 @@ def update_api_key(
     key = crud.api_key.get_by_id(db, key_id=key_id)
     if not key:
         raise HTTPException(
-            status_code=404, detail="API Key not found.",
+            status_code=404,
+            detail="API Key not found.",
         )
 
     key = crud.api_key.update(db, api_key=key, api_key_in=key_in)

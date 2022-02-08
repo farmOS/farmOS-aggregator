@@ -50,7 +50,10 @@ def upgrade():
         sa.Column("refresh_token", sa.String(), nullable=True),
         sa.Column("expires_at", sa.String(), nullable=True),
         sa.Column("farm_id", sa.Integer(), nullable=True),
-        sa.ForeignKeyConstraint(["farm_id"], ["farm.id"],),
+        sa.ForeignKeyConstraint(
+            ["farm_id"],
+            ["farm.id"],
+        ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("farm_id"),
     )

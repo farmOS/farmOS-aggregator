@@ -88,7 +88,8 @@ def test_get_farm_auth_link(client: TestClient, test_farm, superuser_token_heade
 
     # Test that the api_token has access to read /api/v1/farms/{id}
     r = client.get(
-        f"{settings.API_V2_PREFIX}/farms/{test_farm.id}", headers={"api-token": token},
+        f"{settings.API_V2_PREFIX}/farms/{test_farm.id}",
+        headers={"api-token": token},
     )
     assert 200 <= r.status_code < 300
     farm_info = r.json()

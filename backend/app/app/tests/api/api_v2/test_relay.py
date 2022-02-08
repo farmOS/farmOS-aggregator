@@ -13,12 +13,14 @@ def farm_logs_headers(client: TestClient):
 
 
 @farmOS_testing_server
-def test_relay_crud_activity_logs(client: TestClient, test_farm, test_log, farm_logs_headers):
+def test_relay_crud_activity_logs(
+    client: TestClient, test_farm, test_log, farm_logs_headers
+):
     # Create a log.
     response = client.post(
         f"{settings.API_V2_PREFIX}/farms/relay/api/log/activity?farm_id={test_farm.id}",
         headers=farm_logs_headers,
-        json={'data': test_log},
+        json={"data": test_log},
     )
     # Check response
     assert 200 <= response.status_code < 300
@@ -55,7 +57,7 @@ def test_relay_crud_activity_logs(client: TestClient, test_farm, test_log, farm_
     response = client.patch(
         f"{settings.API_V2_PREFIX}/farms/relay/api/log/activity/{test_log['id']}?farm_id={test_farm.id}",
         headers=farm_logs_headers,
-        json={'data': test_log},
+        json={"data": test_log},
     )
 
     # Check response

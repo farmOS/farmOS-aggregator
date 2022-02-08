@@ -52,7 +52,9 @@ def test_create_delete_farm(
         "token": token,
     }
     r = client.post(
-        f"{settings.API_V2_PREFIX}/farms/", headers=farm_create_headers, json=data,
+        f"{settings.API_V2_PREFIX}/farms/",
+        headers=farm_create_headers,
+        json=data,
     )
     assert 200 <= r.status_code < 300
     created_farm = r.json()
@@ -88,7 +90,8 @@ def test_create_delete_farm(
 
     # Delete the farm
     r = client.delete(
-        f"{settings.API_V2_PREFIX}/farms/{farm.id}", headers=farm_delete_headers,
+        f"{settings.API_V2_PREFIX}/farms/{farm.id}",
+        headers=farm_delete_headers,
     )
     assert 200 <= r.status_code < 300
 
@@ -110,7 +113,9 @@ def test_create_farm_update_token(
         "scope": "user_access",
     }
     r = client.post(
-        f"{settings.API_V2_PREFIX}/farms/", headers=farm_create_headers, json=data,
+        f"{settings.API_V2_PREFIX}/farms/",
+        headers=farm_create_headers,
+        json=data,
     )
     assert 200 <= r.status_code < 300
     created_farm = r.json()
@@ -172,7 +177,8 @@ def test_create_farm_update_token(
 
     # Delete the farm
     r = client.delete(
-        f"{settings.API_V2_PREFIX}/farms/{farm.id}", headers=farm_delete_headers,
+        f"{settings.API_V2_PREFIX}/farms/{farm.id}",
+        headers=farm_delete_headers,
     )
     assert 200 <= r.status_code < 300
 
@@ -203,7 +209,9 @@ def test_create_farm_delete_token(
         "token": token,
     }
     r = client.post(
-        f"{settings.API_V2_PREFIX}/farms/", headers=farm_create_headers, json=data,
+        f"{settings.API_V2_PREFIX}/farms/",
+        headers=farm_create_headers,
+        json=data,
     )
     assert 200 <= r.status_code < 300
     created_farm = r.json()
@@ -283,14 +291,18 @@ def test_create_farm_delete_token(
 
     # Delete the farm
     r = client.delete(
-        f"{settings.API_V2_PREFIX}/farms/{farm.id}", headers=farm_delete_headers,
+        f"{settings.API_V2_PREFIX}/farms/{farm.id}",
+        headers=farm_delete_headers,
     )
     assert 200 <= r.status_code < 300
 
 
 def test_get_all_farms(client: TestClient, db: Session, test_farm, farm_read_headers):
     farm_id = test_farm.id
-    r = client.get(f"{settings.API_V2_PREFIX}/farms/", headers=farm_read_headers,)
+    r = client.get(
+        f"{settings.API_V2_PREFIX}/farms/",
+        headers=farm_read_headers,
+    )
     assert 200 <= r.status_code < 300
     response = r.json()
     first_id = response[0]["id"]
@@ -301,7 +313,8 @@ def test_get_all_farms(client: TestClient, db: Session, test_farm, farm_read_hea
 def test_get_farm_by_id(client: TestClient, db: Session, test_farm, farm_read_headers):
     farm_id = test_farm.id
     r = client.get(
-        f"{settings.API_V2_PREFIX}/farms/{farm_id}", headers=farm_read_headers,
+        f"{settings.API_V2_PREFIX}/farms/{farm_id}",
+        headers=farm_read_headers,
     )
     assert 200 <= r.status_code < 300
     response = r.json()

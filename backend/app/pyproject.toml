@@ -6,7 +6,6 @@ authors = ["Paul Weidner <paul.weidner@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-uvicorn = "^0.11.7"
 fastapi = "^0.70"
 pyjwt = "^1.7.1"
 python-multipart = "^0.0.5"
@@ -24,15 +23,17 @@ alembic = "^1.4.2"
 sqlalchemy = "^1.3.16"
 pytest = "^5.4.1"
 farmOS = "^1.0.0-beta.3"
+uvicorn = "^0.17.4"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.770"
-black = "^19.10b0"
+black = "^22"
 isort = "^4.3.21"
 autoflake = "^1.3.1"
 flake8 = "^3.7.9"
 pytest = "^5.4.1"
 vulture = "^1.4"
+safety = "^1.10.3"
 
 [build-system]
 requires = ["poetry>=0.12"]
