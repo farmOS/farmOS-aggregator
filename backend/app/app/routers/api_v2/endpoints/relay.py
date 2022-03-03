@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Body, Depends, HTTPException
-from pydantic.typing import List, Optional
+from pydantic.typing import Any, Optional
 from requests import HTTPError
 from sqlalchemy.orm import Session
 from starlette.requests import Request
@@ -24,7 +24,7 @@ def relay(
     request: Request,
     response: Response,
     path: str,
-    request_payload: Optional[dict] = Body(default=None),
+    request_payload: Optional[Any] = Body(default=None),
     farm: Farm = Depends(get_first_active_farm_url_or_list),
     db: Session = Depends(get_db),
 ):
