@@ -32,7 +32,7 @@ def get_test_farm_instance(db: Session):
     assert "access_token" in token and "refresh_token" in token
 
     # Remove existing farm from DB if it has the testing URL
-    old_farm = crud.farm.get_by_url(db, farm_url=settings.TEST_FARM_URL)
+    old_farm = crud.farm.get_by_url(db, farm_url=settings.TEST_FARM_URL.host)
     if old_farm is not None:
         crud.farm.delete(db, farm_id=old_farm.id)
 
@@ -40,8 +40,8 @@ def get_test_farm_instance(db: Session):
     if settings.TEST_FARM_URL is not None:
         farm_in = FarmCreate(
             farm_name=settings.TEST_FARM_NAME,
-            url=settings.TEST_FARM_URL,
-            scope="user_access",
+            url=settings.TEST_FARM_URL.host,
+            scope="farm_manager",
             active=True,
             token=token,
         )

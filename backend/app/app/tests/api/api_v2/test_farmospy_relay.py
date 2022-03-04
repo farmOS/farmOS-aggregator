@@ -8,10 +8,10 @@ from app.tests.utils.utils import farmOS_testing_server, get_api_key_headers
 
 
 class AggregatorSession(Session):
-    def __init__(self, hostname, api_key, farm_id):
+    def __init__(self, hostname, api_key, farm_url):
         super().__init__()
         self.hostname = hostname
-        self.farm_id = farm_id
+        self.farm_url = farm_url
         self._content_type = "application/vnd.api+json"
         self.headers.update({"api-key": api_key})
 
@@ -26,12 +26,10 @@ class AggregatorSession(Session):
 
     def _http_request(self, url, method="GET", options=None, params=None, headers=None):
 
-        url = f"{self.hostname}/api/v2/farms/relay/{url}"
+        url = f"{self.hostname}/api/v2/farms/relay/{self.farm_url}/{url}"
 
         if params is None:
             params = {}
-
-        params["farm_id"] = self.farm_id
 
         # Automatically follow redirects, unless this is a POST request.
         # The Python requests library converts POST to GET during a redirect.
@@ -97,7 +95,7 @@ def resources_api(client: TestClient, test_farm):
     headers = get_api_key_headers(client=client, api_key_params=test_api_key)
 
     hostname = "http://localhost"
-    session = AggregatorSession(hostname, headers["api-key"], test_farm.id)
+    session = AggregatorSession(hostname, headers["api-key"], test_farm.url)
     resources = ResourceBase(session)
     return resources
 

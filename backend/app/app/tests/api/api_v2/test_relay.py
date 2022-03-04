@@ -18,7 +18,7 @@ def test_relay_crud_activity_logs(
 ):
     # Create a log.
     response = client.post(
-        f"{settings.API_V2_PREFIX}/farms/relay/api/log/activity?farm_id={test_farm.id}",
+        f"{settings.API_V2_PREFIX}/farms/relay/{test_farm.url}/api/log/activity",
         headers=farm_logs_headers,
         json={"data": test_log},
     )
@@ -35,7 +35,7 @@ def test_relay_crud_activity_logs(
 
     # Test a GET with the log ID.
     response = client.get(
-        f"{settings.API_V2_PREFIX}/farms/relay/api/log/activity/{test_log['id']}?farm_id={test_farm.id}",
+        f"{settings.API_V2_PREFIX}/farms/relay/{test_farm.url}/api/log/activity/{test_log['id']}",
         headers=farm_logs_headers,
         json=test_log,
     )
@@ -55,7 +55,7 @@ def test_relay_crud_activity_logs(
     test_log["attributes"]["status"] = "pending"
     test_log = test_log
     response = client.patch(
-        f"{settings.API_V2_PREFIX}/farms/relay/api/log/activity/{test_log['id']}?farm_id={test_farm.id}",
+        f"{settings.API_V2_PREFIX}/farms/relay/{test_farm.url}/api/log/activity/{test_log['id']}",
         headers=farm_logs_headers,
         json={"data": test_log},
     )
@@ -70,7 +70,7 @@ def test_relay_crud_activity_logs(
     assert updated_log["attributes"]["name"] == test_log["attributes"]["name"]
 
     response = client.delete(
-        f"{settings.API_V2_PREFIX}/farms/relay/api/log/activity/{test_log['id']}?farm_id={test_farm.id}",
+        f"{settings.API_V2_PREFIX}/farms/relay/{test_farm.url}/api/log/activity/{test_log['id']}",
         headers=farm_logs_headers,
     )
     # Check response

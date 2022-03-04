@@ -35,7 +35,7 @@ farm_not_found_exception = HTTPException(status_code=404, detail="Farm does not 
 
 def get_farm_by_url(
     db: Session = Depends(get_db),
-    farm_url: str = Query(None),
+    farm_url: str = None,
     farm_access: FarmAccess = Depends(get_farm_access),
 ):
     farm = None
@@ -175,14 +175,6 @@ def get_active_farms_url_or_list(
         farms.extend(farms_by_list)
 
     return farms
-
-
-def get_first_active_farm_url_or_list(
-    farms: List[Farm] = Depends(get_active_farms_url_or_list),
-):
-    if not len(farms):
-        raise farm_not_found_exception
-    return farms.pop()
 
 
 # A helper function to save OAuth Tokens to DB.

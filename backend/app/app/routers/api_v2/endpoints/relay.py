@@ -6,11 +6,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 from app.routers.utils.db import get_db
-from app.routers.utils.farms import (
-    ClientError,
-    get_farm_client,
-    get_first_active_farm_url_or_list,
-)
+from app.routers.utils.farms import ClientError, get_farm_by_url, get_farm_client
 from app.schemas.farm import Farm
 
 router = APIRouter()
@@ -19,19 +15,18 @@ router = APIRouter()
 # /farms/relay endpoint.
 
 
-@router.api_route("/{path:path}", methods=["GET", "POST", "PATCH", "DELETE"])
+# TODO: This does not seem to work if the farm_url includes a http scheme.
+# Specifying farm_url:path works, but then the second path:path argument does not accept a path.
+# It seems that there can only be one path argument per route.
+@router.api_route("/{farm_url}/{path:path}", methods=["GET", "POST", "PATCH", "DELETE"])
 def relay(
     request: Request,
     response: Response,
     path: str,
     request_payload: Optional[Any] = Body(default=None),
-    farm: Farm = Depends(get_first_active_farm_url_or_list),
+    farm: Farm = Depends(get_farm_by_url),
     db: Session = Depends(get_db),
 ):
-    query_params = {**request.query_params}
-    query_params.pop("farm_id", None)
-    query_params.pop("farm_url", None)
-
     # Get a farmOS client.
     try:
         farm_client = get_farm_client(db=db, farm=farm)
@@ -56,6 +51,7 @@ def relay(
             payload = request_payload
 
         # Relay the request.
+        query_params = {**request.query_params}
         server_response = farm_client.session.http_request(
             path=path, method=request.method, options=payload, params=query_params
         )
