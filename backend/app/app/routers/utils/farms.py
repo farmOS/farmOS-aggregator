@@ -222,7 +222,7 @@ client_state = {}
 
 
 # Create a farmOS.py client.
-def get_farm_client(db, farm, version=2):
+def get_farm_client(db, farm):
     client_id = settings.AGGREGATOR_OAUTH_CLIENT_ID
     client_secret = settings.AGGREGATOR_OAUTH_CLIENT_SECRET
 
@@ -250,15 +250,6 @@ def get_farm_client(db, farm, version=2):
         raise ClientError(error)
     # Use the saved scope.
     scope = farm.scope
-
-    # Raise an error if the API endpoint doesn't match the server version.
-    # The length of the access tokens differs between 1.x and 2.x
-    if len(token.access_token) < 60 and version == 2:
-        error = "Server is running farmOS 1.x. Use the /api/v1/farms endpoint."
-        raise ClientError(error)
-    elif len(token.access_token) > 60 and version == 1:
-        error = "Server is running farmOS 2.x. Use the /api/v2/farms endpoint."
-        raise ClientError(error)
 
     token_updater = partial(_save_token, db=db, farm=farm)
 
@@ -294,7 +285,6 @@ def get_farm_client(db, farm, version=2):
             scope=scope,
             token=token.dict(),
             token_updater=token_updater,
-            version=version,
         )
 
         # Make an authenticated request to trigger automatic refresh.

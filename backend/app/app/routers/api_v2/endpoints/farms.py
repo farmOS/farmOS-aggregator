@@ -55,10 +55,8 @@ def get_all_farm_info(
             data[farm.id] = farm.info
         else:
 
-            # Determine the correct version
-            version = 2 if len(farm.token.access_token) > 60 else 1
             try:
-                farm_client = get_farm_client(db=db, farm=farm, version=version)
+                farm_client = get_farm_client(db=db, farm=farm)
             except ClientError as e:
                 data[farm.id] = str(e)
 

@@ -219,8 +219,7 @@ def authorize_farm(
 
     # Reconnect to the farmOS server and update farm info.
     try:
-        version = 2 if len(new_token.access_token) > 60 else 1
-        farm_client = get_farm_client(db=db, farm=farm, version=version)
+        farm_client = get_farm_client(db=db, farm=farm)
 
         response = farm_client.info()
         # Set the info depending on v1 or v2.

@@ -23,7 +23,6 @@ def get_test_farm_instance(db: Session):
         hostname=settings.TEST_FARM_URL,
         client_id="farm",
         scope="farm_manager",
-        version=2,
     )
     token = farm_client.authorize(
         username=settings.TEST_FARM_USERNAME, password=settings.TEST_FARM_PASSWORD
