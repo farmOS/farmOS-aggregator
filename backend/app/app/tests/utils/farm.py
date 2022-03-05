@@ -49,7 +49,7 @@ def get_test_farm_instance(db: Session):
         farm_in = FarmCreate(
             farm_name=settings.TEST_FARM_NAME,
             url="http://localhost",
-            scope="user_access",
+            scope="farm_manager",
             active=True,
         )
 
