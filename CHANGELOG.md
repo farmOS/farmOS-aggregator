@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Update to python 3.10 [#123](https://github.com/farmOS/farmOS-aggregator/issues/123)
+- Update emails to ^0.6 [#123](https://github.com/farmOS/farmOS-aggregator/issues/123)
 
 ### Fixed
 - Update poetry installer [#121](https://github.com/farmOS/farmOS-aggregator/issues/121)
