@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Update poetry installer [#121](https://github.com/farmOS/farmOS-aggregator/issues/121)
+- Only run codespell on backend.
 
 ## v2.0.0-beta.2 2022-03-04
 

@@ -9,7 +9,7 @@ jobs:
       - run: pip install bandit black codespell flake8 isort mypy safety
       - run: bandit --recursive --skip B101 . || true  # B101 is assert statements
       - run: black --check backend/app
-      - run: codespell  # --ignore-words-list="" --skip=""
+      - run: codespell backend/app
       - run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
       - run: cd backend/app && isort --check-only --profile black .
       - run: mypy --ignore-missing-imports . || true
