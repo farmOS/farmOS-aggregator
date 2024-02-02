@@ -11,7 +11,7 @@
   <img width="446" height="413" src="img/aggregator_logo.png">
 </p>
 
-farmOS-aggregator is an application for interacting with multiple [farmOS](https://farmOS.org)
+farmOS-aggregator is a microservice application for interacting with multiple [farmOS](https://farmOS.org)
 instances. The application provides a GUI for registering farmOS instances with the Aggregator
 and a REST API for interacting with farmOS instances. Depending on how an Aggregator is configured,
 farmOS admins will authorize access to only a subset of their farm's data.
