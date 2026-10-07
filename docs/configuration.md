@@ -35,8 +35,8 @@ disabled by default and should only be used during development.
       {...}
     ]
     ``` 
-  This online [formatter](https://www.freeformatter.com/json-formatter.html) can be used to format the JSON object
-  down to one line. Set the `Indentation Level` to `Compact (1 line)` and copy into a `.env` file.
+  This online [JSON formatter](https://jsonviewertool.com/json-formatter) can be used to format the JSON object
+  down to one line. Select `Minify` and copy the output into a `.env` file.
   
   These OAuth Scopes are used in the UI form for authorizing farm profiles. It is important they have clear descriptions
   so users know what level of access & permissions they are authorizing with an Aggregator.
